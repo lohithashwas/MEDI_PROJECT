@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Leaderboard - MEDI-KIT</title>
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter',sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg,#0a0b1e 0%,#1a1d3a 25%,#2d3748 50%,#4a5568 75%,#718096 100%);
+      color:#fff;
+      padding:0;
+      scroll-behavior:smooth;
+    }
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; width: 100%;
+      background: rgba(10,11,30,0.95);
+      border-bottom: 1px solid rgba(34,197,94,0.2);
+      z-index: 1000;
+      box-shadow: 0 4px 25px rgba(34,197,94,0.15);
+      padding: 20px 0;
+    }
+    .nav-container {
+      max-width: 1200px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding:0 20px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-icon {
+      width:40px;height:40px;
+      background:linear-gradient(135deg,#22c55e,#16a34a);
+      border-radius:10px;
+      display:flex;align-items:center;justify-content:center;
+      box-shadow:0 8px 25px rgba(34,197,94,0.3);
+    }
+    .logo-icon i {
+      font-size:20px;color:#fff;
+    }
+    .logo-text {
+      font-size:24px;font-weight:800;
+      background: linear-gradient(135deg,#22c55e,#3b82f6);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    }
+    .main-content {
+      max-width: 650px;
+      margin: 120px auto 40px auto;
+      padding: 30px 0 40px 0;
+    }
+    .page-title {
+      font-size:2.6rem;
+      font-weight:900;
+      margin-bottom:15px;
+      background:linear-gradient(135deg,#fff,#22c55e);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      text-align:center;
+    }
+    .page-subtitle {
+      text-align:center;
+      color:#94a3b8;
+      font-size:1.1rem;
+      margin-bottom:40px;
+    }
+    .leaderboard-list {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+    .leaderboard-card {
+      display: flex;
+      align-items: center;
+      gap:20px;
+      background: linear-gradient(135deg,#1e293b,#334155 90%);
+      padding:26px 30px;
+      border-radius:18px;
+      border-left:6px solid #22c55e;
+      box-shadow:0 8px 30px rgba(34,197,94,0.11);
+      position:relative;
+      transition: all 0.2s;
+      overflow:hidden;
+    }
+   .leaderboard-card .pos {
+      font-size:1.5rem;
+      font-weight:700;
+      color:#22c55e;
+      margin-right:10px;
+      width:36px;
+      text-align:right;
+    }
+    .leaderboard-card .name {
+      font-size:1.22rem;
+      font-weight:700;
+      color:#fff;
+      flex:1;
+      letter-spacing:0.02em;
+    }
+    .leaderboard-card .tasks, .leaderboard-card .points {
+      font-size:1rem;
+      margin-left:22px;
+      color:#94a3b8;
+    }
+    .leaderboard-card .badge {
+      font-size:1.3rem;
+      margin-left:10px;
+      vertical-align:-3px;
+    }
+    .leaderboard-card.top-bg {
+      border-left: 6px solid gold;
+      box-shadow:0 4px 45px 0 rgba(255,215,0,0.18);
+      background: linear-gradient(100deg,#1e293b 60%,#FFD7002b 100%);
+    }
+    .leaderboard-card.me {
+      border-left: 6px solid #3b82f6;
+      box-shadow:0 4px 35px 0 rgba(59,130,246,0.10);
+      background: linear-gradient(120deg,#1e293b 60%,#3b82f642 100%);
+      outline:2px solid #3b82f6;
+    }
+    .highlight {
+      background: linear-gradient(100deg,#FAF884 60%,gold 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight:900;
+      letter-spacing: 0.04em;
+    }
+    /* Redeem section */
+    .redeem-container {
+      margin:42px auto 0 auto;
+      max-width:600px;
+      background: rgba(30,41,59,0.89);
+      border-radius: 18px;
+      box-shadow: 0 5px 18px rgba(34,197,94,0.15), 0 1px 0 rgba(34,197,94,0.14) inset;
+      padding: 34px 30px;
+      text-align: center;
+      border:1.5px solid rgba(34,197,94,0.18);
+      position:relative;
+      overflow:hidden;
+    }
+    .redeem-title {
+      font-size:1.45rem;
+      font-weight:700;
+      letter-spacing:0.01em;
+      background:linear-gradient(135deg,#22c55e,#3b82f6);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      margin-bottom:18px;
+    }
+    .offer-details {
+      color:#94a3b8;
+      font-size:1.1rem;
+      margin-bottom:26px;
+    }
+    .avail-btn {
+      background:linear-gradient(135deg,#22c55e,#16a34a);
+      color:white;
+      font-size:1.08rem;
+      border:none;
+      border-radius:9px;
+      padding: 14px 34px;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:0 9px 24px rgba(34,197,94,0.21);
+      transition: all 0.16s;
+      display: inline-flex; align-items: center;
+      gap:10px;
+    }
+    .avail-btn:hover, .avail-btn:focus {
+      background: linear-gradient(135deg,#16a34a,#22c55e 80%);
+      box-shadow:0 12px 28px rgba(34,197,94,0.3);
+      transform:translateY(-2px) scale(1.03);
+      outline:none;
+    }
+    /* Modal */
+    .modal-bg {
+      display:none; position:fixed;z-index:1090;top:0;left:0;width:100vw;height:100vh;
+      background:rgba(24,32,48,0.48);
+      align-items:center;justify-content:center;
+    }
+    .modal-active {
+      display: flex !important;
+    }
+    .modal-box {
+      background: #232b40;
+      color:#fff;
+      padding: 36px 34px 26px 34px;
+      border-radius: 17px;
+      box-shadow:0 8px 38px 0 rgba(34,197,94,0.18),0 1.5px 0 rgba(34,197,94,0.12) inset;
+      max-width:350px; width:90vw;
+      text-align:center;
+      transform:scale(0.96);
+      animation:popin 0.24s cubic-bezier(.4,2,.4,1) forwards;
+      position:relative;
+    }
+    .modal-box .modal-title {
+      font-size:1.2rem;font-weight:700;
+      margin-bottom: 11px;
+      color: #22c55e;
+    }
+    .modal-box .modal-msg {
+      font-size:1.06rem;
+      color:#d1fae5;
+    }
+    .modal-close {
+      position:absolute;top:12px;right:17px;
+      background: none; border:none; color: #7dd3fc;
+      font-size:1.56rem; cursor:pointer; outline:none;
+      transition: color 0.18s;
+    }
+    .modal-close:hover {color: #f87171;}
+    @keyframes popin {
+      from {transform: scale(0.86);}
+      to   {transform: scale(1);}
+    }
+    @media (max-width:700px){
+      .main-content, .redeem-container {max-width: 94vw;}
+    }
+    @media (max-width:480px){
+      .main-content {margin-top:120px;}
+      .leaderboard-card {
+        flex-direction:column; gap:8px; padding:22px 11px;
+        align-items:flex-start;
+      }
+      .leaderboard-card .tasks, .leaderboard-card .points {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo">
+        <div class="logo-icon"><i class='bx bx-health'></i></div>
+        <span class="logo-text">MEDI-KIT</span>
+      </div>
+    </div>
+  </nav>
+  <div class="main-content">
+    <h1 class="page-title">Leaderboard</h1>
+    <div class="page-subtitle">Track your progress and stay motivated. Top contributors earn exclusive health rewards!</div>
+
+    <div class="leaderboard-list">
+      <div class="leaderboard-card top-bg">
+        <div class="pos">1</div>
+        <div class="name highlight"><i class='bx bxs-crown'></i> Haresh Krishna G S</div>
+        <div class="tasks">✅ 9 Tasks</div>
+        <div class="points">🌟 10 / 10</div>
+      </div>
+
+      <div class="leaderboard-card">
+        <div class="pos">2</div>
+        <div class="name">Roshan M</div>
+        <div class="tasks">✅ 8 Tasks</div>
+        <div class="points">🌟 9 / 10</div>
+      </div>
+
+      <div class="leaderboard-card me">
+        <div class="pos">3</div>
+        <div class="name"><i class='bx bx-user-circle'></i> Lohith Ashwa</div>
+        <div class="tasks">✅ 8 Tasks</div>
+        <div class="points">🌟 9 / 10</div>
+      </div>
+
+      <div class="leaderboard-card">
+        <div class="pos">4</div>
+        <div class="name">Nawin</div>
+        <div class="tasks">✅ 7 Tasks</div>
+        <div class="points">🌟 8 / 10</div>
+      </div>
+      <div class="leaderboard-card">
+        <div class="pos">5</div>
+        <div class="name">Parthiban</div>
+        <div class="tasks">✅ 6 Tasks</div>
+        <div class="points">🌟 7 / 10</div>
+      </div>
+      <div class="leaderboard-card">
+        <div class="pos">6</div>
+        <div class="name">Pranay</div>
+        <div class="tasks">✅ 5 Tasks</div>
+        <div class="points">🌟 6 / 10</div>
+      </div>
+    </div>
+
+    <div class="redeem-container" id="redeem">
+      <div class="redeem-title"><i class='bx bx-gift'></i> Special Health Reward Available!</div>
+      <div class="offer-details">
+        Congratulations! As a top performer, you can claim a <b>Free Health Check-Up Coupon</b> redeemable at MEDI-KIT partnered clinics.<br>
+        <span style="color:#22c55e;">Limited-time offer:</span> Avail now and stay on top of your health.
+      </div>
+      <button class="avail-btn" onclick="showRedeemModal()">
+        <i class='bx bx-receipt'></i> Avail Offer
+      </button>
+    </div>
+  </div>
+  <div class="modal-bg" id="modal">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeRedeemModal()" aria-label="Close">&times;</button>
+      <div class="modal-title"><i class='bx bx-message-check'></i> Redeem Success</div>
+      <div class="modal-msg">Redeem code is sent to your phone no.: <span style="letter-spacing:0.07em;">97910*****</span></div>
+    </div>
+  </div>
+
+  <script>
+    function showRedeemModal() {
+      document.getElementById('modal').classList.add('modal-active');
+      // Optional: Close modal with ESC
+      document.body.addEventListener('keydown', escHandler, {once:true});
+    }
+    function escHandler(e){
+      if(e.key==='Escape') closeRedeemModal();
+    }
+    function closeRedeemModal() {
+      document.getElementById('modal').classList.remove('modal-active');
+    }
+    // Optional: Click outside modal close
+    document.getElementById('modal').addEventListener('click',function(e){
+      if(e.target===this) closeRedeemModal();
+    });
+  </script>
+</body>
+</html>

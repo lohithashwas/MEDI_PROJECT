@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MEDI-KIT Health Monitor Dashboard</title>
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/anime.js/3.2.1/anime.min.js"></script>
+  <style>
+    /* Global Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0a0b1e 0%, #1a1d3a 25%, #2d3748 50%, #4a5568 75%, #718096 100%);
+      color: #ffffff;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+      min-height: 100vh;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* Navigation */
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: rgba(10, 11, 30, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(34, 197, 94, 0.2);
+      z-index: 1000;
+      padding: 15px 0;
+      transition: all 0.3s ease;
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+    }
+
+    .logo-icon i {
+      font-size: 20px;
+      color: white;
+    }
+
+    .logo-text {
+      font-size: 20px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #22c55e, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 30px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: #e2e8f0;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .nav-links a:hover {
+      color: #22c55e;
+      transform: translateY(-2px);
+    }
+
+    /* Data Mode Switch */
+    .data-switch-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(30, 41, 59, 0.8);
+      padding: 10px 15px;
+      border-radius: 25px;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #64748b;
+      transition: .3s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+    .switch-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    /* Header Section */
+    .header {
+      padding: 120px 20px 60px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 80%, rgba(34, 197, 94, 0.1) 0%, transparent 50%);
+      z-index: -1;
+    }
+
+    .header-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .header-title {
+      font-size: 3rem;
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #ffffff, #22c55e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-subtitle {
+      font-size: 1.2rem;
+      color: #94a3b8;
+      margin-bottom: 40px;
+      line-height: 1.6;
+    }
+
+    /* Main Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      gap: 25px;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 20px;
+      min-height: 800px;
+    }
+
+    .card {
+      background: rgba(30, 41, 59, 0.8);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(34, 197, 94, 0.2);
+      border-radius: 20px;
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(34, 197, 94, 0.1), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .card:hover::before {
+      left: 100%;
+    }
+
+    .card:hover {
+      transform: translateY(-10px);
+      border-color: rgba(34, 197, 94, 0.5);
+      box-shadow: 0 20px 40px rgba(34, 197, 94, 0.15);
+    }
+
+    .metric-title {
+      font-size: 1rem;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    .metric-value {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 15px;
+      color: #ffffff;
+      text-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+    }
+
+    .status {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      display: inline-block;
+      margin-bottom: 10px;
+      text-align: center;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .status.warning {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+    }
+
+    .status.critical {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+    }
+
+    .status.connecting {
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    }
+
+    .footer {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+
+    /* Special Cards */
+    .health-status {
+      grid-column: 3;
+      grid-row: 4;
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+      border: 2px solid rgba(34, 197, 94, 0.4);
+    }
+
+    .health-status .metric-value {
+      font-size: 1.8rem;
+      text-align: center;
+      background: linear-gradient(135deg, #22c55e, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .bmi-card {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+      border: 2px solid rgba(34, 197, 94, 0.4);
+    }
+
+    .bmi-inputs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .bmi-inputs input {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #e2e8f0;
+      padding: 10px;
+      border-radius: 10px;
+      flex: 1;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .bmi-inputs input:focus {
+      outline: none;
+      border-color: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+    }
+
+    .bmi-button {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+      margin-bottom: 15px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+      font-size: 0.9rem;
+    }
+
+    .bmi-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
+    }
+
+    /* ECG Wave Animation */
+    .ecg-wave {
+      height: 45px;
+      background: linear-gradient(90deg, #22c55e 0%, #3b82f6 100%);
+      border-radius: 25px;
+      margin: 15px 0;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.2);
+    }
+
+    .ecg-wave.normal::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+      animation: pulse-normal 2s infinite;
+    }
+
+    .ecg-wave.irregular::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent 0%, rgba(239, 68, 68, 0.6) 50%, transparent 100%);
+      animation: pulse-irregular 1.5s infinite;
+    }
+
+    .ecg-wave.abnormal::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent 0%, rgba(245, 158, 11, 0.5) 50%, transparent 100%);
+      animation: pulse-slow 3s infinite;
+    }
+
+    @keyframes pulse-normal {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+
+    @keyframes pulse-irregular {
+      0% { left: -100%; }
+      30% { left: 20%; }
+      60% { left: 40%; }
+      100% { left: 100%; }
+    }
+
+    @keyframes pulse-slow {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+
+    /* Stress Meter */
+    .stress-meter {
+      height: 10px;
+      background: linear-gradient(90deg, #22c55e 0%, #f59e0b 50%, #ef4444 100%);
+      border-radius: 5px;
+      margin: 15px 0;
+      position: relative;
+      box-shadow: 0 2px 10px rgba(34, 197, 94, 0.2);
+    }
+
+    .stress-indicator {
+      position: absolute;
+      top: -3px;
+      width: 16px;
+      height: 16px;
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      transition: left 0.3s ease;
+      border: 2px solid #22c55e;
+    }
+
+    /* Loading Animation */
+    .loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0a0b1e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease;
+    }
+
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(34, 197, 94, 0.2);
+      border-top: 4px solid #22c55e;
+      border-radius: 50%;
+      animation: loadingSpin 1s linear infinite;
+    }
+
+    @keyframes loadingSpin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Scroll Reveal Animation */
+    .reveal {
+      opacity: 0;
+      transform: translateY(50px);
+      transition: all 0.6s ease;
+    }
+
+    .reveal.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 10px 0;
+      }
+
+      .nav-container {
+        flex-direction: column;
+        gap: 15px;
+        padding: 0 15px;
+      }
+
+      .header-title {
+        font-size: 2.5rem;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        gap: 20px;
+        padding: 0 15px;
+      }
+
+      .health-status {
+        grid-column: 1;
+        grid-row: auto;
+      }
+
+      .data-switch-container {
+        margin-top: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div class="loading" id="loading">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo">
+        <div class="logo-icon">
+          <i class='bx bx-health'></i>
+        </div>
+        <span class="logo-text">MEDI-KIT</span>
+      </div>
+      <div class="nav-links">
+        <a href="#dashboard">Dashboard</a>
+        <a href="#vitals">Vitals</a>
+        <a href="#metrics">Metrics</a>
+        <a href="#analysis">Analysis</a>
+        <div class="data-switch-container">
+          <span class="switch-label">Live Data</span>
+          <label class="switch">
+            <input type="checkbox" id="dataToggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Header Section -->
+  <section class="header">
+    <div class="header-container reveal">
+      <h1 class="header-title">Live Health Monitor Dashboard</h1>
+      <p class="header-subtitle">Real-time health monitoring with advanced cardiovascular metrics and comprehensive vital sign tracking for optimal wellness management</p>
+    </div>
+  </section>
+
+  <!-- Main Dashboard Grid -->
+  <div class="grid reveal">
+    <!-- Row 1 -->
+    <div class="card">
+      <div class="metric-title">💓 Heart Rate</div>
+      <div id="heartRate" class="metric-value">00 bpm</div>
+      <div class="status critical">No Signal</div>
+      <div class="footer">Past 24h: Stable</div>
+    </div>
+
+    <div class="card">
+      <div class="metric-title">🩸 Blood Pressure</div>
+      <div id="bp" class="metric-value">00/00</div>
+      <div class="status critical">No Signal</div>
+      <div class="footer">Past 24h: Stable</div>
+    </div>
+
+    <div class="card">
+      <div class="metric-title">🫁 Oxygen Saturation</div>
+      <div id="spo2" class="metric-value">00%</div>
+      <div class="status critical">No Signal</div>
+      <div class="footer">Past 24h: +1%</div>
+    </div>
+
+    <!-- Row 2 -->
+    <div class="card">
+      <div class="metric-title">🌡️ Temperature</div>
+      <div id="temperature" class="metric-value">00.0°C</div>
+      <div class="status critical">No Signal</div>
+      <div class="footer">Body temperature</div>
+    </div>
+
+    <div class="card">
+      <div class="metric-title">📈 ECG</div>
+      <div id="ecg" class="metric-value">00</div>
+      <div class="ecg-wave normal" id="ecgWave"></div>
+      <div class="status critical" id="ecgStatus">No Signal</div>
+      <div class="footer">Real-time monitoring</div>
+    </div>
+
+    <div class="card">
+      <div class="metric-title">🍯 Glucose</div>
+      <div id="glucose" class="metric-value">00 mg/dL</div>
+      <div class="status critical">No Signal</div>
+      <div class="footer">Blood sugar level</div>
+    </div>
+
+    <!-- Row 3 -->
+    <div class="card">
+      <div class="metric-title">📊 Mean Arterial Pressure</div>
+      <div id="map" class="metric-value">00 mmHg</div>
+      <div class="status critical">No Signal</div>
+      <div class="footer">MAP = DBP + ⅓(SBP-DBP)</div>
+    </div>
+
+    <div class="card">
+      <div class="metric-title">📈 Pulse Pressure</div>
+      <div id="pp" class="metric-value">00 mmHg</div>
+      <div class="status critical">No Signal</div>
+      <div class="footer">PP = SBP - DBP</div>
+    </div>
+
+    <div class="card">
+      <div class="metric-title">⚡ Shock Index</div>
+      <div id="si" class="metric-value">0.00</div>
+      <div class="status critical">No Signal</div>
+      <div class="footer">SI = HR ÷ SBP</div>
+    </div>
+
+    <!-- Row 4 -->
+    <div class="card">
+      <div class="metric-title">😰 Stress Level</div>
+      <div id="stress" class="metric-value">No Data</div>
+      <div class="stress-meter">
+        <div class="stress-indicator" id="stressIndicator" style="left: 0%"></div>
+      </div>
+      <div class="status critical">No Signal</div>
+      <div class="footer">HRV analysis</div>
+    </div>
+
+    <div class="card bmi-card">
+      <div class="metric-title">⚖️ BMI Calculator</div>
+      <div class="bmi-inputs">
+        <input type="number" id="height" placeholder="Height (cm)" min="100" max="250">
+        <input type="number" id="weight" placeholder="Weight (kg)" min="30" max="200">
+      </div>
+      <button class="bmi-button" onclick="calculateBMI()">Calculate BMI</button>
+      <div id="bmi" class="metric-value">--</div>
+      <div class="status" id="bmiStatus">Enter values</div>
+      <div class="footer">BMI = kg/m²</div>
+    </div>
+
+    <div class="card health-status">
+      <div class="metric-title">💬 Health Condition</div>
+      <div id="condition" class="metric-value">No Data</div>
+      <div class="status critical">Default Mode</div>
+      <div class="footer">Every 2 sec</div>
+    </div>
+  </div>
+
+  <script>
+    // Health data arrays from C++ code
+    const healthData = {
+      heartRate: [72, 74, 76, 78, 75, 77, 73, 79, 76, 80, 78, 81, 79, 77, 75, 73, 74, 72, 76, 74],
+      systolicBP: [120, 122, 118, 124, 121, 123, 119, 125, 122, 126, 124, 127, 125, 123, 121, 119, 120, 118, 122, 120],
+      diastolicBP: [80, 82, 78, 84, 81, 83, 79, 85, 82, 86, 84, 87, 85, 83, 81, 79, 80, 78, 82, 80],
+      oxygenSaturation: [98, 99, 97, 99, 98, 99, 97, 99, 98, 99, 97, 98, 99, 98, 97, 98, 99, 97, 98, 97],
+      bodyTemperature: [36.6, 36.8, 36.5, 36.9, 36.7, 36.9, 36.6, 37.0, 36.8, 37.1, 36.9, 37.0, 36.8, 36.7, 36.6, 36.5, 36.7, 36.4, 36.8, 36.6],
+      ecgReading: [1, 1, 2, 1, 1, 2, 1, 2, 1, 2, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1],
+      glucoseLevel: [85, 87, 83, 89, 86, 88, 84, 90, 87, 91, 89, 92, 90, 88, 86, 84, 85, 82, 87, 85],
+      meanArterialPressure: [93, 95, 91, 97, 94, 96, 92, 98, 95, 99, 97, 100, 98, 96, 94, 92, 93, 91, 95, 93],
+      pulsePressure: [40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40],
+      shockIndex: [0.60, 0.61, 0.64, 0.63, 0.62, 0.61, 0.61, 0.63, 0.62, 0.63, 0.63, 0.64, 0.63, 0.62, 0.62, 0.61, 0.62, 0.61, 0.62, 0.62],
+      stressLevel: [3, 4, 2, 5, 4, 5, 3, 6, 5, 6, 5, 4, 4, 4, 3, 2, 3, 2, 4, 3],
+      bmi: [22.5, 22.5, 22.5, 22.5, 22.5, 22.5, 22.5, 22.5, 22.5, 22.5, 22.5, 22.5, 22.5, 22.5, 22.5, 22.5, 22.5, 22.5, 22.5, 22.5],
+      healthCondition: [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]
+    };
+
+    let currentDataIndex = 0;
+    let isDataCycling = false; // START WITH OFF
+    let updateInterval; // Store the interval reference
+
+    // Loading screen
+    document.addEventListener('DOMContentLoaded', function() {
+      // Hide loading screen
+      setTimeout(() => {
+        document.getElementById('loading').style.opacity = '0';
+        setTimeout(() => {
+          document.getElementById('loading').style.display = 'none';
+        }, 500);
+      }, 1500);
+
+      // Scroll reveal animation
+      const revealElements = document.querySelectorAll('.reveal');
+      const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+          }
+        });
+      }, { threshold: 0.1 });
+
+      revealElements.forEach(element => {
+        revealObserver.observe(element);
+      });
+
+      // Navbar scroll effect
+      window.addEventListener('scroll', () => {
+        const navbar = document.querySelector('.navbar');
+        if (window.scrollY > 100) {
+          navbar.style.background = 'rgba(10, 11, 30, 0.98)';
+          navbar.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.3)';
+        } else {
+          navbar.style.background = 'rgba(10, 11, 30, 0.95)';
+          navbar.style.boxShadow = 'none';
+        }
+      });
+
+      // Data toggle switch listener - IMMEDIATELY update when toggled
+      const dataToggle = document.getElementById('dataToggle');
+      dataToggle.addEventListener('change', function() {
+        isDataCycling = this.checked;
+        
+        // Clear existing interval
+        if (updateInterval) {
+          clearInterval(updateInterval);
+        }
+        
+        // Immediately update display based on new state
+        if (isDataCycling) {
+          updateWithCyclingData();
+          // Restart the cycling interval
+          updateInterval = setInterval(updateDashboard, 2000);
+        } else {
+          // Immediately show default "00" values
+          updateWithDefaultValues();
+        }
+      });
+    });
+
+    // BMI calculation function
+    function calculateBMI() {
+      const height = parseFloat(document.getElementById("height").value);
+      const weight = parseFloat(document.getElementById("weight").value);
+      
+      if (!height || !weight || height <= 0 || weight <= 0) {
+        document.getElementById("bmi").innerText = "Invalid";
+        document.getElementById("bmiStatus").textContent = "Check inputs";
+        document.getElementById("bmiStatus").className = "status warning";
+        return;
+      }
+      
+      const heightInMeters = height / 100;
+      const bmi = (weight / (heightInMeters * heightInMeters)).toFixed(1);
+      
+      document.getElementById("bmi").innerText = bmi;
+      
+      // Update BMI status
+      const bmiStatus = document.getElementById("bmiStatus");
+      if (bmi < 18.5) {
+        bmiStatus.textContent = "Underweight";
+        bmiStatus.className = "status warning";
+      } else if (bmi >= 18.5 && bmi < 25) {
+        bmiStatus.textContent = "Normal";
+        bmiStatus.className = "status";
+      } else if (bmi >= 25 && bmi < 30) {
+        bmiStatus.textContent = "Overweight";
+        bmiStatus.className = "status warning";
+      } else {
+        bmiStatus.textContent = "Obese";
+        bmiStatus.className = "status critical";
+      }
+    }
+
+    // Calculate cardiovascular metrics
+    function calculateCardiovascularMetrics(systolic, diastolic, heartRate) {
+      const map = Math.round(diastolic + (systolic - diastolic) / 3);
+      const pp = systolic - diastolic;
+      const si = (heartRate / systolic).toFixed(2);
+      
+      return { map, pp, si };
+    }
+
+    // Analyze health data
+    function analyzeHealthData(vitals) {
+      const conditions = ["Excellent", "Good", "Fair", "Monitor", "Consult Doctor"];
+      let score = 0;
+      
+      if (vitals["Heart Rate"] >= 60 && vitals["Heart Rate"] <= 100) score++;
+      if (vitals["SpO2"] >= 95) score++;
+      if (vitals["Systolic_BP"] <= 140 && vitals["Diastolic_BP"] <= 90) score++;
+      if (parseFloat(vitals["Temperature"]) >= 36.0 && parseFloat(vitals["Temperature"]) <= 37.5) score++;
+      if (vitals["Glucose"] >= 70 && vitals["Glucose"] <= 140) score++;
+      
+      return conditions[Math.min(score, 4)];
+    }
+
+    function updateECGStatus(ecgValue) {
+      const ecgWave = document.getElementById("ecgWave");
+      const ecgStatus = document.getElementById("ecgStatus");
+      
+      ecgWave.className = "ecg-wave";
+      
+      if (typeof ecgValue === 'number') {
+        if (ecgValue === 1) {
+          ecgWave.classList.add("normal");
+          ecgStatus.textContent = "Normal";
+          ecgStatus.className = "status";
+        } else if (ecgValue === 2) {
+          ecgWave.classList.add("abnormal");
+          ecgStatus.textContent = "Abnormal";
+          ecgStatus.className = "status warning";
+        } else if (ecgValue === 0) {
+          ecgWave.classList.add("normal");
+          ecgStatus.textContent = "No Signal";
+          ecgStatus.className = "status critical";
+        } else {
+          ecgWave.classList.add("irregular");
+          ecgStatus.textContent = "Irregular";
+          ecgStatus.className = "status critical";
+        }
+      } else {
+        const ecgLower = ecgValue.toString().toLowerCase();
+        if (ecgLower.includes("normal")) {
+          ecgWave.classList.add("normal");
+          ecgStatus.textContent = "Normal";
+          ecgStatus.className = "status";
+        } else if (ecgLower.includes("00")) {
+          ecgWave.classList.add("normal");
+          ecgStatus.textContent = "No Signal";
+          ecgStatus.className = "status critical";
+        } else if (ecgLower.includes("irregular") || ecgLower.includes("arrhythmia")) {
+          ecgWave.classList.add("irregular");
+          ecgStatus.textContent = "Irregular";
+          ecgStatus.className = "status critical";
+        } else if (ecgLower.includes("abnormal") || ecgLower.includes("anomaly")) {
+          ecgWave.classList.add("abnormal");
+          ecgStatus.textContent = "Abnormal";
+          ecgStatus.className = "status warning";
+        } else {
+          ecgWave.classList.add("normal");
+          ecgStatus.textContent = "No Signal";
+          ecgStatus.className = "status critical";
+        }
+      }
+    }
+
+    function updateStatus(elementId, value, normalRange) {
+      const statusElement = document.querySelector(`#${elementId}`).parentElement.querySelector('.status');
+      if (value >= normalRange.min && value <= normalRange.max) {
+        statusElement.textContent = 'Normal';
+        statusElement.className = 'status';
+      } else if (value < normalRange.critical.min || value > normalRange.critical.max) {
+        statusElement.textContent = 'Critical';
+        statusElement.className = 'status critical';
+      } else {
+        statusElement.textContent = 'Warning';
+        statusElement.className = 'status warning';
+      }
+    }
+
+    function updateWithDefaultValues() {
+      // Update basic vitals with "00" default values
+      document.getElementById("heartRate").innerText = "00 bpm";
+      document.getElementById("spo2").innerText = "00%";
+      document.getElementById("bp").innerText = "00/00";
+      document.getElementById("temperature").innerText = "00.0°C";
+      document.getElementById("ecg").innerText = "00";
+      document.getElementById("glucose").innerText = "00 mg/dL"; // GLUCOSE SHOWS "00"
+      
+      // Calculate and display cardiovascular metrics with "00" values
+      document.getElementById("map").innerText = "00 mmHg";
+      document.getElementById("pp").innerText = "00 mmHg";
+      document.getElementById("si").innerText = "0.00";
+      
+      // Update stress level with "00" value
+      document.getElementById("stress").innerText = "No Data";
+      
+      // Update stress indicator to zero position
+      const indicator = document.getElementById("stressIndicator");
+      indicator.style.left = "0%";
+      
+      // Update ECG status with "00" value
+      updateECGStatus("00");
+      
+      // Set all statuses to "No Signal" for "00" default values
+      const heartRateStatus = document.querySelector("#heartRate").parentElement.querySelector('.status');
+      heartRateStatus.textContent = 'No Signal';
+      heartRateStatus.className = 'status critical';
+
+      const spo2Status = document.querySelector("#spo2").parentElement.querySelector('.status');
+      spo2Status.textContent = 'No Signal';
+      spo2Status.className = 'status critical';
+
+      const bpStatus = document.querySelector("#bp").parentElement.querySelector('.status');
+      bpStatus.textContent = 'No Signal';
+      bpStatus.className = 'status critical';
+
+      const tempStatus = document.querySelector("#temperature").parentElement.querySelector('.status');
+      tempStatus.textContent = 'No Signal';
+      tempStatus.className = 'status critical';
+
+      const glucoseStatus = document.querySelector("#glucose").parentElement.querySelector('.status');
+      glucoseStatus.textContent = 'No Signal';
+      glucoseStatus.className = 'status critical';
+
+      const mapStatus = document.querySelector("#map").parentElement.querySelector('.status');
+      mapStatus.textContent = 'No Signal';
+      mapStatus.className = 'status critical';
+
+      const ppStatus = document.querySelector("#pp").parentElement.querySelector('.status');
+      ppStatus.textContent = 'No Signal';
+      ppStatus.className = 'status critical';
+
+      const siStatus = document.querySelector("#si").parentElement.querySelector('.status');
+      siStatus.textContent = 'No Signal';
+      siStatus.className = 'status critical';
+
+      const stressStatus = document.querySelector("#stress").parentElement.querySelector('.status');
+      stressStatus.textContent = 'No Signal';
+      stressStatus.className = 'status critical';
+      
+      // Update overall health condition with "00" values
+      const condition = "No Data";
+      document.getElementById("condition").innerText = condition;
+      
+      const conditionStatus = document.querySelector("#condition").parentElement.querySelector('.status');
+      conditionStatus.textContent = 'Default Mode';
+      conditionStatus.className = 'status critical';
+    }
+
+    function updateWithCyclingData() {
+      // Get current data from arrays
+      const vitals = {
+        "Heart Rate": healthData.heartRate[currentDataIndex],
+        "SpO2": healthData.oxygenSaturation[currentDataIndex],
+        "Systolic_BP": healthData.systolicBP[currentDataIndex],
+        "Diastolic_BP": healthData.diastolicBP[currentDataIndex],
+        "Temperature": healthData.bodyTemperature[currentDataIndex],
+        "ECG": healthData.ecgReading[currentDataIndex],
+        "Glucose": healthData.glucoseLevel[currentDataIndex],
+        "Stress_Level": healthData.stressLevel[currentDataIndex]
+      };
+
+      // Update basic vitals
+      document.getElementById("heartRate").innerText = vitals["Heart Rate"] + " bpm";
+      document.getElementById("spo2").innerText = vitals["SpO2"] + "%";
+      document.getElementById("bp").innerText = vitals["Systolic_BP"] + "/" + vitals["Diastolic_BP"];
+      document.getElementById("temperature").innerText = vitals["Temperature"] + "°C";
+      document.getElementById("ecg").innerText = vitals["ECG"] === 1 ? "Normal" : vitals["ECG"] === 2 ? "Abnormal" : "Irregular";
+      document.getElementById("glucose").innerText = "00 mg/dL"; // GLUCOSE ALWAYS SHOWS "00"
+      
+      // Calculate and display cardiovascular metrics
+      const cardioMetrics = calculateCardiovascularMetrics(
+        vitals["Systolic_BP"], 
+        vitals["Diastolic_BP"], 
+        vitals["Heart Rate"]
+      );
+      
+      document.getElementById("map").innerText = cardioMetrics.map + " mmHg";
+      document.getElementById("pp").innerText = cardioMetrics.pp + " mmHg";
+      document.getElementById("si").innerText = cardioMetrics.si;
+      
+      // Update stress level
+      const stressLevels = ["Very Low", "Low", "Moderate", "High", "Very High"];
+      const stressIndex = Math.floor(vitals["Stress_Level"] / 2);
+      document.getElementById("stress").innerText = stressLevels[Math.min(stressIndex, 4)];
+      
+      // Update stress indicator
+      const indicator = document.getElementById("stressIndicator");
+      const position = (vitals["Stress_Level"] / 10) * 100;
+      indicator.style.left = `${Math.min(position, 88)}%`;
+      
+      // Update ECG status and animation
+      updateECGStatus(vitals["ECG"]);
+      
+      // Update statuses based on values
+      updateStatus("heartRate", vitals["Heart Rate"], {
+        min: 60, max: 100, 
+        critical: {min: 40, max: 150}
+      });
+      
+      updateStatus("spo2", vitals["SpO2"], {
+        min: 95, max: 100, 
+        critical: {min: 85, max: 100}
+      });
+      
+      updateStatus("temperature", parseFloat(vitals["Temperature"]), {
+        min: 36.0, max: 37.5, 
+        critical: {min: 35.0, max: 40.0}
+      });
+      
+      // GLUCOSE STATUS ALWAYS "NO SIGNAL" (since it shows "00")
+      const glucoseStatus = document.querySelector("#glucose").parentElement.querySelector('.status');
+      glucoseStatus.textContent = 'No Signal';
+      glucoseStatus.className = 'status critical';
+      
+      updateStatus("map", cardioMetrics.map, {
+        min: 70, max: 105, 
+        critical: {min: 60, max: 120}
+      });
+      
+      updateStatus("pp", cardioMetrics.pp, {
+        min: 30, max: 50, 
+        critical: {min: 20, max: 70}
+      });
+      
+      updateStatus("si", parseFloat(cardioMetrics.si), {
+        min: 0.5, max: 1.0, 
+        critical: {min: 0.3, max: 1.5}
+      });
+      
+      // Update stress status
+      const stressElement = document.querySelector("#stress").parentElement.querySelector('.status');
+      if (vitals["Stress_Level"] <= 3) {
+        stressElement.textContent = 'Relaxed';
+        stressElement.className = 'status';
+      } else if (vitals["Stress_Level"] <= 6) {
+        stressElement.textContent = 'Moderate';
+        stressElement.className = 'status warning';
+      } else {
+        stressElement.textContent = 'High Stress';
+        stressElement.className = 'status critical';
+      }
+      
+      // Update overall health condition
+      const condition = analyzeHealthData(vitals);
+      document.getElementById("condition").innerText = condition;
+      
+      const conditionStatus = document.querySelector("#condition").parentElement.querySelector('.status');
+      conditionStatus.textContent = 'Live Data';
+      conditionStatus.className = 'status';
+      
+      // Move to next data point (cycle through array)
+      currentDataIndex = (currentDataIndex + 1) % healthData.heartRate.length;
+    }
+
+    function updateDashboard() {
+      // Only update if in cycling mode
+      if (isDataCycling) {
+        updateWithCyclingData();
+      }
+      // When not cycling, don't update anything (stays at default "00" values)
+    }
+
+    // Initialize dashboard
+    function initializeDashboard() {
+      // Start with default values since isDataCycling is false
+      updateWithDefaultValues();
+    }
+
+    // Initialize on page load
+    setTimeout(initializeDashboard, 100);
+  </script>
+</body>
+</html>

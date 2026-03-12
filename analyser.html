@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEDI-KIT Document Analyzer</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(72, 204, 108, 0.1);
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #48cc6c;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .navbar-brand i {
+            background: #48cc6c;
+            color: #1e293b;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 1.2rem;
+        }
+
+        .language-dropdown {
+            position: relative;
+        }
+
+        .language-btn {
+            background: rgba(72, 204, 108, 0.1);
+            border: 1px solid rgba(72, 204, 108, 0.3);
+            color: #48cc6c;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .language-btn:hover {
+            background: rgba(72, 204, 108, 0.2);
+        }
+
+        .language-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(72, 204, 108, 0.3);
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            min-width: 120px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .language-menu.show {
+            display: block;
+        }
+
+        .language-option {
+            padding: 10px 16px;
+            cursor: pointer;
+            color: #e2e8f0;
+            transition: all 0.3s ease;
+            border-radius: 6px;
+            margin: 4px;
+        }
+
+        .language-option:hover {
+            background: rgba(72, 204, 108, 0.2);
+            color: #48cc6c;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #48cc6c, #4fd1c7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .header p {
+            color: #94a3b8;
+            font-size: 1.3rem;
+            font-weight: 300;
+        }
+
+        .main-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(72, 204, 108, 0.2);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, rgba(72, 204, 108, 0.1), rgba(79, 209, 199, 0.1));
+            padding: 2rem;
+            border-bottom: 1px solid rgba(72, 204, 108, 0.2);
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: #48cc6c;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-title i {
+            font-size: 2rem;
+        }
+
+        .card-subtitle {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .upload-zone {
+            background: rgba(74, 85, 104, 0.2);
+            border: 2px dashed rgba(72, 204, 108, 0.4);
+            border-radius: 20px;
+            padding: 4rem 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-zone:hover {
+            border-color: #48cc6c;
+            background: rgba(72, 204, 108, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .upload-zone.dragover {
+            border-color: #4fd1c7;
+            background: rgba(79, 209, 199, 0.1);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 5rem;
+            color: #48cc6c;
+            margin-bottom: 1.5rem;
+        }
+
+        .upload-text h3 {
+            color: #f7fafc;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .upload-text p {
+            color: #94a3b8;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, #48cc6c, #4fd1c7);
+            color: #1e293b;
+            padding: 14px 32px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(72, 204, 108, 0.3);
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 48px rgba(72, 204, 108, 0.5);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .preview-section {
+            display: none;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            max-height: 500px;
+            border-radius: 20px;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.3);
+            margin-bottom: 1.5rem;
+            border: 2px solid rgba(72, 204, 108, 0.2);
+        }
+
+        .analyze-btn {
+            background: linear-gradient(135deg, #4fd1c7, #48cc6c);
+            color: #1e293b;
+            padding: 16px 40px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(79, 209, 199, 0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 48px rgba(79, 209, 199, 0.5);
+        }
+
+        .analyze-btn:disabled {
+            background: #64748b;
+            cursor: not-allowed;
+            transform: none;
+            color: #94a3b8;
+        }
+
+        .loading-section {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            border: 6px solid rgba(72, 204, 108, 0.2);
+            border-top: 6px solid #48cc6c;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+
+        .loading-text {
+            color: #94a3b8;
+            font-size: 1.2rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results-section {
+            display: none;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(72, 204, 108, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .results-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            color: #48cc6c;
+        }
+
+        .results-header i {
+            font-size: 2.5rem;
+        }
+
+        .results-header h3 {
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        .analysis-content {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 2rem;
+            line-height: 1.8;
+            color: #e2e8f0;
+            font-size: 1.1rem;
+        }
+
+        .analysis-content strong {
+            color: #48cc6c;
+            font-weight: 600;
+        }
+
+        .analysis-content h4 {
+            color: #4fd1c7;
+            margin: 1.5rem 0 1rem 0;
+            font-size: 1.3rem;
+        }
+
+        .supported-formats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .format-card {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(72, 204, 108, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .format-card:hover {
+            border-color: #48cc6c;
+            transform: translateY(-8px);
+            box-shadow: 0 16px 32px rgba(72, 204, 108, 0.2);
+        }
+
+        .format-card i {
+            font-size: 3rem;
+            color: #48cc6c;
+            margin-bottom: 1.5rem;
+        }
+
+        .format-card h4 {
+            color: #f7fafc;
+            margin-bottom: 0.8rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .format-card p {
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+
+        .disclaimer {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .disclaimer i {
+            color: #fbbf24;
+            margin-right: 0.8rem;
+            font-size: 1.2rem;
+        }
+
+        .disclaimer strong {
+            color: #fbbf24;
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+            text-align: center;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .card-body {
+                padding: 1.5rem;
+            }
+
+            .upload-zone {
+                padding: 2rem 1rem;
+            }
+
+            .supported-formats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-brand">
+            <i class="fas fa-asterisk"></i>
+            MEDI-KIT
+        </div>
+        <div class="language-dropdown">
+            <div class="language-btn" onclick="toggleLanguageMenu()">
+                <span id="currentLang">EN</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="language-menu" id="languageMenu">
+                <div class="language-option" onclick="changeLanguage('en')">English</div>
+                <div class="language-option" onclick="changeLanguage('ta')">தமிழ்</div>
+                <div class="language-option" onclick="changeLanguage('hi')">हिंदी</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1 data-key="title">Medical Document Analyzer</h1>
+            <p data-key="subtitle">AI-powered analysis for X-rays, lab reports, and medical scans</p>
+        </div>
+
+        <div class="main-card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-file-medical-alt"></i>
+                    <span data-key="card_title">Document Analysis</span>
+                </div>
+                <p class="card-subtitle" data-key="card_subtitle">Upload your medical documents for instant AI analysis</p>
+            </div>
+
+            <div class="card-body">
+                <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <div class="upload-text">
+                        <h3 data-key="upload_title">Upload Medical Document</h3>
+                        <p data-key="upload_desc">Drag and drop or click to select your medical files</p>
+                        <button class="upload-btn" type="button">
+                            <i class="fas fa-plus"></i>
+                            <span data-key="choose_file">Choose File</span>
+                        </button>
+                    </div>
+                    <input type="file" id="fileInput" class="file-input" accept="image/*">
+                </div>
+
+                <div class="preview-section" id="previewSection">
+                    <img id="imagePreview" class="image-preview" alt="Document preview">
+                    <div>
+                        <button class="analyze-btn" id="analyzeBtn">
+                            <i class="fas fa-brain"></i>
+                            <span data-key="analyze_btn">Analyze Document</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="loading-section" id="loadingSection">
+                    <div class="loading-spinner"></div>
+                    <p class="loading-text" data-key="analyzing">Analyzing your medical document...</p>
+                </div>
+
+                <div class="results-section" id="resultsSection">
+                    <div class="results-header">
+                        <i class="fas fa-stethoscope"></i>
+                        <h3 data-key="results_title">Analysis Results</h3>
+                    </div>
+                    <div class="analysis-content" id="analysisContent"></div>
+                </div>
+
+                <div class="supported-formats">
+                    <div class="format-card">
+                        <i class="fas fa-x-ray"></i>
+                        <h4 data-key="xray_title">X-rays & Scans</h4>
+                        <p data-key="xray_desc">CT, MRI, Ultrasound, Chest X-rays</p>
+                    </div>
+                    <div class="format-card">
+                        <i class="fas fa-vial"></i>
+                        <h4 data-key="lab_title">Lab Reports</h4>
+                        <p data-key="lab_desc">Blood tests, Urine analysis, Pathology reports</p>
+                    </div>
+                    <div class="format-card">
+                        <i class="fas fa-heartbeat"></i>
+                        <h4 data-key="ecg_title">ECG Reports</h4>
+                        <p data-key="ecg_desc">Heart rhythm analysis, EKG strips</p>
+                    </div>
+                    <div class="format-card">
+                        <i class="fas fa-prescription"></i>
+                        <h4 data-key="prescription_title">Prescriptions</h4>
+                        <p data-key="prescription_desc">Medicine lists, Dosage instructions</p>
+                    </div>
+                </div>
+
+                <div class="disclaimer">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong data-key="disclaimer_title">Medical Disclaimer:</strong>
+                    <span data-key="disclaimer_text">This AI analysis is for informational purposes only. Always consult healthcare professionals for medical decisions.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_KEY = "AIzaSyDon1GLf43F9_lQweiAiicED9LGnQGGUUQ";
+        const MODEL_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + API_KEY;
+        
+        // Language translations
+        const translations = {
+            en: {
+                title: "Medical Document Analyzer",
+                subtitle: "AI-powered analysis for X-rays, lab reports, and medical scans",
+                card_title: "Document Analysis",
+                card_subtitle: "Upload your medical documents for instant AI analysis",
+                upload_title: "Upload Medical Document",
+                upload_desc: "Drag and drop or click to select your medical files",
+                choose_file: "Choose File",
+                analyze_btn: "Analyze Document",
+                analyzing: "Analyzing your medical document...",
+                results_title: "Analysis Results",
+                xray_title: "X-rays & Scans",
+                xray_desc: "CT, MRI, Ultrasound, Chest X-rays",
+                lab_title: "Lab Reports",
+                lab_desc: "Blood tests, Urine analysis, Pathology reports",
+                ecg_title: "ECG Reports",
+                ecg_desc: "Heart rhythm analysis, EKG strips",
+                prescription_title: "Prescriptions",
+                prescription_desc: "Medicine lists, Dosage instructions",
+                disclaimer_title: "Medical Disclaimer:",
+                disclaimer_text: "This AI analysis is for informational purposes only. Always consult healthcare professionals for medical decisions."
+            },
+            ta: {
+                title: "மருத்துவ ஆவண பகுப்பாய்வி",
+                subtitle: "எக்ஸ்-ரே, ஆய்வக அறிக்கைகள் மற்றும் மருத்துவ ஸ்கேன்களுக்கான AI-இயங்கும் பகுப்பாய்வு",
+                card_title: "ஆவண பகுப்பாய்வு",
+                card_subtitle: "உடனடி AI பகுப்பாய்வுக்காக உங்கள் மருத்துவ ஆவணங்களை பதிவேற்றுக",
+                upload_title: "மருத்துவ ஆவணத்தை பதிவேற்றுக",
+                upload_desc: "உங்கள் மருத்துவ கோப்புகளை இழுத்து விடுக அல்லது தேர்வு செய்ய கிளிக் செய்யுங்கள்",
+                choose_file: "கோப்பு தேர்வு",
+                analyze_btn: "ஆவணத்தை பகுப்பாய்வு செய்க",
+                analyzing: "உங்கள் மருத்துவ ஆவணத்தை பகுப்பாய்வு செய்கிறது...",
+                results_title: "பகுப்பாய்வு முடிவுகள்",
+                xray_title: "எக்ஸ்-ரே & ஸ்கேன்கள்",
+                xray_desc: "சிடி, எம்ஆர்ஐ, அல்ட்ராசவுண்ட், மார்பு எக்ஸ்-ரே",
+                lab_title: "ஆய்வக அறிக்கைகள்",
+                lab_desc: "இரத்த பரிசோதனைகள், சிறுநீர் பகுப்பாய்வு, நோயியல் அறிக்கைகள்",
+                ecg_title: "ईसीजी அறிக்கைகள்",
+                ecg_desc: "இதய தாள பகுப்பாய்வு, ईकেजी துண்டுகள்",
+                prescription_title: "மருந்து பரிந்துரைகள்",
+                prescription_desc: "மருந்து பட்டியல்கள், மருந்தளவு வழிமுறைகள்",
+                disclaimer_title: "மருத்துவ மறுப்பு:",
+                disclaimer_text: "இந்த AI பகுப்பாய்வு தகவல் நோக்கங்களுக்காக மட்டுமே. மருத்துவ முடிவுகளுக்கு எப்போதும் சுகாதார நிபுணர்களுடன் ஆலோசிக்கவும்."
+            },
+            hi: {
+                title: "चिकित्सा दस्तावेज़ विश्लेषक",
+                subtitle: "एक्स-रे, लैब रिपोर्ट और मेडिकल स्कैन के लिए AI-संचालित विश्लेषण",
+                card_title: "दस्तावेज़ विश्लेषण",
+                card_subtitle: "तत्काल AI विश्लेषण के लिए अपने चिकित्सा दस्तावेज़ अपलोड करें",
+                upload_title: "चिकित्सा दस्तावेज़ अपलोड करें",
+                upload_desc: "अपनी चिकित्सा फ़ाइलों को खींचें और छोड़ें या चुनने के लिए क्लिक करें",
+                choose_file: "फ़ाइल चुनें",
+                analyze_btn: "दस्तावेज़ का विश्लेषण करें",
+                analyzing: "आपके चिकित्सा दस्तावेज़ का विश्लेषण कर रहे हैं...",
+                results_title: "विश्लेषण परिणाम",
+                xray_title: "एक्स-रे और स्कैन",
+                xray_desc: "सीटी, एमआरआई, अल्ट्रासाउंड, छाती एक्स-रे",
+                lab_title: "लैब रिपोर्ट",
+                lab_desc: "रक्त परीक्षण, मूत्र विश्लेषण, पैथोलॉजी रिपोर्ट",
+                ecg_title: "ईसीजी रिपोर्ट",
+                ecg_desc: "हृदय ताल विश्लेषण, ईकेजी स्ट्रिप्स",
+                prescription_title: "नुस्खे",
+                prescription_desc: "दवा सूची, खुराक निर्देश",
+                disclaimer_title: "चिकित्सा अस्वीकरण:",
+                disclaimer_text: "यह AI विश्लेषण केवल सूचनात्मक उद्देश्यों के लिए है। चिकित्सा निर्णयों के लिए हमेशा स्वास्थ्य पेशेवरों से सलाह लें।"
+            }
+        };
+
+        let currentLang = 'en';
+        let currentImageData = null;
+
+        // DOM Elements
+        const fileInput = document.getElementById('fileInput');
+        const uploadZone = document.getElementById('uploadZone');
+        const previewSection = document.getElementById('previewSection');
+        const imagePreview = document.getElementById('imagePreview');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const loadingSection = document.getElementById('loadingSection');
+        const resultsSection = document.getElementById('resultsSection');
+        const analysisContent = document.getElementById('analysisContent');
+        const languageMenu = document.getElementById('languageMenu');
+        const currentLangSpan = document.getElementById('currentLang');
+
+        // Language functions
+        function toggleLanguageMenu() {
+            languageMenu.classList.toggle('show');
+        }
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            
+            // Update current language display
+            const langNames = { en: 'EN', ta: 'தமிழ்', hi: 'हिंदी' };
+            currentLangSpan.textContent = langNames[lang];
+            
+            // Update all text elements
+            document.querySelectorAll('[data-key]').forEach(element => {
+                const key = element.getAttribute('data-key');
+                if (translations[lang] && translations[lang][key]) {
+                    if (element.tagName === 'INPUT') {
+                        element.placeholder = translations[lang][key];
+                    } else {
+                        element.textContent = translations[lang][key];
+                    }
+                }
+            });
+            
+            // Hide language menu
+            languageMenu.classList.remove('show');
+        }
+
+        // Close language menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.language-dropdown')) {
+                languageMenu.classList.remove('show');
+            }
+        });
+
+        // File handling
+        fileInput.addEventListener('change', handleFileSelect);
+        uploadZone.addEventListener('dragover', handleDragOver);
+        uploadZone.addEventListener('dragleave', handleDragLeave);
+        uploadZone.addEventListener('drop', handleDrop);
+        analyzeBtn.addEventListener('click', analyzeDocument);
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                displayPreview(file);
+            } else {
+                showError('Please select a valid image file');
+            }
+        }
+
+        function handleDragOver(event) {
+            event.preventDefault();
+            uploadZone.classList.add('dragover');
+        }
+
+        function handleDragLeave(event) {
+            event.preventDefault();
+            uploadZone.classList.remove('dragover');
+        }
+
+        function handleDrop(event) {
+            event.preventDefault();
+            uploadZone.classList.remove('dragover');
+            
+            const files = event.dataTransfer.files;
+            if (files.length > 0 && files[0].type.startsWith('image/')) {
+                displayPreview(files[0]);
+            } else {
+                showError('Please drop a valid image file');
+            }
+        }
+
+        function displayPreview(file) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                currentImageData = e.target.result.split(',')[1];
+                imagePreview.src = e.target.result;
+                previewSection.style.display = 'block';
+                resultsSection.style.display = 'none';
+            };
+            
+            reader.readAsDataURL(file);
+        }
+
+        async function analyzeDocument() {
+            if (!currentImageData) {
+                showError('Please select an image first');
+                return;
+            }
+
+            analyzeBtn.disabled = true;
+            loadingSection.style.display = 'block';
+            resultsSection.style.display = 'none';
+
+            // Create language-specific prompt
+            const prompts = {
+                en: `Analyze this medical document and provide detailed analysis in English with the following structure:
+
+**Document Type**: Identify what type of medical document this is
+**Key Findings**: List the main medical findings or values
+**Clinical Significance**: Explain what these findings indicate
+**Recommendations**: Suggest next steps or highlight concerns
+**Urgency Level**: Classify as Normal, Concerning, or Urgent
+
+Provide clear, professional medical analysis.`,
+
+                ta: `இந்த மருத்துவ ஆவணத்தை பகுப்பாய்வு செய்து தமிழில் விரிவான பகுப்பாய்வு வழங்கவும்:
+
+**ஆவண வகை**: இது என்ன வகையான மருத்துவ ஆவணம் என்று அடையாளம் காணுங்கள்
+**முக்கிய கண்டுபிடிப்புகள்**: முக்கிய மருத்துவ கண்டுபிடிப்புகள் அல்லது மதிப்புகளை பட்டியலிடுங்கள்
+**மருத்துவ முக்கியத்துவம்**: இந்த கண்டுபிடிப்புகள் என்ன குறிக்கின்றன என்பதை விளக்குங்கள்
+**பரிந்துரைகள்**: அடுத்த படிகளை பரிந்துரைக்கவும் அல்லது கவலைகளை முன்னிலைப்படுத்தவும்
+**அவசர நிலை**: சாதாரணம், கவலைக்குரியது அல்லது அவசரம் என வகைப்படுத்துங்கள்
+
+தெளிவான, தொழில்முறை மருத்துவ பகுப்பாய்வு வழங்கவும்.`,
+
+                hi: `इस चिकित्सा दस्तावेज़ का विश्लेषण करें और हिंदी में विस्तृत विश्लेषण प्रदान करें:
+
+**दस्तावेज़ प्रकार**: यह किस प्रकार का चिकित्सा दस्तावेज़ है, इसकी पहचान करें
+**मुख्य निष्कर्ष**: मुख्य चिकित्सा निष्कर्षों या मानों की सूची बनाएं
+**नैदानिक महत्व**: इन निष्कर्षों का क्या अर्थ है, इसकी व्याख्या करें
+**सिफारिशें**: अगले कदमों का सुझाव दें या चिंताओं को उजागर करें
+**तात्कालिकता स्तर**: सामान्य, चिंताजनक, या तत्काल के रूप में वर्गीकृत करें
+
+स्पष्ट, पेशेवर चिकित्सा विश्लेषण प्रदान करें।`
+            };
+
+            try {
+                const response = await fetch(MODEL_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [
+                                { text: prompts[currentLang] },
+                                {
+                                    inline_data: {
+                                        mime_type: "image/jpeg",
+                                        data: currentImageData
+                                    }
+                                }
+                            ]
+                        }],
+                        generationConfig: {
+                            temperature: 0.4,
+                            topK: 32,
+                            topP: 1,
+                            maxOutputTokens: 2048,
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                const analysis = data?.candidates?.[0]?.content?.parts?.[0]?.text || 
+                               "Unable to analyze the document. Please try again.";
+
+                displayResults(analysis);
+
+            } catch (error) {
+                console.error('Error:', error);
+                showError(`Analysis failed: ${error.message}`);
+            } finally {
+                analyzeBtn.disabled = false;
+                loadingSection.style.display = 'none';
+            }
+        }
+
+        function displayResults(analysis) {
+            const formattedAnalysis = analysis
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/\n/g, '<br>')
+                .replace(/(\d+\.\s)/g, '<br><strong>$1</strong>');
+
+            analysisContent.innerHTML = formattedAnalysis;
+            resultsSection.style.display = 'block';
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
+
+            const existingError = document.querySelector('.error-message');
+            if (existingError) {
+                existingError.remove();
+            }
+
+            uploadZone.parentNode.insertBefore(errorDiv, uploadZone.nextSibling);
+
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

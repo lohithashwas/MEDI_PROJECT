@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEDI-KIT - Chronic Disease Screening</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0b1e 0%, #1a1d3a 25%, #2d3748 50%, #4a5568 75%, #718096 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            min-height: 100vh;
+        }
+
+        /* Tamil Language Support */
+        .tamil-text {
+            font-family: 'Noto Sans Tamil', 'Inter', sans-serif !important;
+            line-height: 1.6 !important;
+        }
+
+        /* Hindi Language Support */
+        .hindi-text {
+            font-family: 'Noto Sans Devanagari', 'Inter', sans-serif !important;
+            line-height: 1.6 !important;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 11, 30, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(34, 197, 94, 0.2);
+            z-index: 1000;
+            padding: 15px 0;
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+        }
+
+        .logo-icon i {
+            font-size: 20px;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #22c55e, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #e2e8f0;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover {
+            color: #22c55e;
+            transform: translateY(-2px);
+        }
+
+        /* Language Selector */
+        .language-selector {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 10px;
+            padding: 8px 15px;
+            margin-left: 20px;
+        }
+
+        .language-selector select {
+            background: transparent;
+            border: none;
+            color: #22c55e;
+            font-weight: 600;
+            cursor: pointer;
+            outline: none;
+        }
+
+        /* Header Section */
+        .header {
+            padding: 120px 20px 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 80%, rgba(34, 197, 94, 0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .header-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header-title {
+            font-size: 3rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffffff, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-subtitle {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        /* Progress Section */
+        .progress-section {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 0 auto 50px auto;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .progress-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(#22c55e 0deg, rgba(34, 197, 94, 0.2) 0deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+
+        .progress-circle::before {
+            content: '';
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: #1e293b;
+            position: absolute;
+        }
+
+        .progress-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #22c55e;
+            z-index: 1;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px 100px;
+        }
+
+        /* Testing Categories Grid - Fixed alignment */
+        .testing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 30px;
+            margin-bottom: 80px;
+            justify-items: center;
+        }
+
+        .testing-category {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            max-width: 450px;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .testing-category:hover {
+            transform: translateY(-5px);
+            border-color: rgba(34, 197, 94, 0.5);
+            box-shadow: 0 20px 40px rgba(34, 197, 94, 0.1);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .category-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            box-shadow: 0 10px 25px rgba(34, 197, 94, 0.3);
+            flex-shrink: 0;
+        }
+
+        .category-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: white;
+            flex-grow: 1;
+            line-height: 1.3;
+        }
+
+        .category-description {
+            color: #94a3b8;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            flex-grow: 1;
+        }
+
+        .assessment-parameters {
+            margin-bottom: 25px;
+        }
+
+        .parameters-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #22c55e;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .parameters-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .parameter-tag {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            color: #e2e8f0;
+        }
+
+        /* Action Buttons - Fixed alignment */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: auto;
+            padding-top: 20px;
+        }
+
+        .btn-primary, .btn-secondary {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-width: 140px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(34, 197, 94, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #22c55e;
+            border: 2px solid #22c55e;
+        }
+
+        .btn-secondary:hover {
+            background: #22c55e;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-completed {
+            background: linear-gradient(135deg, #16a34a, #15803d) !important;
+            color: white !important;
+        }
+
+        /* Assessment Modal */
+        .assessment-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            backdrop-filter: blur(10px);
+        }
+
+        .assessment-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: #22c55e;
+        }
+
+        /* Form Styles */
+        .form-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 15px;
+            border: 1px solid rgba(34, 197, 94, 0.1);
+        }
+
+        .form-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #e2e8f0;
+            margin-bottom: 8px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(51, 65, 85, 0.6);
+            border: 2px solid rgba(34, 197, 94, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #22c55e;
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .form-range {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        /* Results Section */
+        .results-container {
+            display: none;
+            padding: 40px;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 20px;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            margin-top: 30px;
+        }
+
+        .results-container.active {
+            display: block;
+        }
+
+        .risk-score {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 900;
+            color: white;
+        }
+
+        .score-low {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+        }
+
+        .score-medium {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .score-high {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .recommendations {
+            background: rgba(15, 23, 42, 0.8);
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .recommendation-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(34, 197, 94, 0.1);
+            border-radius: 10px;
+        }
+
+        /* Responsive Design - Fixed */
+        @media (max-width: 900px) {
+            .testing-grid {
+                grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+                gap: 25px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .testing-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .testing-category {
+                max-width: 100%;
+                min-height: 350px;
+            }
+
+            .modal-content {
+                padding: 20px;
+                margin: 20px;
+            }
+
+            .header-title {
+                font-size: 2.5rem;
+            }
+
+            .nav-container {
+                flex-direction: column;
+                gap: 15px;
+                padding: 0 15px;
+            }
+
+            .category-title {
+                font-size: 1.2rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn-primary, .btn-secondary {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .testing-category {
+                padding: 20px;
+                min-height: 320px;
+            }
+
+            .category-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+
+            .header-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class='bx bx-health'></i>
+                </div>
+                <span class="logo-text">MEDI-KIT</span>
+            </div>
+            <div class="nav-links">
+                <a href="#questionnaires" data-translate="nav-questionnaires">Questionnaires</a>
+                <a href="#physical-tests" data-translate="nav-physical">Physical Tests</a>
+                <a href="#lab-tests" data-translate="nav-lab">Lab Tests</a>
+                <a href="#results" data-translate="nav-results">Results</a>
+                <div class="language-selector">
+                    <select id="languageSelect" onchange="changeLanguage()">
+                        <option value="en">🇬🇧 EN</option>
+                        <option value="ta">🇮🇳 தமிழ்</option>
+                        <option value="hi">🇮🇳 हिं</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header Section -->
+    <section class="header">
+        <div class="header-container">
+            <h1 class="header-title" data-translate="header-title">Chronic Disease Screening</h1>
+            <p class="header-subtitle" data-translate="header-subtitle">Comprehensive health assessment through intelligent questionnaires, physical tests, and laboratory analysis for early detection and prevention of chronic diseases</p>
+        </div>
+    </section>
+
+    <!-- Progress Section -->
+    <div class="main-container">
+        <section class="progress-section">
+            <h2 style="color: white; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <i class='bx bx-chart-line'></i>
+                <span data-translate="progress-title">Screening Progress</span>
+            </h2>
+            <div class="progress-circle">
+                <span class="progress-text" id="progressText">0/9</span>
+            </div>
+            <p style="color: #94a3b8; margin-top: 10px;" data-translate="progress-subtitle">Complete all screening modules for comprehensive assessment</p>
+        </section>
+
+        <!-- Testing Categories Grid -->
+        <div class="testing-grid" id="testingGrid">
+            <!-- Categories will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Assessment Modal -->
+    <div class="assessment-modal" id="assessmentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Assessment</h2>
+                <button class="close-btn" onclick="closeModal()">
+                    <i class='bx bx-x'></i>
+                </button>
+            </div>
+            
+            <form id="assessmentForm">
+                <div id="formContent">
+                    <!-- Form sections will be populated by JavaScript -->
+                </div>
+                
+                <div style="display: flex; gap: 15px; margin-top: 30px; justify-content: flex-end;">
+                    <button type="submit" class="btn-primary">
+                        <i class='bx bx-check'></i>
+                        <span data-translate="generate-report">Generate Report</span>
+                    </button>
+                </div>
+            </form>
+            
+            <div class="results-container" id="resultsContainer">
+                <!-- Results will be shown here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Language translations
+        const translations = {
+            en: {
+                'nav-questionnaires': 'Questionnaires',
+                'nav-physical': 'Physical Tests',
+                'nav-lab': 'Lab Tests',
+                'nav-results': 'Results',
+                'header-title': 'Chronic Disease Screening',
+                'header-subtitle': 'Comprehensive health assessment through intelligent questionnaires, physical tests, and laboratory analysis for early detection and prevention of chronic diseases',
+                'progress-title': 'Screening Progress',
+                'progress-subtitle': 'Complete all screening modules for comprehensive assessment',
+                'generate-report': 'Generate Report',
+                'start-assessment': 'Start Assessment',
+                'learn-more': 'Learn More',
+                'completed': 'Completed',
+                'assessment-parameters': 'Assessment Parameters',
+                'complete-assessment': 'Complete Assessment',
+                'recommendations': 'Recommendations',
+                'comprehensive-report': 'Comprehensive Health Report',
+                'low-risk': 'Low Risk',
+                'moderate-risk': 'Moderate Risk',
+                'high-risk': 'High Risk',
+                'score': 'Score'
+            },
+            ta: {
+                'nav-questionnaires': 'கேள்வித்தாள்கள்',
+                'nav-physical': 'உடல் பரிசோதனைகள்',
+                'nav-lab': 'ஆய்வக பரிசோதனைகள்',
+                'nav-results': 'முடிவுகள்',
+                'header-title': 'நாள்பட்ட நோய் பரிசோதனை',
+                'header-subtitle': 'நாள்பட்ட நோய்களை சீக்கிரம் கண்டறிந்து தடுக்க அறிவார்ந்த கேள்வித்தாள்கள், உடல் பரிசோதனைகள் மற்றும் ஆய்வக பரிப்பாய்வு மூலம் முழுமையான சுகாதார மதிப்பீடு',
+                'progress-title': 'பரிசோதனை முன்னேற்றம்',
+                'progress-subtitle': 'முழுமையான மதிப்பீட்டிற்கு அனைத்து பரிசோதனை தொகுதிகளையும் நிறைவு செய்யுங்கள்',
+                'generate-report': 'அறிக்கை தயாரிக்க',
+                'start-assessment': 'மதிப்பீடு தொடங்க',
+                'learn-more': 'மேலும் அறிய',
+                'completed': 'நிறைவு',
+                'assessment-parameters': 'மதிப்பீட்டு அளவுருக்கள்',
+                'complete-assessment': 'மதிப்பீட்டை நிறைவு செய்க',
+                'recommendations': 'பரிந்துரைகள்',
+                'comprehensive-report': 'முழுமையான சுகாதார அறிக்கை',
+                'low-risk': 'குறைந்த ஆபத்து',
+                'moderate-risk': 'மிதமான ஆபத்து',
+                'high-risk': 'அதிக ஆபத்து',
+                'score': 'மதிப்பெண்'
+            },
+            hi: {
+                'nav-questionnaires': 'प्रश्नावली',
+                'nav-physical': 'शारीरिक परीक्षण',
+                'nav-lab': 'प्रयोगशाला परीक्षण',
+                'nav-results': 'परिणाम',
+                'header-title': 'जीर्ण रोग स्क्रीनिंग',
+                'header-subtitle': 'जीर्ण रोगों का शीघ्र पता लगाने और रोकथाम के लिए बुद्धिमान प्रश्नावली, शारीरिक परीक्षण और प्रयोगशाला विश्लेषण के माध्यम से व्यापक स्वास्थ्य मूल्यांकन',
+                'progress-title': 'स्क्रीनिंग प्रगति',
+                'progress-subtitle': 'व्यापक मूल्यांकन के लिए सभी स्क्रीनिंग मॉड्यूल पूरे करें',
+                'generate-report': 'रिपोर्ट तैयार करें',
+                'start-assessment': 'मूल्यांकन शुरू करें',
+                'learn-more': 'और जानें',
+                'completed': 'पूर्ण',
+                'assessment-parameters': 'मूल्यांकन मापदंड',
+                'complete-assessment': 'मूल्यांकन पूरा करें',
+                'recommendations': 'सिफारिशें',
+                'comprehensive-report': 'व्यापक स्वास्थ्य रिपोर्ट',
+                'low-risk': 'कम जोखिम',
+                'moderate-risk': 'मध्यम जोखिम',
+                'high-risk': 'उच्च जोखिम',
+                'score': 'स्कोर'
+            }
+        };
+
+        // Assessment modules configuration
+        const assessmentModules = {
+            en: [
+                {
+                    id: 'diabetes',
+                    name: 'Diabetes Risk Assessment',
+                    icon: 'bx-droplet',
+                    description: 'Early detection screening for Type 2 diabetes through lifestyle and health indicators',
+                    parameters: ['Age & BMI', 'Family History', 'Physical Activity', 'Glucose Levels', 'Diet Patterns']
+                },
+                {
+                    id: 'hypertension',
+                    name: 'Hypertension Screening',
+                    icon: 'bx-heart',
+                    description: 'Blood pressure risk assessment through lifestyle factors and cardiovascular health indicators',
+                    parameters: ['BP Readings', 'Salt Intake', 'Stress Levels', 'Family History', 'Exercise Habits']
+                },
+                {
+                    id: 'respiratory',
+                    name: 'Respiratory Health',
+                    icon: 'bx-wind',
+                    description: 'COPD and Asthma risk assessment through respiratory symptoms and environmental exposure',
+                    parameters: ['Chronic Cough', 'Breathlessness', 'Smoke Exposure', 'Wheezing', 'Dust Exposure']
+                },
+                {
+                    id: 'kidney',
+                    name: 'Kidney Health',
+                    icon: 'bx-body',
+                    description: 'Chronic Kidney Disease screening through urinary symptoms and cardiovascular indicators',
+                    parameters: ['Foot Swelling', 'Frequent Urination', 'Foamy Urine', 'High BP', 'Fatigue']
+                },
+                {
+                    id: 'liver',
+                    name: 'Liver Health',
+                    icon: 'bx-shield',
+                    description: 'Liver disease risk assessment through lifestyle factors and clinical symptoms',
+                    parameters: ['Alcohol History', 'Yellow Eyes', 'Dark Urine', 'Abdominal Swelling', 'Fatigue']
+                },
+                {
+                    id: 'anemia',
+                    name: 'Anemia Screening',
+                    icon: 'bx-donate-blood',
+                    description: 'Iron deficiency and anemia detection through symptom assessment and dietary history',
+                    parameters: ['Fatigue Level', 'Skin Paleness', 'Dizziness', 'Diet Quality', 'Heavy Periods']
+                },
+                {
+                    id: 'mental',
+                    name: 'Mental Health & Stress',
+                    icon: 'bx-brain',
+                    description: 'Mental wellness assessment through mood, sleep patterns, and stress indicators',
+                    parameters: ['Sleep Patterns', 'Mood Changes', 'Anxiety Level', 'HRV Analysis', 'Stress Factors']
+                },
+                {
+                    id: 'lifestyle',
+                    name: 'Lifestyle Assessment',
+                    icon: 'bx-run',
+                    description: 'Comprehensive lifestyle evaluation including habits, occupation, and environmental factors',
+                    parameters: ['Smoking Habits', 'Alcohol Consumption', 'Physical Activity', 'Occupation Type', 'Diet Habits']
+                },
+                {
+                    id: 'lab',
+                    name: 'Lab/Strip Tests',
+                    icon: 'bx-test-tube',
+                    description: 'Urine dipstick analysis with camera-assisted reading for accurate results',
+                    parameters: ['Glucose', 'Protein', 'pH Level', 'Ketones', 'Bilirubin', 'Urobilinogen', 'Specific Gravity']
+                }
+            ],
+            ta: [
+                {
+                    id: 'diabetes',
+                    name: 'நீரிழிவு அபாய மதிப்பீடு',
+                    icon: 'bx-droplet',
+                    description: 'வாழ்க்கை முறை மற்றும் சுகாதார காரணிகள் மூலம் வகை 2 நீரிழிவுக்கான ஆரம்ப கண்டறிதல் பரிசோதனை',
+                    parameters: ['வயது மற்றும் BMI', 'குடும்ப வரலாறு', 'உடல் செயல்பாடு', 'குளுக்கோஸ் அளவுகள்', 'உணவு முறைகள்']
+                },
+                {
+                    id: 'hypertension',
+                    name: 'உயர் இரத்த அழுத்த பரிசோதனை',
+                    icon: 'bx-heart',
+                    description: 'வாழ்க்கை முறை காரணிகள் மற்றும் இதய சுகாதார காரணிகள் மூலம் இரத்த அழுத்த அபாய மதிப்பீடு',
+                    parameters: ['BP அளவீடுகள்', 'உப்பு உட்கொள்ளல்', 'மன அழுத்த நிலைகள்', 'குடும்ப வரலாறு', 'உடற்பயிற்சி பழக்கங்கள்']
+                },
+                {
+                    id: 'respiratory',
+                    name: 'சுவாச ஆரோக்கியம்',
+                    icon: 'bx-wind',
+                    description: 'சுவாச அறிகுறிகள் மற்றும் சுற்றுச்சூழல் வெளிப்பாடு மூலம் COPD மற்றும் ஆஸ்துமா அபாய மதிப்பீடு',
+                    parameters: ['நாள்பட்ட இருமல்', 'மூச்சு திணறல்', 'புகை வெளிப்பாடு', 'மூச்சு திணறல் ஒலி', 'தூசி வெளிப்பாடு']
+                },
+                {
+                    id: 'kidney',
+                    name: 'சிறுநீரக ஆரோக்கியம்',
+                    icon: 'bx-body',
+                    description: 'சிறுநீர் அறிகுறிகள் மற்றும் இதய சுகாதார காரணிகள் மூலம் நாள்பட்ட சிறுநீரக நோய் பரிசோதனை',
+                    parameters: ['கால் வீக்கம்', 'அடிக்கடி சிறுநீர் கழித்தல்', 'நுரைத்த சிறுநீர்', 'உயர் BP', 'களைப்பு']
+                },
+                {
+                    id: 'liver',
+                    name: 'கல்லீரல் ஆரோக்கியம்',
+                    icon: 'bx-shield',
+                    description: 'வாழ்க்கை முறை காரணிகள் மற்றும் மருத்துவ அறிகுறிகள் மூலம் கல்லீரல் நோய் அபாய மதிப்பீடு',
+                    parameters: ['மதுபான வரலாறு', 'மஞ்சள் கண்கள்', 'அடர் நிற சிறுநீர்', 'வயிற்று வீக்கம்', 'களைப்பு']
+                },
+                {
+                    id: 'anemia',
+                    name: 'இரத்த சோகை பரிசோதனை',
+                    icon: 'bx-donate-blood',
+                    description: 'அறிகுறி மதிப்பீடு மற்றும் உணவு வரலாறு மூலம் இரும்பு குறைபாடு மற்றும் இரத்த சோகை கண்டறிதல்',
+                    parameters: ['களைப்பு நிலை', 'தோல் வெளுப்பு', 'தலைச்சுற்றல்', 'உணவு தரம்', 'அதிக மாதவிடாய்']
+                },
+                {
+                    id: 'mental',
+                    name: 'மன ஆரோக்கியம் மற்றும் மன அழுத்தம்',
+                    icon: 'bx-brain',
+                    description: 'மனநிலை, உறக்க முறைகள் மற்றும் மன அழுத்த காரணிகள் மூலம் மன நல மதிப்பீடு',
+                    parameters: ['தூக்க முறைகள்', 'மனநிலை மாற்றங்கள்', 'பதட்ட அளவு', 'HRV பகுப்பாய்வு', 'மன அழுத்த காரணிகள்']
+                },
+                {
+                    id: 'lifestyle',
+                    name: 'வாழ்க்கை முறை மதிப்பீடு',
+                    icon: 'bx-run',
+                    description: 'பழக்கங்கள், தொழில் மற்றும் சுற்றுச்சூழல் காரணிகள் உள்ளிட்ட விரிவான வாழ்க்கை முறை மதிப்பீடு',
+                    parameters: ['புகைபிடித்தல் பழக்கங்கள்', 'மதுபான உட்கொள்ளல்', 'உடல் செயல்பாடு', 'தொழில் வகை', 'உணவு பழக்கங்கள்']
+                },
+                {
+                    id: 'lab',
+                    name: 'ஆய்வக/ஸ்ட்ரிப் பரிசோதனைகள்',
+                    icon: 'bx-test-tube',
+                    description: 'துல்லியமான முடிவுகளுக்கான கேமரா-உதவி வாசிப்புடன் சிறுநீர் டிப்ஸ்டிக் பகுப்பாய்வு',
+                    parameters: ['குளுக்கோஸ்', 'புரதம்', 'pH அளவு', 'கீட்டோன்கள்', 'பிலிரூபின்', 'யூரோபிலினோஜன்', 'குறிப்பிட்ட ஈர்ப்பு']
+                }
+            ],
+            hi: [
+                {
+                    id: 'diabetes',
+                    name: 'मधुमेह जोखिम मूल्यांकन',
+                    icon: 'bx-droplet',
+                    description: 'जीवनशैली और स्वास्थ्य संकेतकों के माध्यम से टाइप 2 मधुमेह की जल्दी पहचान स्क्रीनिंग',
+                    parameters: ['आयु और BMI', 'पारिवारिक इतिहास', 'शारीरिक गतिविधि', 'ग्लूकोज स्तर', 'आहार पैटर्न']
+                },
+                {
+                    id: 'hypertension',
+                    name: 'उच्च रक्तचाप स्क्रीनिंग',
+                    icon: 'bx-heart',
+                    description: 'जीवनशैली कारकों और हृदय स्वास्थ्य संकेतकों के माध्यम से रक्तचाप जोखिम मूल्यांकन',
+                    parameters: ['BP रीडिंग', 'नमक सेवन', 'तनाव स्तर', 'पारिवारिक इतिहास', 'व्यायाम की आदतें']
+                },
+                {
+                    id: 'respiratory',
+                    name: 'श्वसन स्वास्थ्य',
+                    icon: 'bx-wind',
+                    description: 'श्वसन लक्षणों और पर्यावरणीय जोखिम के माध्यम से COPD और अस्थमा जोखिम मूल्यांकन',
+                    parameters: ['पुरानी खांसी', 'सांस की तकलीफ', 'धुआं जोखिम', 'घरघराहट', 'धूल जोखिम']
+                },
+                {
+                    id: 'kidney',
+                    name: 'गुर्दे का स्वास्थ्य',
+                    icon: 'bx-body',
+                    description: 'मूत्र संबंधी लक्षणों और हृदय स्वास्थ्य संकेतकों के माध्यम से पुरानी गुर्दे की बीमारी की स्क्रीनिंग',
+                    parameters: ['पैर में सूजन', 'बार-बार पेशाब', 'फेनिल मूत्र', 'उच्च BP', 'थकान']
+                },
+                {
+                    id: 'liver',
+                    name: 'यकृत स्वास्थ्य',
+                    icon: 'bx-shield',
+                    description: 'जीवनशैली कारकों और नैदानिक लक्षणों के माध्यम से यकृत रोग जोखिम मूल्यांकन',
+                    parameters: ['शराब का इतिहास', 'पीली आंखें', 'गहरा मूत्र', 'पेट की सूजन', 'थकान']
+                },
+                {
+                    id: 'anemia',
+                    name: 'एनीमिया स्क्रीनिंग',
+                    icon: 'bx-donate-blood',
+                    description: 'लक्षण मूल्यांकन और आहार इतिहास के माध्यम से आयरन की कमी और एनीमिया का पता लगाना',
+                    parameters: ['थकान स्तर', 'त्वचा की पीलाहट', 'चक्कर आना', 'आहार गुणवत्ता', 'भारी पीरियड्स']
+                },
+                {
+                    id: 'mental',
+                    name: 'मानसिक स्वास्थ्य और तनाव',
+                    icon: 'bx-brain',
+                    description: 'मूड, नींद के पैटर्न और तनाव संकेतकों के माध्यम से मानसिक कल्याण मूल्यांकन',
+                    parameters: ['नींद के पैटर्न', 'मूड में बदलाव', 'चिंता स्तर', 'HRV विश्लेषण', 'तनाव कारक']
+                },
+                {
+                    id: 'lifestyle',
+                    name: 'जीवनशैली मूल्यांकन',
+                    icon: 'bx-run',
+                    description: 'आदतों, व्यवसाय और पर्यावरणीय कारकों सहित व्यापक जीवनशैली मूल्यांकन',
+                    parameters: ['धूम्रपान की आदतें', 'शराब सेवन', 'शारीरिक गतिविधि', 'व्यवसाय प्रकार', 'आहार की आदतें']
+                },
+                {
+                    id: 'lab',
+                    name: 'प्रयोगशाला/स्ट्रिप परीक्षण',
+                    icon: 'bx-test-tube',
+                    description: 'सटीक परिणामों के लिए कैमरा-सहायक रीडिंग के साथ मूत्र डिपस्टिक विश्लेषण',
+                    parameters: ['ग्लूकोज', 'प्रोटीन', 'pH स्तर', 'कीटोन्स', 'बिलीरूबिन', 'यूरोबिलिनोजेन', 'विशिष्ट गुरुत्व']
+                }
+            ]
+        };
+
+        // Complete assessment questions database
+        const assessmentQuestions = {
+            diabetes: {
+                title: 'Diabetes Risk Assessment',
+                questions: [
+                    { name: 'age', label: 'Age', type: 'number', min: 1, max: 120, required: true },
+                    { name: 'bmi', label: 'BMI (Body Mass Index)', type: 'number', step: 0.1, min: 10, max: 60 },
+                    { name: 'diabFamily', label: 'Family history of diabetes?', type: 'select', options: ['No', 'Grandparent', 'Parent/Sibling'] },
+                    { name: 'activity', label: 'Physical activity (days per week)', type: 'number', min: 0, max: 7 },
+                    { name: 'glucose', label: 'Urine/Blood glucose level?', type: 'select', options: ['Normal', 'Borderline', 'High'] },
+                    { name: 'thirst', label: 'Do you often feel extremely thirsty?', type: 'select', options: ['Never', 'Sometimes', 'Often', 'Always'] },
+                    { name: 'urination', label: 'Do you urinate more frequently?', type: 'select', options: ['No', 'Sometimes', 'Often', 'Very frequently'] },
+                    { name: 'weightLoss', label: 'Unexplained weight loss recently?', type: 'select', options: ['No', 'Slight (2-5 kg)', 'Moderate (5-10 kg)', 'Significant (>10 kg)'] },
+                    { name: 'energy', label: 'How would you rate your energy levels?', type: 'select', options: ['High energy', 'Normal', 'Often tired', 'Constantly fatigued'] }
+                ]
+            },
+            hypertension: {
+                title: 'Hypertension Risk Assessment',
+                questions: [
+                    { name: 'bpFamily', label: 'Family history of high blood pressure?', type: 'select', options: ['No', 'Distant relatives', 'Parents/siblings'] },
+                    { name: 'salt', label: 'Salt intake level?', type: 'select', options: ['Very little', 'Moderate', 'High'] },
+                    { name: 'exercise', label: 'How often do you exercise?', type: 'select', options: ['Daily', '3-4 times/week', '1-2 times/week', 'Rarely'] },
+                    { name: 'stress', label: 'Stress level (0-10)', type: 'range', min: 0, max: 10 },
+                    { name: 'smoking', label: 'Smoking habits?', type: 'select', options: ['Never', 'Former (quit >1 year)', 'Light smoker', 'Heavy smoker'] },
+                    { name: 'alcohol', label: 'Alcohol consumption?', type: 'select', options: ['None', '1-2 drinks/week', '3-7 drinks/week', '>7 drinks/week'] },
+                    { name: 'bpReading', label: 'Recent BP reading (if known)', type: 'text', placeholder: 'e.g., 120/80' },
+                    { name: 'headaches', label: 'Frequent headaches?', type: 'select', options: ['Rarely', 'Sometimes', 'Frequently', 'Daily'] }
+                ]
+            },
+            respiratory: {
+                title: 'Respiratory Health Assessment',
+                questions: [
+                    { name: 'cough', label: 'Persistent cough lasting weeks?', type: 'select', options: ['No', 'Occasional', 'Frequent', 'Constant'] },
+                    { name: 'breathlessness', label: 'Shortness of breath during activities?', type: 'select', options: ['Never', 'With intense activity', 'With moderate activity', 'At rest'] },
+                    { name: 'smokeExposure', label: 'Exposure to smoke, dust, or pollution?', type: 'select', options: ['No exposure', 'Occasional', 'Regular', 'Heavy daily'] },
+                    { name: 'wheezing', label: 'Wheezing or whistling sound when breathing?', type: 'select', options: ['Never', 'Occasionally', 'Frequently', 'Daily'] },
+                    { name: 'smokingHistory', label: 'Smoking history?', type: 'select', options: ['Never smoked', 'Quit >5 years ago', 'Quit <5 years ago', 'Current smoker'] },
+                    { name: 'occupational', label: 'Work in dusty environment?', type: 'select', options: ['No exposure', 'With protection', 'Regular exposure', 'Heavy exposure'] },
+                    { name: 'chestTightness', label: 'Chest tightness?', type: 'select', options: ['Never', 'Occasionally', 'Frequently', 'Daily'] }
+                ]
+            },
+            kidney: {
+                title: 'Kidney Health Assessment',
+                questions: [
+                    { name: 'swelling', label: 'Swelling in feet, ankles, or legs?', type: 'select', options: ['Never', 'Occasionally', 'Frequently', 'Always'] },
+                    { name: 'urineFreq', label: 'Urination frequency per day?', type: 'select', options: ['4-7 times (normal)', '8-10 times', '>10 times', 'Constantly'] },
+                    { name: 'foamyUrine', label: 'Foamy or frothy urine?', type: 'select', options: ['Never', 'Occasionally', 'Often', 'Always'] },
+                    { name: 'highBP', label: 'High blood pressure?', type: 'select', options: ['Normal BP', 'Borderline', 'High BP', 'Very high, on medication'] },
+                    { name: 'diabetes', label: 'Diabetes history?', type: 'select', options: ['No diabetes', 'Pre-diabetes', 'Type 2 controlled', 'Diabetes with complications'] },
+                    { name: 'fatigue', label: 'Fatigue or weakness?', type: 'select', options: ['Good energy', 'Occasionally tired', 'Often fatigued', 'Constantly exhausted'] },
+                    { name: 'urineColor', label: 'Changes in urine color?', type: 'select', options: ['Normal pale yellow', 'Sometimes darker', 'Often dark/cloudy', 'Blood in urine'] }
+                ]
+            },
+            liver: {
+                title: 'Liver Health Assessment',
+                questions: [
+                    { name: 'alcoholUse', label: 'Alcohol consumption history?', type: 'select', options: ['None', 'Occasional', 'Moderate', 'Heavy'] },
+                    { name: 'yellowEyes', label: 'Yellow discoloration of eyes or skin?', type: 'select', options: ['No', 'Mild', 'Noticeable'] },
+                    { name: 'darkUrine', label: 'Dark-colored urine?', type: 'select', options: ['No', 'Sometimes', 'Always'] },
+                    { name: 'abdSwelling', label: 'Abdominal swelling or bloating?', type: 'select', options: ['No', 'Mild', 'Significant'] },
+                    { name: 'fatigue', label: 'Unexplained fatigue?', type: 'select', options: ['No fatigue', 'Mild fatigue', 'Moderate fatigue', 'Severe fatigue'] },
+                    { name: 'appetite', label: 'Changes in appetite?', type: 'select', options: ['Normal appetite', 'Decreased appetite', 'Loss of appetite'] },
+                    { name: 'nausea', label: 'Nausea or vomiting?', type: 'select', options: ['No', 'Occasionally', 'Frequently'] }
+                ]
+            },
+            anemia: {
+                title: 'Anemia Screening',
+                questions: [
+                    { name: 'fatigue', label: 'Fatigue levels?', type: 'select', options: ['Good energy', 'Occasionally tired', 'Often fatigued', 'Constantly exhausted'] },
+                    { name: 'paleness', label: 'Paleness of skin, nails, or inner eyelids?', type: 'select', options: ['No', 'Mild', 'Noticeable', 'Significant'] },
+                    { name: 'dizziness', label: 'Dizziness or lightheadedness?', type: 'select', options: ['No', 'Sometimes', 'Frequently', 'Daily'] },
+                    { name: 'dietQuality', label: 'Diet quality (iron-rich foods)?', type: 'select', options: ['Good diet', 'Average diet', 'Poor diet', 'Very poor diet'] },
+                    { name: 'heavyPeriods', label: 'Heavy menstrual periods? (if applicable)', type: 'select', options: ['N/A', 'Normal', 'Heavy', 'Very heavy'] },
+                    { name: 'coldHands', label: 'Cold hands and feet?', type: 'select', options: ['No', 'Sometimes', 'Often', 'Always'] },
+                    { name: 'heartRate', label: 'Rapid or irregular heartbeat?', type: 'select', options: ['No', 'Sometimes', 'Frequently'] }
+                ]
+            },
+            mental: {
+                title: 'Mental Health & Stress Assessment',
+                questions: [
+                    { name: 'sleepHours', label: 'Hours of sleep per night?', type: 'select', options: ['7-9 hours', '6-7 hours', '4-6 hours', '<4 hours'] },
+                    { name: 'sleepQuality', label: 'Sleep quality?', type: 'select', options: ['Deep, restful', 'Generally good', 'Often disturbed', 'Very poor'] },
+                    { name: 'mood', label: 'How often do you feel sad or depressed?', type: 'select', options: ['Rarely', 'Sometimes', 'Often', 'Most of the time'] },
+                    { name: 'anxiety', label: 'Anxiety or worry levels (0-10)?', type: 'range', min: 0, max: 10 },
+                    { name: 'stressLevel', label: 'Current stress level (0-10)?', type: 'range', min: 0, max: 10 },
+                    { name: 'overwhelmed', label: 'Feel overwhelmed by daily tasks?', type: 'select', options: ['Never', 'Sometimes', 'Often', 'Daily'] },
+                    { name: 'socialSupport', label: 'Social support system?', type: 'select', options: ['Strong support', 'Moderate support', 'Limited support', 'Very little support'] }
+                ]
+            },
+            lifestyle: {
+                title: 'Lifestyle Assessment',
+                questions: [
+                    { name: 'smoking', label: 'Smoking or tobacco use?', type: 'select', options: ['Never', 'Former (quit >2 years)', 'Former (quit <2 years)', 'Current smoker'] },
+                    { name: 'alcoholWeekly', label: 'Alcohol consumption per week?', type: 'select', options: ['No alcohol', '1-3 drinks', '4-7 drinks', '8-14 drinks', '>14 drinks'] },
+                    { name: 'exerciseDays', label: 'Exercise days per week?', type: 'number', min: 0, max: 7 },
+                    { name: 'workType', label: 'Type of work?', type: 'select', options: ['Sedentary/office', 'Light physical', 'Moderate physical', 'Heavy physical/farming'] },
+                    { name: 'fruitVeg', label: 'Servings of fruits/vegetables daily?', type: 'select', options: ['5+ servings', '3-4 servings', '1-2 servings', '<1 serving'] },
+                    { name: 'fastFood', label: 'Fast/processed food consumption?', type: 'select', options: ['Rarely', '1-2 times/week', '3-4 times/week', 'Daily'] },
+                    { name: 'stressManagement', label: 'Stress management skills?', type: 'select', options: ['Excellent', 'Good', 'Poor', 'None'] }
+                ]
+            },
+            lab: {
+                title: 'Lab/Strip Test Results',
+                questions: [
+                    { name: 'urineGlucose', label: 'Urine glucose result?', type: 'select', options: ['Normal', 'Trace', 'High'] },
+                    { name: 'urineProtein', label: 'Urine protein?', type: 'select', options: ['Normal', 'Trace', 'Above normal'] },
+                    { name: 'urinePH', label: 'Urine pH?', type: 'number', step: 0.1, min: 4, max: 9 },
+                    { name: 'urineKetones', label: 'Urine ketones?', type: 'select', options: ['Absent', 'Trace', 'Present'] },
+                    { name: 'urineBilirubin', label: 'Bilirubin?', type: 'select', options: ['Absent', 'Present'] },
+                    { name: 'urineUrobilinogen', label: 'Urobilinogen?', type: 'select', options: ['Normal', 'High'] },
+                    { name: 'specificGravity', label: 'Specific Gravity?', type: 'number', step: 0.001, min: 1.000, max: 1.035 }
+                ]
+            }
+        };
+
+        // Global variables
+        let currentLanguage = 'en';
+        let completedAssessments = new Set();
+        let allAssessmentData = {};
+
+        // Language functions
+        function getTranslation(key) {
+            return translations[currentLanguage][key] || translations['en'][key] || key;
+        }
+
+        function updateText() {
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                element.textContent = getTranslation(key);
+            });
+
+            // Apply language-specific font classes
+            if (currentLanguage === 'ta') {
+                document.body.classList.add('tamil-text');
+                document.body.classList.remove('hindi-text');
+            } else if (currentLanguage === 'hi') {
+                document.body.classList.add('hindi-text');
+                document.body.classList.remove('tamil-text');
+            } else {
+                document.body.classList.remove('tamil-text', 'hindi-text');
+            }
+        }
+
+        function changeLanguage() {
+            const languageSelect = document.getElementById('languageSelect');
+            currentLanguage = languageSelect.value;
+            updateText();
+            renderTestingGrid();
+            localStorage.setItem('medikit-language', currentLanguage);
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load saved language
+            const savedLanguage = localStorage.getItem('medikit-language');
+            if (savedLanguage && translations[savedLanguage]) {
+                currentLanguage = savedLanguage;
+                document.getElementById('languageSelect').value = savedLanguage;
+            }
+            
+            updateText();
+            renderTestingGrid();
+            loadCompletedAssessments();
+            updateProgress();
+        });
+
+        // Render testing grid
+        function renderTestingGrid() {
+            const grid = document.getElementById('testingGrid');
+            grid.innerHTML = '';
+
+            const modules = assessmentModules[currentLanguage] || assessmentModules['en'];
+
+            modules.forEach(module => {
+                const isCompleted = completedAssessments.has(module.id);
+                const card = document.createElement('div');
+                card.className = 'testing-category';
+                card.innerHTML = `
+                    <div class="category-header">
+                        <div class="category-icon">
+                            <i class='bx ${module.icon}'></i>
+                        </div>
+                        <h3 class="category-title">${module.name}</h3>
+                    </div>
+                    <p class="category-description">${module.description}</p>
+                    
+                    <div class="assessment-parameters">
+                        <div class="parameters-title">
+                            <i class='bx bx-list-check'></i>
+                            ${getTranslation('assessment-parameters')}
+                        </div>
+                        <div class="parameters-list">
+                            ${module.parameters.map(param => `<span class="parameter-tag">${param}</span>`).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn-primary ${isCompleted ? 'btn-completed' : ''}" onclick="startAssessment('${module.id}')">
+                            <i class='bx ${isCompleted ? 'bx-check' : 'bx-play'}'></i>
+                            ${isCompleted ? getTranslation('completed') : getTranslation('start-assessment')}
+                        </button>
+                        <button class="btn-secondary">
+                            <i class='bx bx-info-circle'></i>
+                            ${getTranslation('learn-more')}
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Start assessment
+        function startAssessment(moduleId) {
+            if (completedAssessments.has(moduleId)) {
+                alert('Assessment already completed. View results in the Results section.');
+                return;
+            }
+
+            showAssessmentForm(moduleId);
+        }
+
+        // Show assessment form
+        function showAssessmentForm(moduleId) {
+            const modal = document.getElementById('assessmentModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const formContent = document.getElementById('formContent');
+            
+            const module = assessmentQuestions[moduleId];
+            if (!module) {
+                alert('Assessment not available yet. Please try another module.');
+                return;
+            }
+
+            modalTitle.innerHTML = `<i class='bx ${getModuleIcon(moduleId)}'></i> ${module.title}`;
+            formContent.innerHTML = generateFormSection(moduleId);
+            
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Handle form submission
+            document.getElementById('assessmentForm').onsubmit = function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                
+                // Collect assessment data
+                allAssessmentData[moduleId] = {};
+                for (let [key, value] of formData.entries()) {
+                    allAssessmentData[moduleId][key] = value;
+                }
+                
+                // Generate results
+                generateResults(moduleId);
+            };
+        }
+
+        // Generate form section
+        function generateFormSection(sectionId) {
+            const section = assessmentQuestions[sectionId];
+            if (!section) return '<p>Assessment questions not available.</p>';
+            
+            let html = `<div class="form-section">
+                <h3 class="form-title">${section.title}</h3>`;
+            
+            section.questions.forEach(question => {
+                html += `<div class="form-group">
+                    <label class="form-label">${question.label}${question.required ? ' *' : ''}</label>`;
+                
+                if (question.type === 'text' || question.type === 'number') {
+                    html += `<input class="form-input" name="${question.name}" type="${question.type}" 
+                        ${question.required ? 'required' : ''} 
+                        ${question.min !== undefined ? `min="${question.min}"` : ''}
+                        ${question.max !== undefined ? `max="${question.max}"` : ''}
+                        ${question.step ? `step="${question.step}"` : ''}
+                        ${question.placeholder ? `placeholder="${question.placeholder}"` : ''}>`;
+                } else if (question.type === 'select') {
+                    html += `<select class="form-select" name="${question.name}" ${question.required ? 'required' : ''}>`;
+                    if (!question.required) {
+                        html += '<option value="">Choose...</option>';
+                    }
+                    question.options.forEach(option => {
+                        html += `<option value="${option}">${option}</option>`;
+                    });
+                    html += '</select>';
+                } else if (question.type === 'range') {
+                    const defaultValue = Math.floor(((question.min || 0) + (question.max || 10)) / 2);
+                    html += `<input class="form-range" name="${question.name}" type="range" 
+                        min="${question.min || 0}" max="${question.max || 10}" value="${defaultValue}"
+                        oninput="this.nextElementSibling.textContent = this.value">
+                        <span style="color: #22c55e; font-weight: 600;">${defaultValue}</span>`;
+                }
+                
+                html += '</div>';
+            });
+            
+            html += '</div>';
+            return html;
+        }
+
+        // Generate results with proper scoring
+        function generateResults(moduleId) {
+            const data = allAssessmentData[moduleId];
+            const results = calculateRisk(moduleId, data);
+            
+            // Show results
+            const resultsContainer = document.getElementById('resultsContainer');
+            resultsContainer.innerHTML = `
+                <div class="risk-score">
+                    <div class="score-circle ${results.riskClass}">
+                        ${results.riskPercentage}%
+                    </div>
+                    <h3 style="color: white; margin-bottom: 10px;">${results.riskLevel}</h3>
+                    <p style="color: #94a3b8;">${getTranslation('score')}: ${results.score} / ${results.maxScore}</p>
+                </div>
+                
+                <div class="recommendations">
+                    <h4 style="color: white; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                        <i class='bx bx-list-check'></i> ${getTranslation('recommendations')}
+                    </h4>
+                    ${results.recommendations.map(rec => `
+                        <div class="recommendation-item">
+                            <i class='bx bx-check-circle' style="color: #22c55e; font-size: 1.2rem; min-width: 20px;"></i>
+                            <span>${rec}</span>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn-primary" onclick="completeAssessment('${moduleId}')">
+                        <i class='bx bx-check'></i>
+                        ${getTranslation('complete-assessment')}
+                    </button>
+                </div>
+            `;
+            
+            resultsContainer.classList.add('active');
+            document.getElementById('assessmentForm').style.display = 'none';
+        }
+
+        // Calculate risk score with proper logic
+        function calculateRisk(moduleId, data) {
+            let score = 0;
+            let maxScore = 10;
+            let recommendations = [];
+            
+            // Risk calculation logic for each module
+            switch (moduleId) {
+                case 'diabetes':
+                    maxScore = 20;
+                    if (parseInt(data.age) >= 45) score += 3;
+                    if (parseFloat(data.bmi) >= 30) score += 3;
+                    else if (parseFloat(data.bmi) >= 25) score += 2;
+                    if (data.diabFamily === 'Parent/Sibling') score += 3;
+                    else if (data.diabFamily === 'Grandparent') score += 1;
+                    if (parseInt(data.activity) < 2) score += 3;
+                    else if (parseInt(data.activity) < 4) score += 1;
+                    if (data.glucose === 'High') score += 4;
+                    else if (data.glucose === 'Borderline') score += 2;
+                    if (data.thirst === 'Always') score += 2;
+                    else if (data.thirst === 'Often') score += 1;
+                    break;
+                    
+                case 'hypertension':
+                    maxScore = 15;
+                    if (data.bpFamily === 'Parents/siblings') score += 3;
+                    else if (data.bpFamily === 'Distant relatives') score += 1;
+                    if (data.salt === 'High') score += 3;
+                    else if (data.salt === 'Moderate') score += 1;
+                    if (data.exercise === 'Rarely') score += 3;
+                    else if (data.exercise === '1-2 times/week') score += 2;
+                    score += Math.floor(parseInt(data.stress || 0) / 2);
+                    if (data.smoking === 'Heavy smoker') score += 3;
+                    else if (data.smoking === 'Light smoker') score += 2;
+                    break;
+                    
+                case 'respiratory':
+                    maxScore = 12;
+                    if (data.cough === 'Constant') score += 3;
+                    else if (data.cough === 'Frequent') score += 2;
+                    else if (data.cough === 'Occasional') score += 1;
+                    if (data.breathlessness === 'At rest') score += 3;
+                    else if (data.breathlessness === 'With moderate activity') score += 2;
+                    if (data.smokeExposure === 'Heavy daily') score += 3;
+                    else if (data.smokeExposure === 'Regular') score += 2;
+                    if (data.smokingHistory === 'Current smoker') score += 4;
+                    else if (data.smokingHistory === 'Quit <5 years ago') score += 2;
+                    break;
+                    
+                default:
+                    // Default scoring for other modules
+                    Object.values(data).forEach(value => {
+                        if (typeof value === 'string') {
+                            if (value.includes('High') || value.includes('Severe') || value.includes('Always') || value.includes('Heavy')) score += 3;
+                            else if (value.includes('Moderate') || value.includes('Often') || value.includes('Frequently')) score += 2;
+                            else if (value.includes('Sometimes') || value.includes('Mild') || value.includes('Occasional')) score += 1;
+                        } else if (typeof value === 'number' || !isNaN(value)) {
+                            const num = parseInt(value);
+                            if (num > 7) score += 2;
+                            else if (num > 4) score += 1;
+                        }
+                    });
+                    break;
+            }
+            
+            const riskPercentage = Math.min(100, Math.round((score / maxScore) * 100));
+            let riskLevel, riskClass;
+            
+            if (riskPercentage < 30) {
+                riskLevel = getTranslation('low-risk');
+                riskClass = 'score-low';
+                recommendations = [
+                    'Continue maintaining healthy lifestyle habits',
+                    'Regular health checkups are recommended',
+                    'Monitor symptoms and report any changes',
+                    'Keep following preventive measures'
+                ];
+            } else if (riskPercentage < 60) {
+                riskLevel = getTranslation('moderate-risk');
+                riskClass = 'score-medium';
+                recommendations = [
+                    'Consider lifestyle modifications as recommended',
+                    'Consult healthcare provider for detailed evaluation',
+                    'Increase physical activity and improve diet',
+                    'Schedule more frequent health monitoring'
+                ];
+            } else {
+                riskLevel = getTranslation('high-risk');
+                riskClass = 'score-high';
+                recommendations = [
+                    'Immediate consultation with healthcare provider recommended',
+                    'Detailed medical evaluation and tests needed',
+                    'Significant lifestyle changes are essential',
+                    'Regular medical monitoring and follow-up required'
+                ];
+            }
+            
+            return {
+                score,
+                maxScore,
+                riskPercentage,
+                riskLevel,
+                riskClass,
+                recommendations
+            };
+        }
+
+        // Complete assessment
+        function completeAssessment(moduleId) {
+            completedAssessments.add(moduleId);
+            saveCompletedAssessments();
+            closeModal();
+            renderTestingGrid();
+            updateProgress();
+        }
+
+        // Helper functions
+        function getModuleIcon(moduleId) {
+            const modules = assessmentModules[currentLanguage] || assessmentModules['en'];
+            const module = modules.find(m => m.id === moduleId);
+            return module ? module.icon : 'bx-health';
+        }
+
+        function closeModal() {
+            document.getElementById('assessmentModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            document.getElementById('resultsContainer').classList.remove('active');
+            document.getElementById('assessmentForm').style.display = 'block';
+        }
+
+        function updateProgress() {
+            const modules = assessmentModules[currentLanguage] || assessmentModules['en'];
+            const total = modules.length;
+            const completed = completedAssessments.size;
+            const percentage = (completed / total) * 360;
+            
+            document.getElementById('progressText').textContent = `${completed}/${total}`;
+            document.querySelector('.progress-circle').style.background = 
+                `conic-gradient(#22c55e ${percentage}deg, rgba(34, 197, 94, 0.2) ${percentage}deg)`;
+        }
+
+        function saveCompletedAssessments() {
+            localStorage.setItem('completedAssessments', JSON.stringify([...completedAssessments]));
+            localStorage.setItem('allAssessmentData', JSON.stringify(allAssessmentData));
+        }
+
+        function loadCompletedAssessments() {
+            const saved = localStorage.getItem('completedAssessments');
+            if (saved) {
+                completedAssessments = new Set(JSON.parse(saved));
+            }
+            
+            const savedAssessmentData = localStorage.getItem('allAssessmentData');
+            if (savedAssessmentData) {
+                allAssessmentData = JSON.parse(savedAssessmentData);
+            }
+        }
+
+        // Navigation handlers
+        document.querySelector('a[href="#results"]').onclick = function(e) {
+            e.preventDefault();
+            if (completedAssessments.size === 0) {
+                alert('Complete at least one assessment to view results.');
+                return;
+            }
+            
+            generateComprehensiveReport();
+        };
+
+        function generateComprehensiveReport() {
+            const modal = document.getElementById('assessmentModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const formContent = document.getElementById('formContent');
+            
+            modalTitle.innerHTML = `<i class="bx bx-bar-chart-alt"></i> ${getTranslation('comprehensive-report')}`;
+            
+            let reportHTML = '';
+            
+            const modules = assessmentModules[currentLanguage] || assessmentModules['en'];
+            completedAssessments.forEach(moduleId => {
+                const module = modules.find(m => m.id === moduleId);
+                const data = allAssessmentData[moduleId];
+                const results = calculateRisk(moduleId, data);
+                
+                reportHTML += `
+                    <div class="form-section">
+                        <h3 class="form-title">${module.name}</h3>
+                        <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 15px;">
+                            <div class="score-circle ${results.riskClass}" style="width: 80px; height: 80px; font-size: 1.2rem;">
+                                ${results.riskPercentage}%
+                            </div>
+                            <div>
+                                <h4 style="color: white; margin-bottom: 5px;">${results.riskLevel}</h4>
+                                <p style="color: #94a3b8;">${getTranslation('score')}: ${results.score}/${results.maxScore}</p>
+                            </div>
+                        </div>
+                        <div style="background: rgba(34, 197, 94, 0.1); padding: 15px; border-radius: 10px;">
+                            <p style="color: #e2e8f0; font-weight: 500;">Key Recommendation:</p>
+                            <p style="color: #94a3b8; margin-top: 5px;">${results.recommendations[0]}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            formContent.innerHTML = reportHTML;
+            document.getElementById('assessmentForm').style.display = 'none';
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('assessmentModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Reset functionality
+        function resetAllAssessments() {
+            if (confirm('Are you sure you want to reset all assessments? This will clear all progress.')) {
+                completedAssessments.clear();
+                allAssessmentData = {};
+                localStorage.clear();
+                renderTestingGrid();
+                updateProgress();
+                alert('All assessments have been reset.');
+            }
+        }
+
+        // Add reset button to navigation (optional)
+        document.querySelector('.nav-links').innerHTML += `
+            <a onclick="resetAllAssessments()" style="color: #ef4444; cursor: pointer;">Reset All</a>
+        `;
+    </script>
+</body>
+</html>

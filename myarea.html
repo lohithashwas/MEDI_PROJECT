@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEDI-KIT Professional Healthcare Platform</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(20px);
+            padding: 1rem 2rem;
+            border-bottom: 3px solid #10b981;
+            box-shadow: 0 4px 30px rgba(16, 185, 129, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 2000;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .brand-icon {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .brand-text {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .location-input {
+            background: rgba(30, 41, 59, 0.8);
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            color: #e2e8f0;
+            padding: 12px 16px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            width: 280px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .location-input:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+            background: rgba(30, 41, 59, 0.95);
+        }
+
+        .search-btn, .emergency-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .emergency-btn {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            animation: pulse 2s infinite;
+        }
+
+        .search-btn:hover, .emergency-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .emergency-btn:hover {
+            box-shadow: 0 5px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .select-control {
+            background: rgba(30, 41, 59, 0.8);
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
+            padding: 10px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .select-control:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+
+        .main-content {
+            display: flex;
+            min-height: calc(100vh - 90px);
+            max-width: 1600px;
+            margin: 0 auto;
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        .left-panel {
+            width: 380px;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .panel-card {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .map-container {
+            flex: 1;
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 2px solid rgba(16, 185, 129, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        #map {
+            width: 100%;
+            height: calc(100vh - 110px);
+        }
+
+        .panel-title {
+            color: #10b981;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .current-location {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .location-name {
+            color: #34d399;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .location-coords {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 1rem;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 8px;
+            padding: 4px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 8px 12px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .tab.active {
+            background: #10b981;
+            color: white;
+        }
+
+        .tab:not(.active) {
+            color: #94a3b8;
+        }
+
+        .tab:not(.active):hover {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+
+        .tab-content {
+            display: none;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .facility-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .facility-card:hover {
+            border-color: #10b981;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.2);
+        }
+
+        .facility-name {
+            color: #34d399;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .facility-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            font-size: 0.9rem;
+        }
+
+        .facility-distance {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .facility-type {
+            color: #94a3b8;
+        }
+
+        .facility-rating {
+            color: #fbbf24;
+        }
+
+        .facility-status {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 0.3rem;
+        }
+
+        .status-available { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+        .status-busy { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+        .status-emergency { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+
+        .disease-stats {
+            display: grid;
+            gap: 0.8rem;
+        }
+
+        .stat-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 10px;
+            padding: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            border-color: #10b981;
+            transform: translateY(-2px);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-name {
+            color: #e2e8f0;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            color: #10b981;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .stat-risk {
+            font-size: 0.8rem;
+            padding: 3px 8px;
+            border-radius: 15px;
+            font-weight: 600;
+        }
+
+        .risk-low { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+        .risk-moderate { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+        .risk-high { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .risk-critical { background: rgba(220, 38, 127, 0.2); color: #dc2626; }
+
+        .floating-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .control-btn {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-btn:hover {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: #10b981;
+            transform: scale(1.05);
+        }
+
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 15px;
+            padding: 1rem;
+            z-index: 1000;
+            min-width: 200px;
+        }
+
+        .legend-title {
+            color: #10b981;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.4rem;
+            font-size: 0.9rem;
+        }
+
+        .legend-color {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .loading-spinner {
+            border: 3px solid rgba(16, 185, 129, 0.2);
+            border-radius: 50%;
+            border-top: 3px solid #10b981;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 1rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .emergency-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: rgba(15, 23, 42, 0.98);
+            border: 2px solid #ef4444;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .modal-title {
+            color: #ef4444;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .modal-text {
+            color: #e2e8f0;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-call {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-close {
+            background: rgba(100, 116, 139, 0.3);
+            color: #e2e8f0;
+        }
+
+        /* Leaflet popup customization */
+        .leaflet-popup-content-wrapper {
+            background: rgba(15, 23, 42, 0.98) !important;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(16, 185, 129, 0.3) !important;
+            border-radius: 12px !important;
+            color: #e2e8f0;
+        }
+
+        .leaflet-popup-tip {
+            background: rgba(15, 23, 42, 0.98) !important;
+            border: 1px solid rgba(16, 185, 129, 0.3) !important;
+        }
+
+        .popup-content {
+            padding: 0.5rem;
+        }
+
+        .popup-title {
+            color: #34d399;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .popup-info {
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        /* Custom marker styles */
+        .hospital-marker {
+            background: #ef4444;
+            border: 3px solid white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .ambulance-marker {
+            background: #fbbf24;
+            border: 3px solid white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            animation: ambulancePulse 2s infinite;
+        }
+
+        @keyframes ambulancePulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .current-location-marker {
+            background: #10b981;
+            border: 3px solid white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 2px 12px rgba(16, 185, 129, 0.5);
+            animation: locationPulse 3s infinite;
+        }
+
+        @keyframes locationPulse {
+            0% { box-shadow: 0 2px 12px rgba(16, 185, 129, 0.5); }
+            50% { box-shadow: 0 2px 20px rgba(16, 185, 129, 0.8); }
+            100% { box-shadow: 0 2px 12px rgba(16, 185, 129, 0.5); }
+        }
+
+        /* Responsive design */
+        @media (max-width: 1200px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .left-panel {
+                width: 100%;
+                flex-direction: row;
+                overflow-x: auto;
+            }
+            
+            .panel-card {
+                min-width: 350px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-controls {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .location-input {
+                width: 100%;
+            }
+            
+            .left-panel {
+                flex-direction: column;
+            }
+            
+            .panel-card {
+                min-width: auto;
+            }
+            
+            .floating-controls {
+                position: relative;
+                margin: 10px;
+                flex-direction: row;
+                justify-content: center;
+            }
+            
+            .legend {
+                position: relative;
+                margin: 10px;
+                width: calc(100% - 20px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fas fa-heartbeat"></i>
+                </div>
+                <div class="brand-text">MEDI-KIT Professional</div>
+            </div>
+            
+            <div class="nav-controls">
+                <div class="search-container">
+                    <input type="text" class="location-input" id="locationInput" 
+                           placeholder="Enter location (city, address, pincode...)" />
+                    <button class="search-btn" id="searchBtn">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                    <button class="emergency-btn" id="emergencyBtn">
+                        <i class="fas fa-phone"></i> Emergency
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <select class="select-control" id="diseaseSelect">
+                        <option value="diabetes">Diabetes</option>
+                        <option value="hypertension">Hypertension</option>
+                        <option value="obesity">Obesity</option>
+                        <option value="anemia">Anemia</option>
+                        <option value="malnutrition">Malnutrition</option>
+                        <option value="covid">COVID-19</option>
+                    </select>
+                    
+                    <select class="select-control" id="languageSelect">
+                        <option value="en">English</option>
+                        <option value="hi">हिंदी</option>
+                        <option value="ta">தமிழ்</option>
+                        <option value="te">తెలుగు</option>
+                        <option value="bn">বাংলা</option>
+                    </select>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <aside class="left-panel">
+            <!-- Current Location Panel -->
+            <div class="panel-card">
+                <div class="panel-title">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Current Location
+                </div>
+                <div class="current-location" id="currentLocationPanel">
+                    <div class="location-name" id="locationName">Search location to begin</div>
+                    <div class="location-coords" id="locationCoords">Enter a location above</div>
+                    <button class="search-btn" id="getCurrentLocationBtn" style="margin-top: 0.5rem; padding: 8px 16px; font-size: 0.8rem;">
+                        <i class="fas fa-crosshairs"></i> Use Current Location
+                    </button>
+                </div>
+            </div>
+
+            <!-- Disease Statistics Panel -->
+            <div class="panel-card">
+                <div class="panel-title">
+                    <i class="fas fa-chart-line"></i>
+                    Disease Prevalence
+                </div>
+                <div class="disease-stats" id="diseaseStats">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-name">Select location first</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Facilities Panel -->
+            <div class="panel-card">
+                <div class="panel-title">
+                    <i class="fas fa-hospital"></i>
+                    Healthcare Facilities
+                </div>
+                
+                <div class="tabs">
+                    <div class="tab active" data-tab="hospitals">
+                        <i class="fas fa-hospital"></i> Hospitals
+                    </div>
+                    <div class="tab" data-tab="ambulances">
+                        <i class="fas fa-ambulance"></i> Ambulances
+                    </div>
+                    <div class="tab" data-tab="pharmacies">
+                        <i class="fas fa-pills"></i> Pharmacies
+                    </div>
+                </div>
+
+                <div class="tab-content active" id="hospitals-content">
+                    <div id="hospitalsList">
+                        <div class="facility-card">
+                            <div class="facility-name">Search for hospitals</div>
+                            <div class="facility-info">
+                                <span>Enter a location to find nearby healthcare facilities</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="ambulances-content">
+                    <div id="ambulancesList">
+                        <div class="facility-card">
+                            <div class="facility-name">Search for ambulances</div>
+                            <div class="facility-info">
+                                <span>Enter a location to find nearby ambulance services</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="pharmacies-content">
+                    <div id="pharmaciesList">
+                        <div class="facility-card">
+                            <div class="facility-name">Search for pharmacies</div>
+                            <div class="facility-info">
+                                <span>Enter a location to find nearby pharmacies</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <div class="map-container">
+            <div id="map"></div>
+            
+            <div class="floating-controls">
+                <button class="control-btn" id="layerToggle" title="Toggle Layers">
+                    <i class="fas fa-layers"></i>
+                </button>
+                <button class="control-btn" id="fullscreenBtn" title="Fullscreen">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <button class="control-btn" id="shareBtn" title="Share Location">
+                    <i class="fas fa-share-alt"></i>
+                </button>
+            </div>
+
+            <div class="legend">
+                <div class="legend-title">Map Legend</div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ef4444; border-radius: 50%;"></div>
+                    <span>Hospitals</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #fbbf24; border-radius: 50%;"></div>
+                    <span>Ambulances</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #8b5cf6; border-radius: 50%;"></div>
+                    <span>Pharmacies</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #10b981; border-radius: 50%;"></div>
+                    <span>Your Location</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Emergency Modal -->
+    <div class="emergency-modal" id="emergencyModal">
+        <div class="modal-content">
+            <div class="modal-title">
+                <i class="fas fa-exclamation-triangle"></i> Emergency Services
+            </div>
+            <div class="modal-text">
+                Do you need immediate medical assistance? This will connect you to emergency services.
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn btn-call" id="callEmergencyBtn">
+                    <i class="fas fa-phone"></i> Call 108
+                </button>
+                <button class="modal-btn btn-close" id="closeModalBtn">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Enhanced disease data with comprehensive coverage
+        const diseaseData = {
+            diabetes: {
+                "Delhi": 14.7, "Mumbai": 11.8, "Bangalore": 10.3, "Chennai": 13.2, "Kolkata": 7.3,
+                "Hyderabad": 12.4, "Pune": 9.8, "Ahmedabad": 9.8, "Jaipur": 8.1, "Lucknow": 6.9,
+                "Kanpur": 6.9, "Nagpur": 11.8, "Indore": 7.2, "Thane": 11.8, "Bhopal": 7.2,
+                "Visakhapatnam": 8.5, "Pimpri": 9.8, "Patna": 4.8, "Vadodara": 9.8, "Ghaziabad": 14.7,
+                "Ludhiana": 18.9, "Agra": 6.9, "Nashik": 11.8, "Faridabad": 11.4, "Meerut": 6.9,
+                "Rajkot": 9.8, "Kalyan": 11.8, "Vasai": 11.8, "Varanasi": 6.9, "Srinagar": 9.2,
+                "Aurangabad": 11.8, "Dhanbad": 5.5, "Amritsar": 18.9, "Navi Mumbai": 11.8, "Allahabad": 6.9,
+                "Ranchi": 5.5, "Howrah": 7.3, "Coimbatore": 13.2, "Jabalpur": 7.2, "Gwalior": 7.2,
+                "Vijayawada": 8.5, "Jodhpur": 8.1, "Madurai": 13.2, "Raipur": 6.7, "Kota": 8.1
+            },
+            hypertension: {
+                "Delhi": 29.9, "Mumbai": 28.3, "Bangalore": 25.8, "Chennai": 30.1, "Kolkata": 24.6,
+                "Hyderabad": 27.7, "Pune": 26.4, "Ahmedabad": 26.4, "Jaipur": 23.1, "Lucknow": 22.8,
+                "Kanpur": 22.8, "Nagpur": 28.3, "Indore": 20.6, "Thane": 28.3, "Bhopal": 20.6,
+                "Visakhapatnam": 28.5, "Pimpri": 26.4, "Patna": 19.8, "Vadodara": 26.4, "Ghaziabad": 29.9,
+                "Ludhiana": 33.2, "Agra": 22.8, "Nashik": 28.3, "Faridabad": 27.9, "Meerut": 22.8,
+                "Rajkot": 26.4, "Kalyan": 28.3, "Vasai": 28.3, "Varanasi": 22.8, "Srinagar": 26.2,
+                "Aurangabad": 28.3, "Dhanbad": 18.7, "Amritsar": 33.2, "Navi Mumbai": 28.3, "Allahabad": 22.8,
+                "Ranchi": 18.7, "Howrah": 24.6, "Coimbatore": 30.1, "Jabalpur": 20.6, "Gwalior": 20.6,
+                "Vijayawada": 28.5, "Jodhpur": 23.1, "Madurai": 30.1, "Raipur": 22.1, "Kota": 23.1
+            },
+            obesity: {
+                "Delhi": 25.3, "Mumbai": 17.9, "Bangalore": 16.8, "Chennai": 20.6, "Kolkata": 12.4,
+                "Hyderabad": 18.1, "Pune": 18.4, "Ahmedabad": 18.4, "Jaipur": 13.4, "Lucknow": 11.3,
+                "Kanpur": 11.3, "Nagpur": 17.9, "Indore": 10.1, "Thane": 17.9, "Bhopal": 10.1,
+                "Visakhapatnam": 15.2, "Pimpri": 18.4, "Patna": 7.2, "Vadodara": 18.4, "Ghaziabad": 25.3,
+                "Ludhiana": 26.8, "Agra": 11.3, "Nashik": 17.9, "Faridabad": 19.7, "Meerut": 11.3,
+                "Rajkot": 18.4, "Kalyan": 17.9, "Vasai": 17.9, "Varanasi": 11.3, "Srinagar": 15.6,
+                "Aurangabad": 17.9, "Dhanbad": 6.8, "Amritsar": 26.8, "Navi Mumbai": 17.9, "Allahabad": 11.3,
+                "Ranchi": 6.8, "Howrah": 12.4, "Coimbatore": 20.6, "Jabalpur": 10.1, "Gwalior": 10.1,
+                "Vijayawada": 15.2, "Jodhpur": 13.4, "Madurai": 20.6, "Raipur": 8.9, "Kota": 13.4
+            }
+        };
+
+        // Comprehensive hospital data with real-world examples
+        const hospitalData = {
+            "Delhi": [
+                {
+                    name: "All India Institute of Medical Sciences (AIIMS)",
+                    type: "Government Super Specialty",
+                    distance: "2.3 km",
+                    rating: "4.8 ★",
+                    specialties: ["Cardiology", "Neurology", "Oncology", "Emergency"],
+                    status: "available",
+                    phone: "+91-11-26588500",
+                    address: "Ansari Nagar, New Delhi"
+                },
+                {
+                    name: "Apollo Hospital",
+                    type: "Private Multi-specialty",
+                    distance: "3.1 km",
+                    rating: "4.5 ★",
+                    specialties: ["Cardiac Surgery", "Orthopedics", "Gastroenterology"],
+                    status: "available",
+                    phone: "+91-11-71791000",
+                    address: "Sarita Vihar, New Delhi"
+                },
+                {
+                    name: "Fortis Hospital",
+                    type: "Private Super Specialty",
+                    distance: "4.2 km",
+                    rating: "4.3 ★",
+                    specialties: ["Emergency", "ICU", "Surgery"],
+                    status: "busy",
+                    phone: "+91-11-47135000",
+                    address: "Shalimar Bagh, New Delhi"
+                },
+                {
+                    name: "Max Super Speciality Hospital",
+                    type: "Private",
+                    distance: "1.8 km",
+                    rating: "4.4 ★",
+                    specialties: ["Maternity", "Pediatrics", "Nephrology"],
+                    status: "available",
+                    phone: "+91-11-26925858",
+                    address: "Saket, New Delhi"
+                }
+            ],
+            "Mumbai": [
+                {
+                    name: "Tata Memorial Hospital",
+                    type: "Government Cancer Specialty",
+                    distance: "3.5 km",
+                    rating: "4.7 ★",
+                    specialties: ["Oncology", "Radiation Therapy", "Surgery"],
+                    status: "available",
+                    phone: "+91-22-24177000",
+                    address: "Parel, Mumbai"
+                },
+                {
+                    name: "Kokilaben Dhirubhai Ambani Hospital",
+                    type: "Private Super Specialty",
+                    distance: "2.8 km",
+                    rating: "4.6 ★",
+                    specialties: ["Cardiology", "Neurology", "Emergency"],
+                    status: "available",
+                    phone: "+91-22-30999999",
+                    address: "Andheri West, Mumbai"
+                },
+                {
+                    name: "Breach Candy Hospital",
+                    type: "Private",
+                    distance: "4.1 km",
+                    rating: "4.4 ★",
+                    specialties: ["General Surgery", "Internal Medicine"],
+                    status: "busy",
+                    phone: "+91-22-23672888",
+                    address: "Breach Candy, Mumbai"
+                }
+            ],
+            "Bangalore": [
+                {
+                    name: "Manipal Hospital",
+                    type: "Private Multi-specialty",
+                    distance: "2.1 km",
+                    rating: "4.5 ★",
+                    specialties: ["Cardiology", "Orthopedics", "Emergency"],
+                    status: "available",
+                    phone: "+91-80-25023200",
+                    address: "HAL Airport Road, Bangalore"
+                },
+                {
+                    name: "Apollo Hospital",
+                    type: "Private Super Specialty",
+                    distance: "3.7 km",
+                    rating: "4.6 ★",
+                    specialties: ["Heart Surgery", "Neurosurgery", "Oncology"],
+                    status: "available",
+                    phone: "+91-80-26304050",
+                    address: "Bannerghatta Road, Bangalore"
+                }
+            ]
+        };
+
+        // Ambulance service data
+        const ambulanceData = {
+            "Delhi": [
+                {
+                    name: "Delhi Ambulance Service - Unit 1",
+                    type: "Government Emergency",
+                    distance: "0.8 km",
+                    eta: "4 mins",
+                    status: "available",
+                    phone: "108",
+                    equipment: ["Life Support", "Oxygen", "Defibrillator"]
+                },
+                {
+                    name: "Apollo Emergency Services",
+                    type: "Private",
+                    distance: "1.2 km",
+                    eta: "6 mins",
+                    status: "available",
+                    phone: "+91-11-71791108",
+                    equipment: ["ICU Equipment", "Ventilator", "Emergency Drugs"]
+                },
+                {
+                    name: "Red Cross Ambulance",
+                    type: "NGO",
+                    distance: "2.3 km",
+                    eta: "8 mins",
+                    status: "busy",
+                    phone: "+91-11-23711551",
+                    equipment: ["Basic Life Support", "First Aid"]
+                }
+            ],
+            "Mumbai": [
+                {
+                    name: "Mumbai Emergency Medical Services",
+                    type: "Government",
+                    distance: "1.1 km",
+                    eta: "5 mins",
+                    status: "available",
+                    phone: "108",
+                    equipment: ["Advanced Life Support", "Cardiac Monitor"]
+                },
+                {
+                    name: "Kokilaben Ambulance Service",
+                    type: "Private",
+                    distance: "1.8 km",
+                    eta: "7 mins",
+                    status: "available",
+                    phone: "+91-22-30999911",
+                    equipment: ["Mobile ICU", "Ventilator"]
+                }
+            ]
+        };
+
+        // Pharmacy data
+        const pharmacyData = {
+            "Delhi": [
+                {
+                    name: "Apollo Pharmacy",
+                    type: "Chain Pharmacy",
+                    distance: "0.3 km",
+                    timing: "24/7",
+                    status: "open",
+                    phone: "+91-11-39143914",
+                    services: ["Home Delivery", "Online Orders", "Health Checkup"]
+                },
+                {
+                    name: "MedPlus",
+                    type: "Chain Pharmacy",
+                    distance: "0.7 km",
+                    timing: "8 AM - 11 PM",
+                    status: "open",
+                    phone: "+91-11-40884088",
+                    services: ["Medicine Search", "Health Products"]
+                },
+                {
+                    name: "Local Medical Store",
+                    type: "Independent",
+                    distance: "0.5 km",
+                    timing: "9 AM - 10 PM",
+                    status: "open",
+                    phone: "+91-11-25551234",
+                    services: ["Prescription Drugs", "OTC Medicines"]
+                }
+            ]
+        };
+
+        let map, currentMarker, currentLat, currentLng, currentLocation;
+        let currentDisease = 'diabetes';
+        let hospitalMarkers = [];
+        let ambulanceMarkers = [];
+        let pharmacyMarkers = [];
+        let layersVisible = { hospitals: true, ambulances: true, pharmacies: true };
+
+        // Initialize map
+        function initializeMap() {
+            map = L.map('map').setView([20.5937, 78.9629], 5);
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '© OpenStreetMap contributors © CARTO',
+                subdomains: 'abcd',
+                maxZoom: 18
+            }).addTo(map);
+
+            // Add India boundaries (simplified for demo)
+            addIndiaBoundaries();
+        }
+
+        function addIndiaBoundaries() {
+            // Major Indian cities for demonstration
+            const majorCities = [
+                { name: "Delhi", lat: 28.6139, lng: 77.2090, population: "32M" },
+                { name: "Mumbai", lat: 19.0760, lng: 72.8777, population: "25M" },
+                { name: "Bangalore", lat: 12.9716, lng: 77.5946, population: "13M" },
+                { name: "Chennai", lat: 13.0827, lng: 80.2707, population: "11M" },
+                { name: "Kolkata", lat: 22.5726, lng: 88.3639, population: "15M" },
+                { name: "Hyderabad", lat: 17.3850, lng: 78.4867, population: "10M" },
+                { name: "Pune", lat: 18.5204, lng: 73.8567, population: "8M" },
+                { name: "Ahmedabad", lat: 23.0225, lng: 72.5714, population: "8M" }
+            ];
+
+            majorCities.forEach(city => {
+                const diseaseValue = diseaseData[currentDisease][city.name] || 10;
+                const color = getColorByValue(diseaseValue);
+                
+                L.circle([city.lat, city.lng], {
+                    color: color,
+                    fillColor: color,
+                    fillOpacity: 0.6,
+                    radius: 50000 // Radius in meters
+                }).addTo(map).bindPopup(`
+                    <div class="popup-content">
+                        <div class="popup-title">${city.name}</div>
+                        <div class="popup-info">
+                            Population: <strong>${city.population}</strong><br>
+                            ${currentDisease.charAt(0).toUpperCase() + currentDisease.slice(1)} Prevalence: <strong>${diseaseValue}%</strong><br>
+                            Risk Level: <strong>${getRiskLevel(diseaseValue)}</strong>
+                        </div>
+                    </div>
+                `);
+            });
+        }
+
+        function getColorByValue(value) {
+            if (value > 25) return '#dc2626';
+            if (value > 20) return '#ef4444';
+            if (value > 15) return '#f59e0b';
+            if (value > 10) return '#fbbf24';
+            if (value > 5) return '#10b981';
+            return '#059669';
+        }
+
+        // Search location function
+        async function searchLocation(query) {
+            showLoading();
+            
+            try {
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Enhanced city database
+                const cityDatabase = {
+                    'delhi': { lat: 28.6139, lng: 77.2090, name: 'Delhi' },
+                    'new delhi': { lat: 28.6139, lng: 77.2090, name: 'Delhi' },
+                    'mumbai': { lat: 19.0760, lng: 72.8777, name: 'Mumbai' },
+                    'bombay': { lat: 19.0760, lng: 72.8777, name: 'Mumbai' },
+                    'bangalore': { lat: 12.9716, lng: 77.5946, name: 'Bangalore' },
+                    'bengaluru': { lat: 12.9716, lng: 77.5946, name: 'Bangalore' },
+                    'chennai': { lat: 13.0827, lng: 80.2707, name: 'Chennai' },
+                    'madras': { lat: 13.0827, lng: 80.2707, name: 'Chennai' },
+                    'kolkata': { lat: 22.5726, lng: 88.3639, name: 'Kolkata' },
+                    'calcutta': { lat: 22.5726, lng: 88.3639, name: 'Kolkata' },
+                    'hyderabad': { lat: 17.3850, lng: 78.4867, name: 'Hyderabad' },
+                    'pune': { lat: 18.5204, lng: 73.8567, name: 'Pune' },
+                    'ahmedabad': { lat: 23.0225, lng: 72.5714, name: 'Ahmedabad' },
+                    'jaipur': { lat: 26.9124, lng: 75.7873, name: 'Jaipur' },
+                    'lucknow': { lat: 26.8467, lng: 80.9462, name: 'Lucknow' },
+                    'kanpur': { lat: 26.4499, lng: 80.3319, name: 'Kanpur' },
+                    'nagpur': { lat: 21.1458, lng: 79.0882, name: 'Nagpur' },
+                    'indore': { lat: 22.7196, lng: 75.8577, name: 'Indore' },
+                    'thane': { lat: 19.2183, lng: 72.9781, name: 'Thane' },
+                    'bhopal': { lat: 23.2599, lng: 77.4126, name: 'Bhopal' },
+                    'visakhapatnam': { lat: 17.6868, lng: 83.2185, name: 'Visakhapatnam' },
+                    'pimpri': { lat: 18.6298, lng: 73.7997, name: 'Pimpri' },
+                    'patna': { lat: 25.5941, lng: 85.1376, name: 'Patna' },
+                    'vadodara': { lat: 22.3072, lng: 73.1812, name: 'Vadodara' },
+                    'ghaziabad': { lat: 28.6692, lng: 77.4538, name: 'Ghaziabad' },
+                    'ludhiana': { lat: 30.9010, lng: 75.8573, name: 'Ludhiana' },
+                    'agra': { lat: 27.1767, lng: 78.0081, name: 'Agra' },
+                    'nashik': { lat: 19.9975, lng: 73.7898, name: 'Nashik' },
+                    'faridabad': { lat: 28.4089, lng: 77.3178, name: 'Faridabad' },
+                    'meerut': { lat: 28.9845, lng: 77.7064, name: 'Meerut' },
+                    'rajkot': { lat: 22.3039, lng: 70.8022, name: 'Rajkot' },
+                    'kalyan': { lat: 19.2437, lng: 73.1355, name: 'Kalyan' },
+                    'vasai': { lat: 19.4911, lng: 72.8054, name: 'Vasai' },
+                    'varanasi': { lat: 25.3176, lng: 82.9739, name: 'Varanasi' },
+                    'srinagar': { lat: 34.0837, lng: 74.7973, name: 'Srinagar' },
+                    'aurangabad': { lat: 19.8762, lng: 75.3433, name: 'Aurangabad' },
+                    'dhanbad': { lat: 23.7957, lng: 86.4304, name: 'Dhanbad' },
+                    'amritsar': { lat: 31.6340, lng: 74.8723, name: 'Amritsar' },
+                    'navi mumbai': { lat: 19.0330, lng: 73.0297, name: 'Navi Mumbai' },
+                    'allahabad': { lat: 25.4358, lng: 81.8463, name: 'Allahabad' },
+                    'prayagraj': { lat: 25.4358, lng: 81.8463, name: 'Allahabad' },
+                    'ranchi': { lat: 23.3441, lng: 85.3096, name: 'Ranchi' },
+                    'howrah': { lat: 22.5958, lng: 88.2636, name: 'Howrah' },
+                    'coimbatore': { lat: 11.0168, lng: 76.9558, name: 'Coimbatore' },
+                    'jabalpur': { lat: 23.1815, lng: 79.9864, name: 'Jabalpur' },
+                    'gwalior': { lat: 26.2183, lng: 78.1828, name: 'Gwalior' },
+                    'vijayawada': { lat: 16.5062, lng: 80.6480, name: 'Vijayawada' },
+                    'jodhpur': { lat: 26.2389, lng: 73.0243, name: 'Jodhpur' },
+                    'madurai': { lat: 9.9252, lng: 78.1198, name: 'Madurai' },
+                    'raipur': { lat: 21.2514, lng: 81.6296, name: 'Raipur' },
+                    'kota': { lat: 25.2138, lng: 75.8648, name: 'Kota' }
+                };
+
+                const normalizedQuery = query.toLowerCase().trim();
+                const coords = cityDatabase[normalizedQuery];
+
+                if (coords) {
+                    updateLocation(coords.lat, coords.lng, coords.name);
+                } else {
+                    // Default to Delhi if location not found
+                    updateLocation(28.6139, 77.2090, query);
+                    alert(`Location "${query}" not found in database. Showing Delhi as default. You can add more cities to the database.`);
+                }
+                
+            } catch (error) {
+                console.error('Error searching location:', error);
+                alert('Error searching location. Please try again.');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Get current location using browser geolocation
+        function getCurrentLocation() {
+            if (navigator.geolocation) {
+                showLoading();
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        updateLocation(lat, lng, 'Current Location');
+                        hideLoading();
+                    },
+                    (error) => {
+                        console.error('Error getting location:', error);
+                        alert('Unable to get your current location. Please search manually.');
+                        hideLoading();
+                    }
+                );
+            } else {
+                alert('Geolocation is not supported by this browser.');
+            }
+        }
+
+        // Update current location
+        function updateLocation(lat, lng, name) {
+            currentLat = lat;
+            currentLng = lng;
+            currentLocation = name;
+
+            // Update map view
+            map.setView([lat, lng], 13);
+
+            // Remove existing marker
+            if (currentMarker) {
+                map.removeLayer(currentMarker);
+            }
+
+            // Add new current location marker
+            currentMarker = L.marker([lat, lng], {
+                icon: L.divIcon({
+                    className: 'current-location-marker',
+                    html: '<i class="fas fa-user"></i>',
+                    iconSize: [25, 25],
+                    iconAnchor: [12.5, 25]
+                })
+            }).addTo(map);
+
+            currentMarker.bindPopup(`
+                <div class="popup-content">
+                    <div class="popup-title">${name}</div>
+                    <div class="popup-info">
+                        <strong>Your Current Location</strong><br>
+                        Lat: ${lat.toFixed(6)}<br>
+                        Lng: ${lng.toFixed(6)}
+                    </div>
+                </div>
+            `);
+
+            // Update all panels
+            updateLocationPanel(name, lat, lng);
+            updateDiseaseStats();
+            updateFacilitiesLists();
+            addFacilityMarkers();
+        }
+
+        // Update location panel
+        function updateLocationPanel(name, lat, lng) {
+            document.getElementById('locationName').textContent = name;
+            document.getElementById('locationCoords').textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+        }
+
+        // Update disease statistics
+        function updateDiseaseStats() {
+            const statsContainer = document.getElementById('diseaseStats');
+            
+            // Get disease data for current location or use estimates
+            const diseases = [
+                { name: 'Diabetes', value: getLocationDiseaseValue('diabetes'), type: 'diabetes' },
+                { name: 'Hypertension', value: getLocationDiseaseValue('hypertension'), type: 'hypertension' },
+                { name: 'Obesity', value: getLocationDiseaseValue('obesity'), type: 'obesity' },
+                { name: 'Anemia', value: Math.random() * 25 + 5, type: 'anemia' },
+                { name: 'Malnutrition', value: Math.random() * 15 + 3, type: 'malnutrition' },
+                { name: 'COVID-19', value: Math.random() * 5 + 1, type: 'covid' }
+            ];
+
+            statsContainer.innerHTML = diseases.map(disease => `
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-name">${disease.name}</span>
+                        <span class="stat-value">${disease.value.toFixed(1)}%</span>
+                    </div>
+                    <div class="stat-risk ${getRiskClass(disease.value)}">${getRiskLevel(disease.value)}</div>
+                </div>
+            `).join('');
+        }
+
+        function getLocationDiseaseValue(disease) {
+            if (diseaseData[disease] && diseaseData[disease][currentLocation]) {
+                return diseaseData[disease][currentLocation];
+            }
+            
+            // Return estimated value based on city type
+            const cityEstimates = {
+                diabetes: { metro: 12, urban: 9, rural: 6 },
+                hypertension: { metro: 27, urban: 22, rural: 18 },
+                obesity: { metro: 20, urban: 15, rural: 8 }
+            };
+            
+            const cityType = isMetroCity(currentLocation) ? 'metro' : 'urban';
+            return cityEstimates[disease][cityType] + (Math.random() - 0.5) * 4;
+        }
+
+        function isMetroCity(city) {
+            const metroCities = ['Delhi', 'Mumbai', 'Bangalore', 'Chennai', 'Kolkata', 'Hyderabad'];
+            return metroCities.includes(city);
+        }
+
+        // Update facilities lists
+        function updateFacilitiesLists() {
+            updateHospitalsList();
+            updateAmbulancesList();
+            updatePharmaciesList();
+        }
+
+        function updateHospitalsList() {
+            const hospitalsContainer = document.getElementById('hospitalsList');
+            const hospitals = hospitalData[currentLocation] || generateDefaultHospitals();
+            
+            hospitalsContainer.innerHTML = hospitals.map(hospital => `
+                <div class="facility-card" onclick="focusOnFacility(${hospital.lat || currentLat}, ${hospital.lng || currentLng}, 'hospital')">
+                    <div class="facility-name">${hospital.name}</div>
+                    <div class="facility-info">
+                        <span class="facility-type">${hospital.type}</span>
+                        <span class="facility-distance">${hospital.distance}</span>
+                        <span class="facility-rating">${hospital.rating}</span>
+                        <div class="facility-status ${hospital.status === 'available' ? 'status-available' : hospital.status === 'busy' ? 'status-busy' : 'status-emergency'}">${hospital.status.toUpperCase()}</div>
+                        <div style="margin-top: 0.5rem; font-size: 0.8rem; color: #94a3b8;">
+                            Specialties: ${hospital.specialties.join(', ')}
+                        </div>
+                        <div style="margin-top: 0.3rem; font-size: 0.8rem; color: #10b981;">
+                            📞 ${hospital.phone}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateAmbulancesList() {
+            const ambulancesContainer = document.getElementById('ambulancesList');
+            const ambulances = ambulanceData[currentLocation] || generateDefaultAmbulances();
+            
+            ambulancesContainer.innerHTML = ambulances.map(ambulance => `
+                <div class="facility-card" onclick="focusOnFacility(${ambulance.lat || currentLat}, ${ambulance.lng || currentLng}, 'ambulance')">
+                    <div class="facility-name">${ambulance.name}</div>
+                    <div class="facility-info">
+                        <span class="facility-type">${ambulance.type}</span>
+                        <span class="facility-distance">${ambulance.distance} • ETA: ${ambulance.eta}</span>
+                        <div class="facility-status ${ambulance.status === 'available' ? 'status-available' : 'status-busy'}">${ambulance.status.toUpperCase()}</div>
+                        <div style="margin-top: 0.5rem; font-size: 0.8rem; color: #94a3b8;">
+                            Equipment: ${ambulance.equipment.join(', ')}
+                        </div>
+                        <div style="margin-top: 0.3rem; font-size: 0.8rem; color: #10b981;">
+                            📞 ${ambulance.phone}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updatePharmaciesList() {
+            const pharmaciesContainer = document.getElementById('pharmaciesList');
+            const pharmacies = pharmacyData[currentLocation] || generateDefaultPharmacies();
+            
+            pharmaciesContainer.innerHTML = pharmacies.map(pharmacy => `
+                <div class="facility-card" onclick="focusOnFacility(${pharmacy.lat || currentLat}, ${pharmacy.lng || currentLng}, 'pharmacy')">
+                    <div class="facility-name">${pharmacy.name}</div>
+                    <div class="facility-info">
+                        <span class="facility-type">${pharmacy.type}</span>
+                        <span class="facility-distance">${pharmacy.distance}</span>
+                        <span class="facility-rating">⏰ ${pharmacy.timing}</span>
+                        <div class="facility-status ${pharmacy.status === 'open' ? 'status-available' : 'status-busy'}">${pharmacy.status.toUpperCase()}</div>
+                        <div style="margin-top: 0.5rem; font-size: 0.8rem; color: #94a3b8;">
+                            Services: ${pharmacy.services.join(', ')}
+                        </div>
+                        <div style="margin-top: 0.3rem; font-size: 0.8rem; color: #10b981;">
+                            📞 ${pharmacy.phone}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Generate default facilities for cities not in database
+        function generateDefaultHospitals() {
+            return [
+                {
+                    name: `${currentLocation} Government Hospital`,
+                    type: "Government",
+                    distance: `${(Math.random() * 3 + 0.5).toFixed(1)} km`,
+                    rating: "4.2 ★",
+                    specialties: ["Emergency", "General Medicine", "Surgery"],
+                    status: "available",
+                    phone: "108"
+                },
+                {
+                    name: `${currentLocation} Private Medical Center`,
+                    type: "Private",
+                    distance: `${(Math.random() * 4 + 1).toFixed(1)} km`,
+                    rating: "4.0 ★",
+                    specialties: ["Cardiology", "Orthopedics", "ICU"],
+                    status: Math.random() > 0.3 ? "available" : "busy",
+                    phone: "+91-XXX-XXXXXXX"
+                }
+            ];
+        }
+
+        function generateDefaultAmbulances() {
+            return [
+                {
+                    name: "Emergency Ambulance Service",
+                    type: "Government",
+                    distance: `${(Math.random() * 2 + 0.3).toFixed(1)} km`,
+                    eta: `${Math.floor(Math.random() * 8 + 3)} mins`,
+                    status: "available",
+                    phone: "108",
+                    equipment: ["Life Support", "Emergency Drugs"]
+                }
+            ];
+        }
+
+        function generateDefaultPharmacies() {
+            return [
+                {
+                    name: "Local Medical Store",
+                    type: "Independent",
+                    distance: `${(Math.random() * 1 + 0.2).toFixed(1)} km`,
+                    timing: "9 AM - 10 PM",
+                    status: "open",
+                    phone: "+91-XXX-XXXXXXX",
+                    services: ["Prescription Drugs", "OTC Medicines"]
+                }
+            ];
+        }
+
+        // Add facility markers to map
+        function addFacilityMarkers() {
+            clearAllMarkers();
+            
+            if (layersVisible.hospitals) addHospitalMarkers();
+            if (layersVisible.ambulances) addAmbulanceMarkers();
+            if (layersVisible.pharmacies) addPharmacyMarkers();
+        }
+
+        function clearAllMarkers() {
+            hospitalMarkers.forEach(marker => map.removeLayer(marker));
+            ambulanceMarkers.forEach(marker => map.removeLayer(marker));
+            pharmacyMarkers.forEach(marker => map.removeLayer(marker));
+            hospitalMarkers = [];
+            ambulanceMarkers = [];
+            pharmacyMarkers = [];
+        }
+
+        function addHospitalMarkers() {
+            const hospitals = hospitalData[currentLocation] || generateDefaultHospitals();
+            
+            hospitals.forEach((hospital, index) => {
+                // Generate random nearby coordinates
+                const lat = currentLat + (Math.random() - 0.5) * 0.02;
+                const lng = currentLng + (Math.random() - 0.5) * 0.02;
+                
+                const marker = L.marker([lat, lng], {
+                    icon: L.divIcon({
+                        className: 'hospital-marker',
+                        html: '<i class="fas fa-hospital"></i>',
+                        iconSize: [20, 20],
+                        iconAnchor: [10, 20]
+                    })
+                }).addTo(map);
+
+                marker.bindPopup(`
+                    <div class="popup-content">
+                        <div class="popup-title">${hospital.name}</div>
+                        <div class="popup-info">
+                            Type: <strong>${hospital.type}</strong><br>
+                            Distance: <strong>${hospital.distance}</strong><br>
+                            Rating: <strong>${hospital.rating}</strong><br>
+                            Status: <strong class="${hospital.status === 'available' ? 'status-available' : 'status-busy'}">${hospital.status.toUpperCase()}</strong><br>
+                            Phone: <strong>${hospital.phone}</strong>
+                        </div>
+                    </div>
+                `);
+
+                hospitalMarkers.push(marker);
+            });
+        }
+
+        function addAmbulanceMarkers() {
+            const ambulances = ambulanceData[currentLocation] || generateDefaultAmbulances();
+            
+            ambulances.forEach((ambulance, index) => {
+                // Generate random nearby coordinates
+                const lat = currentLat + (Math.random() - 0.5) * 0.015;
+                const lng = currentLng + (Math.random() - 0.5) * 0.015;
+                
+                const marker = L.marker([lat, lng], {
+                    icon: L.divIcon({
+                        className: 'ambulance-marker',
+                        html: '<i class="fas fa-ambulance"></i>',
+                        iconSize: [20, 20],
+                        iconAnchor: [10, 20]
+                    })
+                }).addTo(map);
+
+                marker.bindPopup(`
+                    <div class="popup-content">
+                        <div class="popup-title">${ambulance.name}</div>
+                        <div class="popup-info">
+                            Type: <strong>${ambulance.type}</strong><br>
+                            Distance: <strong>${ambulance.distance}</strong><br>
+                            ETA: <strong>${ambulance.eta}</strong><br>
+                            Status: <strong class="${ambulance.status === 'available' ? 'status-available' : 'status-busy'}">${ambulance.status.toUpperCase()}</strong><br>
+                            Phone: <strong>${ambulance.phone}</strong>
+                        </div>
+                    </div>
+                `);
+
+                ambulanceMarkers.push(marker);
+            });
+        }
+
+        function addPharmacyMarkers() {
+            const pharmacies = pharmacyData[currentLocation] || generateDefaultPharmacies();
+            
+            pharmacies.forEach((pharmacy, index) => {
+                // Generate random nearby coordinates
+                const lat = currentLat + (Math.random() - 0.5) * 0.01;
+                const lng = currentLng + (Math.random() - 0.5) * 0.01;
+                
+                const marker = L.marker([lat, lng], {
+                    icon: L.divIcon({
+                        className: 'hospital-marker',
+                        html: '<i class="fas fa-pills"></i>',
+                        iconSize: [20, 20],
+                        iconAnchor: [10, 20],
+                        style: 'background: #8b5cf6;'
+                    })
+                }).addTo(map);
+
+                marker.bindPopup(`
+                    <div class="popup-content">
+                        <div class="popup-title">${pharmacy.name}</div>
+                        <div class="popup-info">
+                            Type: <strong>${pharmacy.type}</strong><br>
+                            Distance: <strong>${pharmacy.distance}</strong><br>
+                            Timing: <strong>${pharmacy.timing}</strong><br>
+                            Status: <strong class="${pharmacy.status === 'open' ? 'status-available' : 'status-busy'}">${pharmacy.status.toUpperCase()}</strong><br>
+                            Phone: <strong>${pharmacy.phone}</strong>
+                        </div>
+                    </div>
+                `);
+
+                pharmacyMarkers.push(marker);
+            });
+        }
+
+        // Focus on specific facility
+        function focusOnFacility(lat, lng, type) {
+            map.setView([lat, lng], 16);
+        }
+
+        // Utility functions
+        function getRiskLevel(value) {
+            if (value > 25) return 'Critical Risk';
+            if (value > 20) return 'Very High Risk';
+            if (value > 15) return 'High Risk';
+            if (value > 10) return 'Moderate Risk';
+            if (value > 5) return 'Low Risk';
+            return 'Very Low Risk';
+        }
+
+        function getRiskClass(value) {
+            if (value > 25) return 'risk-critical';
+            if (value > 15) return 'risk-high';
+            if (value > 10) return 'risk-moderate';
+            return 'risk-low';
+        }
+
+        function showLoading() {
+            document.getElementById('diseaseStats').innerHTML = '<div class="loading-spinner"></div>';
+            document.getElementById('hospitalsList').innerHTML = '<div class="loading-spinner"></div>';
+            document.getElementById('ambulancesList').innerHTML = '<div class="loading-spinner"></div>';
+            document.getElementById('pharmaciesList').innerHTML = '<div class="loading-spinner"></div>';
+        }
+
+        function hideLoading() {
+            // Loading will be hidden when content is updated
+        }
+
+        // Tab functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetTab = tab.dataset.tab;
+                
+                // Update active tab
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Update active content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(`${targetTab}-content`).classList.add('active');
+            });
+        });
+
+        // Event listeners
+        document.getElementById('searchBtn').addEventListener('click', () => {
+            const query = document.getElementById('locationInput').value.trim();
+            if (query) {
+                searchLocation(query);
+            }
+        });
+
+        document.getElementById('locationInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const query = e.target.value.trim();
+                if (query) {
+                    searchLocation(query);
+                }
+            }
+        });
+
+        document.getElementById('getCurrentLocationBtn').addEventListener('click', getCurrentLocation);
+
+        document.getElementById('diseaseSelect').addEventListener('change', (e) => {
+            currentDisease = e.target.value;
+            if (currentLocation) {
+                updateDiseaseStats();
+                // Update city circles on map
+                map.eachLayer(layer => {
+                    if (layer instanceof L.Circle) {
+                        map.removeLayer(layer);
+                    }
+                });
+                addIndiaBoundaries();
+            }
+        });
+
+        // Emergency button
+        document.getElementById('emergencyBtn').addEventListener('click', () => {
+            document.getElementById('emergencyModal').style.display = 'flex';
+        });
+
+        document.getElementById('closeModalBtn').addEventListener('click', () => {
+            document.getElementById('emergencyModal').style.display = 'none';
+        });
+
+        document.getElementById('callEmergencyBtn').addEventListener('click', () => {
+            window.open('tel:108', '_self');
+        });
+
+        // Layer toggle
+        document.getElementById('layerToggle').addEventListener('click', () => {
+            const isVisible = layersVisible.hospitals || layersVisible.ambulances || layersVisible.pharmacies;
+            layersVisible.hospitals = !isVisible;
+            layersVisible.ambulances = !isVisible;
+            layersVisible.pharmacies = !isVisible;
+            
+            if (currentLocation) {
+                addFacilityMarkers();
+            }
+        });
+
+        // Fullscreen
+        document.getElementById('fullscreenBtn').addEventListener('click', () => {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                document.documentElement.requestFullscreen();
+            }
+        });
+
+        // Share location
+        document.getElementById('shareBtn').addEventListener('click', () => {
+            if (navigator.share && currentLocation) {
+                navigator.share({
+                    title: 'MEDI-KIT Location',
+                    text: `Check out healthcare facilities near ${currentLocation}`,
+                    url: window.location.href
+                });
+            } else if (currentLocation) {
+                navigator.clipboard.writeText(`${currentLocation}: ${currentLat}, ${currentLng}`);
+                alert('Location coordinates copied to clipboard!');
+            }
+        });
+
+        // Initialize the application
+        initializeMap();
+        
+        // Set default location to Delhi after 1 second
+        setTimeout(() => {
+            updateLocation(28.6139, 77.2090, 'Delhi');
+        }, 1000);
+    </script>
+</body>
+</html>

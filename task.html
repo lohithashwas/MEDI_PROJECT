@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a202c">
+    <title>Tasks - MEDI-KIT</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #1a202c;
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .header h1 {
+            font-size: 3.2rem;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #48cc6c, #4fd1c7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            color: #a0aec0;
+            font-size: 1.2rem;
+            font-weight: 300;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin: 50px 0;
+            animation: slideInUp 1s ease-out;
+        }
+
+        .stat-card {
+            background: rgba(45, 55, 72, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(72, 204, 108, 0.2);
+            border-radius: 24px;
+            padding: 32px;
+            text-align: center;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #48cc6c, #4fd1c7);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            border-color: #48cc6c;
+            box-shadow: 0 20px 40px rgba(72, 204, 108, 0.15);
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-number {
+            font-size: 2.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #48cc6c, #4fd1c7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: #cbd5e1;
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+
+        .task-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 28px;
+            margin: 50px 0;
+        }
+
+        .task-card {
+            background: rgba(45, 55, 72, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(74, 85, 104, 0.4);
+            border-radius: 28px;
+            padding: 36px;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .task-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, #48cc6c, #4fd1c7, #48cc6c);
+            border-radius: 30px;
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.3s ease;
+        }
+
+        .task-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            border-color: transparent;
+        }
+
+        .task-card:hover::before {
+            opacity: 1;
+        }
+
+        .task-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .task-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-right: 20px;
+            background: #48cc6c;
+            color: #1a202c;
+            box-shadow: 0 8px 32px rgba(72, 204, 108, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .task-card:hover .task-icon {
+            transform: rotate(10deg) scale(1.1);
+            box-shadow: 0 12px 48px rgba(72, 204, 108, 0.5);
+            background: #4fd1c7;
+        }
+
+        .task-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #f7fafc;
+            margin-bottom: 4px;
+        }
+
+        .task-description {
+            color: #a0aec0;
+            margin-bottom: 24px;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(74, 85, 104, 0.4);
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #48cc6c, #4fd1c7);
+            border-radius: 6px;
+            transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        .points-badge {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            background: #48cc6c;
+            color: #1a202c;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 16px rgba(72, 204, 108, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .task-card:hover .points-badge {
+            transform: scale(1.1);
+            box-shadow: 0 6px 24px rgba(72, 204, 108, 0.5);
+            background: #4fd1c7;
+        }
+
+        .level-section {
+            background: rgba(45, 55, 72, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(72, 204, 108, 0.2);
+            border-radius: 32px;
+            padding: 48px;
+            margin: 60px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .level-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #48cc6c, #4fd1c7, #48cc6c);
+            animation: levelGlow 3s infinite;
+        }
+
+        .level-section h2 {
+            color: #f7fafc;
+            margin-bottom: 32px;
+            font-size: 2.2rem;
+            font-weight: 600;
+        }
+
+        .level-badges {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 32px;
+        }
+
+        .level-badge {
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: all 0.4s ease;
+            border: 2px solid transparent;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .level-badge.beginner {
+            background: #48cc6c;
+            color: #1a202c;
+            box-shadow: 0 8px 32px rgba(72, 204, 108, 0.2);
+        }
+
+        .level-badge.bronze {
+            background: linear-gradient(135deg, #ed8936, #dd6b20);
+            color: #f7fafc;
+            box-shadow: 0 8px 32px rgba(237, 137, 54, 0.2);
+        }
+
+        .level-badge.silver {
+            background: linear-gradient(135deg, #718096, #4a5568);
+            color: #f7fafc;
+            box-shadow: 0 8px 32px rgba(113, 128, 150, 0.2);
+        }
+
+        .level-badge.gold {
+            background: linear-gradient(135deg, #ecc94b, #d69e2e);
+            color: #1a202c;
+            box-shadow: 0 8px 32px rgba(236, 201, 75, 0.2);
+        }
+
+        .level-badge:hover {
+            transform: translateY(-4px) scale(1.05);
+            animation: pulse 1s infinite;
+        }
+
+        .achievement-section {
+            margin-top: 60px;
+        }
+
+        .achievement-section h2 {
+            text-align: center;
+            color: #f7fafc;
+            margin-bottom: 40px;
+            font-size: 2.2rem;
+            font-weight: 600;
+        }
+
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
+        }
+
+        .achievement-card {
+            background: rgba(45, 55, 72, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(74, 85, 104, 0.4);
+            border-radius: 20px;
+            padding: 28px;
+            text-align: center;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .achievement-card:hover {
+            transform: translateY(-8px) rotateY(8deg);
+            border-color: #48cc6c;
+            box-shadow: 0 16px 32px rgba(72, 204, 108, 0.15);
+        }
+
+        .achievement-icon {
+            font-size: 3.2rem;
+            margin-bottom: 16px;
+            display: block;
+            filter: drop-shadow(0 4px 8px rgba(72, 204, 108, 0.2));
+        }
+
+        .achievement-card h3 {
+            color: #f7fafc;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .achievement-card p {
+            color: #a0aec0;
+            font-size: 0.95rem;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(200%); }
+        }
+
+        @keyframes levelGlow {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 8px 32px rgba(72, 204, 108, 0.2); }
+            50% { box-shadow: 0 12px 48px rgba(72, 204, 108, 0.4); }
+        }
+
+        .task-card:nth-child(odd) {
+            animation: slideInLeft 0.8s ease-out;
+        }
+
+        .task-card:nth-child(even) {
+            animation: slideInRight 0.8s ease-out;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-60px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(60px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.4rem;
+            }
+            
+            .task-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .level-badges {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 MEDI-KIT Tasks</h1>
+            <p>Complete diagnostic challenges and advance through healthcare levels</p>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-number">1,247</div>
+                <div class="stat-label">Total Points</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">Level 7</div>
+                <div class="stat-label">Current Rank</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">23/30</div>
+                <div class="stat-label">Tasks Complete</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">85%</div>
+                <div class="stat-label">Health Score</div>
+            </div>
+        </div>
+
+        <div class="task-grid">
+            <div class="task-card">
+                <div class="points-badge">+10 pts</div>
+                <div class="task-header">
+                    <div class="task-icon">🫀</div>
+                    <div>
+                        <div class="task-title">Daily Vitals Check</div>
+                    </div>
+                </div>
+                <div class="task-description">Monitor BP, Heart Rate, and SpO₂ daily using your portable MEDI-KIT diagnostic sensors</div>
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Weekly Progress</span>
+                        <span>6/7 days</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 85%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="task-card">
+                <div class="points-badge">+25 pts</div>
+                <div class="task-header">
+                    <div class="task-icon">🩸</div>
+                    <div>
+                        <div class="task-title">Glucose Monitoring</div>
+                    </div>
+                </div>
+                <div class="task-description">Weekly blood sugar level tracking with advanced glucose sensor analysis and trends</div>
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Monthly Progress</span>
+                        <span>3/4 weeks</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 75%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="task-card">
+                <div class="points-badge">+35 pts</div>
+                <div class="task-header">
+                    <div class="task-icon">⚡</div>
+                    <div>
+                        <div class="task-title">ECG Analysis</div>
+                    </div>
+                </div>
+                <div class="task-description">Comprehensive heart rhythm monitoring with AI-powered diagnostic recommendations</div>
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Bi-weekly Sessions</span>
+                        <span>2/3 complete</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 67%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="task-card">
+                <div class="points-badge">+50 pts</div>
+                <div class="task-header">
+                    <div class="task-icon">🎯</div>
+                    <div>
+                        <div class="task-title">Health Challenge</div>
+                    </div>
+                </div>
+                <div class="task-description">Monthly wellness goals with personalized targets and achievement milestones</div>
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Challenge Progress</span>
+                        <span>18/30 days</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 60%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="task-card">
+                <div class="points-badge">+100 pts</div>
+                <div class="task-header">
+                    <div class="task-icon">🚑</div>
+                    <div>
+                        <div class="task-title">Rural Health Mission</div>
+                    </div>
+                </div>
+                <div class="task-description">Community healthcare outreach using portable diagnostic kit in remote areas</div>
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Community Impact</span>
+                        <span>4/10 people</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 40%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="task-card">
+                <div class="points-badge">+30 pts</div>
+                <div class="task-header">
+                    <div class="task-icon">☁️</div>
+                    <div>
+                        <div class="task-title">Data Sync & Share</div>
+                    </div>
+                </div>
+                <div class="task-description">Regular health data backup and secure sharing with healthcare providers</div>
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Sync Status</span>
+                        <span>9/10 complete</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 90%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="level-section">
+            <h2>🏆 Healthcare Levels</h2>
+            <p style="color: #a0aec0; font-size: 1.1rem; margin-bottom: 20px;">Advance through levels based on your diagnostic achievements and community impact</p>
+            <div class="level-badges">
+                <div class="level-badge beginner">🌱 Beginner (0-99)</div>
+                <div class="level-badge bronze">🥉 Bronze (100-249)</div>
+                <div class="level-badge silver">🥈 Silver (250-499)</div>
+                <div class="level-badge gold">🥇 Gold (500+)</div>
+            </div>
+        </div>
+
+        <div class="achievement-section">
+            <h2>🎖️ Elite Achievements</h2>
+            <div class="achievement-grid">
+                <div class="achievement-card">
+                    <span class="achievement-icon">🔥</span>
+                    <h3>Consistency Master</h3>
+                    <p>30-day diagnostic streak</p>
+                </div>
+                <div class="achievement-card">
+                    <span class="achievement-icon">❤️</span>
+                    <h3>Heart Guardian</h3>
+                    <p>100 ECG readings complete</p>
+                </div>
+                <div class="achievement-card">
+                    <span class="achievement-icon">🌟</span>
+                    <h3>Rural Health Hero</h3>
+                    <p>50+ community diagnoses</p>
+                </div>
+                <div class="achievement-card">
+                    <span class="achievement-icon">🚀</span>
+                    <h3>Tech Pioneer</h3>
+                    <p>All MEDI-KIT features unlocked</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced animations and interactions
+        document.querySelectorAll('.task-card').forEach((card, index) => {
+            // Stagger animation delays
+            card.style.animationDelay = `${index * 0.1}s`;
+            
+            card.addEventListener('mouseenter', () => {
+                card.style.borderColor = 'rgba(72, 204, 108, 0.5)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.borderColor = 'rgba(74, 85, 104, 0.4)';
+            });
+
+            // Progress bar animation on scroll
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const progressFill = entry.target.querySelector('.progress-fill');
+                        if (progressFill) {
+                            const width = progressFill.style.width;
+                            progressFill.style.width = '0%';
+                            setTimeout(() => {
+                                progressFill.style.width = width;
+                            }, 200);
+                        }
+                    }
+                });
+            }, { threshold: 0.5 });
+            
+            observer.observe(card);
+        });
+
+        // Achievement card interactions
+        document.querySelectorAll('.achievement-card').forEach(card => {
+            card.addEventListener('click', () => {
+                card.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    card.style.transform = 'translateY(-8px) rotateY(8deg)';
+                }, 150);
+            });
+        });
+
+        // Level badge hover effects
+        document.querySelectorAll('.level-badge').forEach(badge => {
+            badge.addEventListener('mouseenter', () => {
+                badge.style.animation = 'pulse 0.6s ease infinite';
+            });
+            
+            badge.addEventListener('mouseleave', () => {
+                badge.style.animation = 'none';
+            });
+        });
+
+        // Smooth scroll for better UX
+        document.documentElement.style.scrollBehavior = 'smooth';
+    </script>
+</body>
+</html>

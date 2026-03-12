@@ -1,0 +1,2755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEDI-CARE - Doctor Portal</title>
+    
+    <!-- External Dependencies -->
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0b1e 0%, #1a1d3a 25%, #2d3748 50%, #4a5568 75%, #718096 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 11, 30, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(34, 197, 94, 0.2);
+            z-index: 1000;
+            padding: 15px 0;
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #22c55e, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #e2e8f0;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: #22c55e;
+            background: rgba(34, 197, 94, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: #22c55e;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after, .nav-links a.active::after {
+            width: 80%;
+        }
+
+        /* Main Content Container */
+        .main-content {
+            margin-top: 80px;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Page Section */
+        .page-section {
+            display: none;
+            padding: 50px 20px;
+            min-height: calc(100vh - 130px);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .page-section.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 2.8rem;
+            font-weight: 900;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #ffffff, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(34, 197, 94, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(34, 197, 94, 0.5);
+            box-shadow: 0 20px 40px rgba(34, 197, 94, 0.1);
+        }
+
+        /* Dashboard Section */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .dashboard-card {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(34, 197, 94, 0.5);
+            box-shadow: 0 20px 40px rgba(34, 197, 94, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .card-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #22c55e;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+
+        .card-content {
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        /* Buttons */
+        .btn-primary, .btn-secondary, .btn-success, .btn-warning, .btn-danger {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            margin: 5px;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #22c55e;
+            border: 2px solid #22c55e;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .btn-primary:hover, .btn-success:hover, .btn-warning:hover, .btn-danger:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(34, 197, 94, 0.4);
+        }
+
+        .btn-secondary:hover {
+            background: #22c55e;
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* Patient Management */
+        .patients-section {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .search-bar {
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            padding: 12px 20px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            width: 300px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+        }
+
+        .patients-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .patient-card {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .patient-card:hover {
+            border-color: rgba(34, 197, 94, 0.5);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(34, 197, 94, 0.1);
+        }
+
+        .patient-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .patient-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .patient-info h3 {
+            color: white;
+            margin-bottom: 5px;
+            font-size: 1.2rem;
+        }
+
+        .patient-info p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-bottom: 3px;
+        }
+
+        .patient-status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .status-stable {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .status-critical {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .status-monitoring {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .patient-vitals {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 10px;
+        }
+
+        .vital-item {
+            text-align: center;
+        }
+
+        .vital-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #22c55e;
+        }
+
+        .vital-label {
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        /* Appointment Calendar */
+        .calendar-container {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .month-display {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #22c55e;
+        }
+
+        .month-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 18px;
+        }
+
+        .nav-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 20px rgba(34, 197, 94, 0.3);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+
+        .calendar-day-header {
+            padding: 15px 10px;
+            text-align: center;
+            font-weight: 600;
+            color: #22c55e;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            font-weight: 600;
+        }
+
+        .calendar-day:hover {
+            background: rgba(34, 197, 94, 0.2);
+            transform: scale(1.05);
+        }
+
+        .calendar-day.today {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+        }
+
+        .calendar-day.has-appointment::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: #ef4444;
+            border-radius: 50%;
+        }
+
+        .appointment-list {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .appointment-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #22c55e;
+            transition: all 0.3s ease;
+        }
+
+        .appointment-item:hover {
+            border-color: rgba(34, 197, 94, 0.5);
+            transform: translateX(10px);
+        }
+
+        .appointment-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .appointment-time {
+            font-weight: 700;
+            color: #22c55e;
+            font-size: 1.1rem;
+            min-width: 100px;
+        }
+
+        .appointment-details h4 {
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .appointment-details p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .appointment-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Telemedicine */
+        .telemedicine-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .video-call-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .video-main {
+            background: #000;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .video-placeholder {
+            text-align: center;
+            color: #94a3b8;
+        }
+
+        .video-placeholder i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            color: #22c55e;
+        }
+
+        .video-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+        }
+
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn.mute {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+        }
+
+        .control-btn.video {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+
+        .control-btn.end {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .control-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .video-sidebar {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+        }
+
+        .patient-video-info {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .patient-video-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 32px;
+            color: white;
+        }
+
+        .session-timer {
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .timer-display {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #22c55e;
+        }
+
+        /* Forms */
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            color: white;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* Reports */
+        .reports-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .report-card {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .report-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(34, 197, 94, 0.5);
+            box-shadow: 0 20px 40px rgba(34, 197, 94, 0.1);
+        }
+
+        .report-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 32px;
+            color: white;
+        }
+
+        .report-card h3 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .report-card p {
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        .chart-container {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        /* Settings */
+        .settings-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .settings-section {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .settings-section h3 {
+            color: white;
+            margin-bottom: 25px;
+            font-size: 1.4rem;
+            border-bottom: 2px solid rgba(34, 197, 94, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #22c55e;
+        }
+
+        .checkbox-group label {
+            color: #e2e8f0;
+            cursor: pointer;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            backdrop-filter: blur(10px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: rgba(30, 41, 59, 0.95);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            animation: scaleIn 0.3s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 28px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .close-btn:hover {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.3);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 2001;
+            font-weight: 600;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .notification.warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(34, 197, 94, 0.2);
+            border-top: 2px solid #22c55e;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 15px;
+                padding: 0 15px;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+            }
+
+            .dashboard-grid,
+            .patients-grid,
+            .reports-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .video-call-container {
+                grid-template-columns: 1fr;
+            }
+
+            .section-title {
+                font-size: 2.2rem;
+            }
+
+            .search-bar {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .search-input {
+                width: 100%;
+                max-width: 400px;
+            }
+        }
+
+        /* Additional Animations */
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo" onclick="showSection('dashboard')">
+                <div class="logo-icon">
+                    <i class='bx bx-health'></i>
+                </div>
+                <span class="logo-text">MEDI-CARE</span>
+            </div>
+            <div class="nav-links">
+                <a onclick="showSection('dashboard')" data-section="dashboard">Dashboard</a>
+                <a onclick="showSection('patients')" data-section="patients">Patients</a>
+                <a onclick="showSection('appointments')" data-section="appointments">Appointments</a>
+                <a onclick="showSection('telemedicine')" data-section="telemedicine">Telemedicine</a>
+                <a onclick="showSection('prescriptions')" data-section="prescriptions">Prescriptions</a>
+                <a onclick="showSection('reports')" data-section="reports">Reports</a>
+                <a onclick="showSection('settings')" data-section="settings">Settings</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="page-section active">
+            <div class="section-header">
+                <h1 class="section-title">Doctor Dashboard</h1>
+                <p class="section-subtitle">Welcome back, Dr. Sarah Johnson. Here's your practice overview for today.</p>
+                <div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+                    <button class="btn-primary" onclick="showSection('patients')">
+                        <i class='bx bx-user-plus'></i> Manage Patients
+                    </button>
+                    <button class="btn-secondary" onclick="showSection('appointments')">
+                        <i class='bx bx-calendar'></i> View Schedule
+                    </button>
+                </div>
+            </div>
+            
+            <div class="dashboard-grid">
+                <div class="dashboard-card" onclick="showSection('patients')">
+                    <div class="card-header">
+                        <h3 class="card-title">Patient Management</h3>
+                        <div class="card-icon">
+                            <i class='bx bx-user-heart'></i>
+                        </div>
+                    </div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">247</span>
+                            <span class="stat-label">Total Patients</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">12</span>
+                            <span class="stat-label">New Today</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">5</span>
+                            <span class="stat-label">Critical</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <p>Manage patient records, medical history, treatment plans, and monitor patient health status with comprehensive care coordination.</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-card" onclick="showSection('appointments')">
+                    <div class="card-header">
+                        <h3 class="card-title">Appointments</h3>
+                        <div class="card-icon">
+                            <i class='bx bx-calendar-heart'></i>
+                        </div>
+                    </div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">18</span>
+                            <span class="stat-label">Today</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">45</span>
+                            <span class="stat-label">This Week</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">3</span>
+                            <span class="stat-label">Urgent</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <p>Schedule and manage patient appointments with automated reminders, conflict detection, and seamless calendar integration.</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-card" onclick="showSection('telemedicine')">
+                    <div class="card-header">
+                        <h3 class="card-title">Telemedicine</h3>
+                        <div class="card-icon">
+                            <i class='bx bx-video-plus'></i>
+                        </div>
+                    </div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">8</span>
+                            <span class="stat-label">Video Calls</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">2</span>
+                            <span class="stat-label">Waiting</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">95%</span>
+                            <span class="stat-label">Success Rate</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <p>Conduct secure HD video consultations with remote patients, screen sharing, and integrated health monitoring tools.</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-card" onclick="showSection('prescriptions')">
+                    <div class="card-header">
+                        <h3 class="card-title">Prescriptions</h3>
+                        <div class="card-icon">
+                            <i class='bx bx-capsule'></i>
+                        </div>
+                    </div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">156</span>
+                            <span class="stat-label">This Month</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">8</span>
+                            <span class="stat-label">Pending</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">0</span>
+                            <span class="stat-label">Conflicts</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <p>Create digital prescriptions with drug interaction checks, allergy alerts, and direct pharmacy integration for patient safety.</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-card" onclick="showSection('reports')">
+                    <div class="card-header">
+                        <h3 class="card-title">Analytics & Reports</h3>
+                        <div class="card-icon">
+                            <i class='bx bx-trending-up'></i>
+                        </div>
+                    </div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">94%</span>
+                            <span class="stat-label">Satisfaction</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">42</span>
+                            <span class="stat-label">Reports</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">15%</span>
+                            <span class="stat-label">Growth</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <p>Generate comprehensive analytics on patient outcomes, practice performance, financial metrics, and compliance reports.</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-card" onclick="showSection('settings')">
+                    <div class="card-header">
+                        <h3 class="card-title">Settings & Profile</h3>
+                        <div class="card-icon">
+                            <i class='bx bx-cog'></i>
+                        </div>
+                    </div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">100%</span>
+                            <span class="stat-label">Profile</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">12</span>
+                            <span class="stat-label">Preferences</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">✓</span>
+                            <span class="stat-label">HIPAA</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <p>Configure your portal preferences, notification settings, security options, and maintain HIPAA compliance settings.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Patients Section -->
+        <section id="patients" class="page-section">
+            <div class="section-header">
+                <h1 class="section-title">Patient Management</h1>
+                <p class="section-subtitle">Comprehensive patient care and medical record management system</p>
+            </div>
+
+            <div class="patients-section">
+                <div class="search-bar">
+                    <input type="text" class="search-input" id="patientSearch" placeholder="Search patients by name, ID, or condition...">
+                    <button class="btn-primary" onclick="searchPatients()">
+                        <i class='bx bx-search'></i> Search
+                    </button>
+                    <button class="btn-success" onclick="openModal('addPatientModal')">
+                        <i class='bx bx-user-plus'></i> Add Patient
+                    </button>
+                    <button class="btn-secondary" onclick="exportPatients()">
+                        <i class='bx bx-download'></i> Export
+                    </button>
+                </div>
+
+                <div class="patients-grid" id="patientsGrid">
+                    <!-- Patients will be populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Appointments Section -->
+        <section id="appointments" class="page-section">
+            <div class="section-header">
+                <h1 class="section-title">Appointment Management</h1>
+                <p class="section-subtitle">Schedule, manage, and track patient appointments efficiently</p>
+            </div>
+
+            <div class="calendar-container">
+                <div class="calendar-header">
+                    <h3 class="month-display" id="currentMonth">January 2025</h3>
+                    <div class="month-nav">
+                        <button class="nav-btn" onclick="changeMonth(-1)">
+                            <i class='bx bx-chevron-left'></i>
+                        </button>
+                        <button class="nav-btn" onclick="goToToday()">
+                            <i class='bx bx-calendar'></i>
+                        </button>
+                        <button class="nav-btn" onclick="changeMonth(1)">
+                            <i class='bx bx-chevron-right'></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Calendar will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="appointment-list">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                    <h3 style="color: white; font-size: 1.5rem;">Today's Appointments</h3>
+                    <button class="btn-primary" onclick="openModal('scheduleModal')">
+                        <i class='bx bx-calendar-plus'></i> Schedule Appointment
+                    </button>
+                </div>
+                <div id="appointmentsList">
+                    <!-- Appointments will be populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Telemedicine Section -->
+        <section id="telemedicine" class="page-section">
+            <div class="section-header">
+                <h1 class="section-title">Telemedicine Center</h1>
+                <p class="section-subtitle">Secure video consultations and remote patient monitoring</p>
+            </div>
+
+            <div class="telemedicine-container">
+                <div class="video-call-container">
+                    <div class="video-main">
+                        <div class="video-placeholder" id="videoPlaceholder">
+                            <div>
+                                <i class='bx bx-video-off'></i>
+                                <h3>Video Consultation Ready</h3>
+                                <p>Click "Start Video Call" to begin consultation</p>
+                                <button class="btn-primary" onclick="startVideoCall()" style="margin-top: 20px;">
+                                    <i class='bx bx-video'></i> Start Video Call
+                                </button>
+                            </div>
+                        </div>
+                        <div class="video-controls">
+                            <button class="control-btn mute" onclick="toggleMute()" title="Mute/Unmute">
+                                <i class='bx bx-microphone' id="micIcon"></i>
+                            </button>
+                            <button class="control-btn video" onclick="toggleVideo()" title="Camera On/Off">
+                                <i class='bx bx-video' id="videoIcon"></i>
+                            </button>
+                            <button class="control-btn end" onclick="endCall()" title="End Call">
+                                <i class='bx bx-phone-off'></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="video-sidebar">
+                        <div class="patient-video-info">
+                            <div class="patient-video-avatar">JS</div>
+                            <h4 style="color: white; margin-bottom: 5px;">John Smith</h4>
+                            <p style="color: #94a3b8; margin-bottom: 15px;">Follow-up Consultation</p>
+                            <div class="session-timer">
+                                <div class="timer-display" id="sessionTimer">00:00</div>
+                                <p style="color: #94a3b8; font-size: 0.9rem;">Session Duration</p>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Session Notes</label>
+                            <textarea id="sessionNotes" placeholder="Enter consultation notes, symptoms, observations..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Vital Signs</label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                <input type="text" placeholder="BP" id="bp">
+                                <input type="text" placeholder="HR" id="hr">
+                                <input type="text" placeholder="Temp" id="temp">
+                                <input type="text" placeholder="SpO2" id="spo2">
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <button class="btn-success" onclick="saveSessionData()">
+                                <i class='bx bx-save'></i> Save Session
+                            </button>
+                            <button class="btn-secondary" onclick="prescribeMedication()">
+                                <i class='bx bx-pill'></i> Prescribe
+                            </button>
+                            <button class="btn-warning" onclick="scheduleFollowUp()">
+                                <i class='bx bx-calendar-plus'></i> Follow-up
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 style="color: white; margin-bottom: 20px;">Waiting Room</h3>
+                    <div id="waitingRoom">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(15, 23, 42, 0.6); border-radius: 10px; margin-bottom: 10px;">
+                            <div>
+                                <strong style="color: white;">Emma Wilson</strong>
+                                <p style="color: #94a3b8; margin: 5px 0;">Scheduled: 2:30 PM - Routine Checkup</p>
+                            </div>
+                            <button class="btn-primary" onclick="joinPatient('Emma Wilson')">
+                                <i class='bx bx-video'></i> Join
+                            </button>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(15, 23, 42, 0.6); border-radius: 10px;">
+                            <div>
+                                <strong style="color: white;">Michael Brown</strong>
+                                <p style="color: #94a3b8; margin: 5px 0;">Scheduled: 3:00 PM - Consultation</p>
+                            </div>
+                            <button class="btn-secondary" onclick="joinPatient('Michael Brown')">
+                                <i class='bx bx-video'></i> Join
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Prescriptions Section -->
+        <section id="prescriptions" class="page-section">
+            <div class="section-header">
+                <h1 class="section-title">Prescription Management</h1>
+                <p class="section-subtitle">Create, manage, and track digital prescriptions with safety checks</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; max-width: 1200px; margin: 0 auto;">
+                <div class="form-container">
+                    <h3 style="color: white; margin-bottom: 25px;">New Prescription</h3>
+                    
+                    <div class="form-group">
+                        <label>Patient</label>
+                        <select id="prescriptionPatient">
+                            <option value="">Select Patient</option>
+                            <option value="john-smith">John Smith (ID: 001)</option>
+                            <option value="sarah-johnson">Sarah Johnson (ID: 002)</option>
+                            <option value="michael-brown">Michael Brown (ID: 003)</option>
+                            <option value="emma-wilson">Emma Wilson (ID: 004)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Medication</label>
+                        <input type="text" id="medication" placeholder="Enter medication name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Dosage & Frequency</label>
+                        <input type="text" id="dosage" placeholder="e.g., 500mg twice daily">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Duration</label>
+                        <select id="duration">
+                            <option>5 days</option>
+                            <option>7 days</option>
+                            <option>10 days</option>
+                            <option>14 days</option>
+                            <option>30 days</option>
+                            <option>90 days</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Instructions</label>
+                        <textarea id="instructions" placeholder="Special instructions for patient (e.g., take with food, avoid alcohol)"></textarea>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn-primary" onclick="createPrescription()">
+                            <i class='bx bx-check'></i> Create Prescription
+                        </button>
+                        <button class="btn-warning" onclick="checkDrugInteractions()">
+                            <i class='bx bx-shield-check'></i> Check Interactions
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 style="color: white; margin-bottom: 20px;">Recent Prescriptions</h3>
+                    <div id="recentPrescriptions">
+                        <div style="border-bottom: 1px solid rgba(34, 197, 94, 0.2); padding: 15px 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <div>
+                                    <strong style="color: white;">Amoxicillin 500mg</strong>
+                                    <p style="color: #94a3b8; margin: 5px 0;">Patient: John Smith</p>
+                                    <p style="color: #94a3b8; font-size: 0.9rem;">3x daily for 7 days</p>
+                                </div>
+                                <span style="background: rgba(34, 197, 94, 0.2); color: #22c55e; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">Active</span>
+                            </div>
+                        </div>
+                        <div style="border-bottom: 1px solid rgba(34, 197, 94, 0.2); padding: 15px 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <div>
+                                    <strong style="color: white;">Lisinopril 10mg</strong>
+                                    <p style="color: #94a3b8; margin: 5px 0;">Patient: Sarah Johnson</p>
+                                    <p style="color: #94a3b8; font-size: 0.9rem;">Once daily for 30 days</p>
+                                </div>
+                                <span style="background: rgba(34, 197, 94, 0.2); color: #22c55e; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">Active</span>
+                            </div>
+                        </div>
+                        <div style="padding: 15px 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <div>
+                                    <strong style="color: white;">Ibuprofen 400mg</strong>
+                                    <p style="color: #94a3b8; margin: 5px 0;">Patient: Michael Brown</p>
+                                    <p style="color: #94a3b8; font-size: 0.9rem;">As needed for pain</p>
+                                </div>
+                                <span style="background: rgba(239, 68, 68, 0.2); color: #ef4444; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">Completed</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn-secondary" onclick="viewAllPrescriptions()" style="width: 100%; margin-top: 20px;">
+                        <i class='bx bx-list-ul'></i> View All Prescriptions
+                    </button>
+                </div>
+            </div>
+
+            <div class="card" style="max-width: 1200px; margin: 30px auto 0;">
+                <h3 style="color: white; margin-bottom: 20px;">Drug Database & Information</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div style="text-align: center; padding: 20px; background: rgba(15, 23, 42, 0.6); border-radius: 10px;">
+                        <i class='bx bx-search-alt' style="font-size: 32px; color: #22c55e; margin-bottom: 10px;"></i>
+                        <h4 style="color: white; margin-bottom: 10px;">Drug Search</h4>
+                        <p style="color: #94a3b8; font-size: 0.9rem;">Search medication information</p>
+                    </div>
+                    <div style="text-align: center; padding: 20px; background: rgba(15, 23, 42, 0.6); border-radius: 10px;">
+                        <i class='bx bx-shield-check' style="font-size: 32px; color: #22c55e; margin-bottom: 10px;"></i>
+                        <h4 style="color: white; margin-bottom: 10px;">Interaction Checker</h4>
+                        <p style="color: #94a3b8; font-size: 0.9rem;">Check drug interactions</p>
+                    </div>
+                    <div style="text-align: center; padding: 20px; background: rgba(15, 23, 42, 0.6); border-radius: 10px;">
+                        <i class='bx bx-exclamation-triangle' style="font-size: 32px; color: #f59e0b; margin-bottom: 10px;"></i>
+                        <h4 style="color: white; margin-bottom: 10px;">Allergy Alerts</h4>
+                        <p style="color: #94a3b8; font-size: 0.9rem;">Patient allergy monitoring</p>
+                    </div>
+                    <div style="text-align: center; padding: 20px; background: rgba(15, 23, 42, 0.6); border-radius: 10px;">
+                        <i class='bx bx-pharmacy' style="font-size: 32px; color: #22c55e; margin-bottom: 10px;"></i>
+                        <h4 style="color: white; margin-bottom: 10px;">Pharmacy Network</h4>
+                        <p style="color: #94a3b8; font-size: 0.9rem;">Send to preferred pharmacy</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reports Section -->
+        <section id="reports" class="page-section">
+            <div class="section-header">
+                <h1 class="section-title">Reports & Analytics</h1>
+                <p class="section-subtitle">Comprehensive healthcare analytics and reporting dashboard</p>
+            </div>
+
+            <div class="reports-container">
+                <div class="reports-grid">
+                    <div class="report-card" onclick="generatePatientReport()">
+                        <div class="report-icon">
+                            <i class='bx bx-user-detail'></i>
+                        </div>
+                        <h3>Patient Reports</h3>
+                        <p>Individual patient health summaries, treatment history, and outcome tracking</p>
+                    </div>
+
+                    <div class="report-card" onclick="generatePracticeAnalytics()">
+                        <div class="report-icon">
+                            <i class='bx bx-bar-chart-alt-2'></i>
+                        </div>
+                        <h3>Practice Analytics</h3>
+                        <p>Practice performance metrics, patient satisfaction, and operational efficiency</p>
+                    </div>
+
+                    <div class="report-card" onclick="generateFinancialReport()">
+                        <div class="report-icon">
+                            <i class='bx bx-dollar-circle'></i>
+                        </div>
+                        <h3>Financial Reports</h3>
+                        <p>Revenue analysis, billing performance, and insurance claim tracking</p>
+                    </div>
+
+                    <div class="report-card" onclick="generateMedicationAnalysis()">
+                        <div class="report-icon">
+                            <i class='bx bx-pill'></i>
+                        </div>
+                        <h3>Medication Analysis</h3>
+                        <p>Prescription patterns, medication effectiveness, and adherence tracking</p>
+                    </div>
+
+                    <div class="report-card" onclick="generateAppointmentReport()">
+                        <div class="report-icon">
+                            <i class='bx bx-calendar-check'></i>
+                        </div>
+                        <h3>Appointment Analytics</h3>
+                        <p>Scheduling efficiency, no-show rates, and appointment type analysis</p>
+                    </div>
+
+                    <div class="report-card" onclick="generateComplianceReport()">
+                        <div class="report-icon">
+                            <i class='bx bx-shield-check'></i>
+                        </div>
+                        <h3>Compliance Reports</h3>
+                        <p>HIPAA compliance, security audits, and regulatory requirement tracking</p>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3 style="color: white; margin-bottom: 20px;">Practice Overview - Last 6 Months</h3>
+                    <canvas id="practiceChart" width="400" height="200"></canvas>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                    <div class="chart-container">
+                        <h3 style="color: white; margin-bottom: 20px;">Patient Demographics</h3>
+                        <canvas id="demographicsChart" width="400" height="300"></canvas>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="color: white; margin-bottom: 20px;">Key Metrics</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div style="text-align: center; padding: 20px; background: rgba(15, 23, 42, 0.6); border-radius: 10px;">
+                                <div style="font-size: 2rem; font-weight: 900; color: #22c55e;">94%</div>
+                                <div style="color: #94a3b8; font-size: 0.9rem;">Patient Satisfaction</div>
+                            </div>
+                            <div style="text-align: center; padding: 20px; background: rgba(15, 23, 42, 0.6); border-radius: 10px;">
+                                <div style="font-size: 2rem; font-weight: 900; color: #22c55e;">8.5</div>
+                                <div style="color: #94a3b8; font-size: 0.9rem;">Avg Daily Patients</div>
+                            </div>
+                            <div style="text-align: center; padding: 20px; background: rgba(15, 23, 42, 0.6); border-radius: 10px;">
+                                <div style="font-size: 2rem; font-weight: 900; color: #22c55e;">15%</div>
+                                <div style="color: #94a3b8; font-size: 0.9rem;">Growth Rate</div>
+                            </div>
+                            <div style="text-align: center; padding: 20px; background: rgba(15, 23, 42, 0.6); border-radius: 10px;">
+                                <div style="font-size: 2rem; font-weight: 900; color: #22c55e;">99.2%</div>
+                                <div style="color: #94a3b8; font-size: 0.9rem;">System Uptime</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Settings Section -->
+        <section id="settings" class="page-section">
+            <div class="section-header">
+                <h1 class="section-title">Settings & Preferences</h1>
+                <p class="section-subtitle">Configure your portal settings, security, and preferences</p>
+            </div>
+
+            <div class="settings-container">
+                <div class="settings-section">
+                    <h3>Profile Information</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" value="Dr. Sarah Johnson" id="fullName">
+                        </div>
+                        <div class="form-group">
+                            <label>Medical License</label>
+                            <input type="text" value="MD123456789" id="licenseNumber">
+                        </div>
+                        <div class="form-group">
+                            <label>Specialization</label>
+                            <select id="specialization">
+                                <option>Internal Medicine</option>
+                                <option>Cardiology</option>
+                                <option>Pediatrics</option>
+                                <option>Surgery</option>
+                                <option>Dermatology</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Years of Experience</label>
+                            <input type="number" value="12" id="experience">
+                        </div>
+                        <div class="form-group">
+                            <label>Contact Email</label>
+                            <input type="email" value="dr.sarah.johnson@medicacare.com" id="email">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" value="+1 (555) 123-4567" id="phone">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Notification Preferences</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="emailNotifications" checked>
+                            <label for="emailNotifications">Email notifications for new appointments</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="smsAlerts" checked>
+                            <label for="smsAlerts">SMS alerts for emergencies</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="dailyReports">
+                            <label for="dailyReports">Daily patient summary reports</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="appointmentReminders" checked>
+                            <label for="appointmentReminders">Appointment reminder notifications</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="prescriptionAlerts" checked>
+                            <label for="prescriptionAlerts">Prescription renewal alerts</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="systemUpdates">
+                            <label for="systemUpdates">System update notifications</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Security Settings</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label>Current Password</label>
+                            <input type="password" placeholder="Enter current password">
+                        </div>
+                        <div class="form-group">
+                            <label>New Password</label>
+                            <input type="password" placeholder="Enter new password">
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm Password</label>
+                            <input type="password" placeholder="Confirm new password">
+                        </div>
+                        <div class="form-group">
+                            <label>Session Timeout (minutes)</label>
+                            <select>
+                                <option>15 minutes</option>
+                                <option selected>30 minutes</option>
+                                <option>60 minutes</option>
+                                <option>120 minutes</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="twoFactor" checked>
+                            <label for="twoFactor">Enable two-factor authentication</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="loginAlerts" checked>
+                            <label for="loginAlerts">Email alerts for login attempts</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>System Preferences</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label>Time Zone</label>
+                            <select>
+                                <option>Eastern Time (ET)</option>
+                                <option>Central Time (CT)</option>
+                                <option>Mountain Time (MT)</option>
+                                <option>Pacific Time (PT)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date Format</label>
+                            <select>
+                                <option>MM/DD/YYYY</option>
+                                <option>DD/MM/YYYY</option>
+                                <option>YYYY-MM-DD</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Language</label>
+                            <select>
+                                <option>English</option>
+                                <option>Spanish</option>
+                                <option>French</option>
+                                <option>German</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Default Appointment Duration</label>
+                            <select>
+                                <option>15 minutes</option>
+                                <option selected>30 minutes</option>
+                                <option>45 minutes</option>
+                                <option>60 minutes</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: center; gap: 15px; margin-top: 30px;">
+                    <button class="btn-primary" onclick="saveSettings()">
+                        <i class='bx bx-save'></i> Save All Settings
+                    </button>
+                    <button class="btn-secondary" onclick="resetSettings()">
+                        <i class='bx bx-reset'></i> Reset to Default
+                    </button>
+                    <button class="btn-warning" onclick="exportSettings()">
+                        <i class='bx bx-download'></i> Export Settings
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Modals -->
+    <div id="addPatientModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add New Patient</h2>
+                <button class="close-btn" onclick="closeModal('addPatientModal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="newPatientName" placeholder="Enter patient full name">
+            </div>
+            <div class="form-group">
+                <label>Date of Birth</label>
+                <input type="date" id="newPatientDob">
+            </div>
+            <div class="form-group">
+                <label>Gender</label>
+                <select id="newPatientGender">
+                    <option>Male</option>
+                    <option>Female</option>
+                    <option>Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" id="newPatientPhone" placeholder="Enter phone number">
+            </div>
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="newPatientEmail" placeholder="Enter email address">
+            </div>
+            <div class="form-group">
+                <label>Medical History</label>
+                <textarea id="newPatientHistory" placeholder="Enter relevant medical history, allergies, medications..."></textarea>
+            </div>
+            <button class="btn-primary" onclick="addNewPatient()">
+                <i class='bx bx-check'></i> Add Patient
+            </button>
+        </div>
+    </div>
+
+    <div id="scheduleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Schedule Appointment</h2>
+                <button class="close-btn" onclick="closeModal('scheduleModal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>Patient</label>
+                <select id="appointmentPatient">
+                    <option value="">Select Patient</option>
+                    <option value="john-smith">John Smith</option>
+                    <option value="sarah-johnson">Sarah Johnson</option>
+                    <option value="michael-brown">Michael Brown</option>
+                    <option value="emma-wilson">Emma Wilson</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="appointmentDate">
+            </div>
+            <div class="form-group">
+                <label>Time</label>
+                <input type="time" id="appointmentTime">
+            </div>
+            <div class="form-group">
+                <label>Appointment Type</label>
+                <select id="appointmentType">
+                    <option>Regular Checkup</option>
+                    <option>Follow-up</option>
+                    <option>Emergency</option>
+                    <option>Consultation</option>
+                    <option>Telemedicine</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Notes</label>
+                <textarea id="appointmentNotes" placeholder="Additional notes or special instructions"></textarea>
+            </div>
+            <button class="btn-primary" onclick="scheduleNewAppointment()">
+                <i class='bx bx-calendar-check'></i> Schedule Appointment
+            </button>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <script>
+        // Global Variables
+        let currentSection = 'dashboard';
+        let currentMonth = 0; // January 2025
+        let currentYear = 2025;
+        let isCallActive = false;
+        let isMuted = false;
+        let isVideoOn = true;
+        let sessionStartTime = null;
+
+        const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                       'July', 'August', 'September', 'October', 'November', 'December'];
+
+        // Sample Data
+        let patients = [
+            { 
+                id: 1, 
+                name: 'John Smith', 
+                age: 45, 
+                status: 'stable', 
+                lastVisit: '2025-01-22', 
+                condition: 'Hypertension',
+                vitals: { bp: '120/80', hr: '72', temp: '98.6°F', spo2: '98%' }
+            },
+            { 
+                id: 2, 
+                name: 'Sarah Johnson', 
+                age: 32, 
+                status: 'monitoring', 
+                lastVisit: '2025-01-20', 
+                condition: 'Type 2 Diabetes',
+                vitals: { bp: '110/70', hr: '68', temp: '98.4°F', spo2: '99%' }
+            },
+            { 
+                id: 3, 
+                name: 'Michael Brown', 
+                age: 67, 
+                status: 'critical', 
+                lastVisit: '2025-01-24', 
+                condition: 'Heart Disease',
+                vitals: { bp: '140/90', hr: '85', temp: '99.1°F', spo2: '96%' }
+            },
+            { 
+                id: 4, 
+                name: 'Emma Wilson', 
+                age: 28, 
+                status: 'stable', 
+                lastVisit: '2025-01-21', 
+                condition: 'Pregnancy Care',
+                vitals: { bp: '115/75', hr: '76', temp: '98.7°F', spo2: '99%' }
+            },
+            { 
+                id: 5, 
+                name: 'David Lee', 
+                age: 54, 
+                status: 'monitoring', 
+                lastVisit: '2025-01-19', 
+                condition: 'Arthritis',
+                vitals: { bp: '125/82', hr: '70', temp: '98.5°F', spo2: '98%' }
+            }
+        ];
+
+        let appointments = [
+            { id: 1, patient: 'John Smith', time: '09:00 AM', type: 'Follow-up', date: '2025-01-25', status: 'confirmed' },
+            { id: 2, patient: 'Sarah Johnson', time: '10:30 AM', type: 'Routine Checkup', date: '2025-01-25', status: 'confirmed' },
+            { id: 3, patient: 'Michael Brown', time: '02:00 PM', type: 'Emergency Consultation', date: '2025-01-25', status: 'urgent' },
+            { id: 4, patient: 'Emma Wilson', time: '03:30 PM', type: 'Prenatal Visit', date: '2025-01-25', status: 'confirmed' },
+            { id: 5, patient: 'David Lee', time: '04:15 PM', type: 'Telemedicine', date: '2025-01-25', status: 'confirmed' }
+        ];
+
+        // Initialize Application
+        document.addEventListener('DOMContentLoaded', function() {
+            showSection('dashboard');
+            loadPatients();
+            loadCalendar();
+            loadAppointments();
+            initializeCharts();
+            
+            // Add entry animations
+            setTimeout(() => {
+                document.querySelectorAll('.dashboard-card').forEach((card, index) => {
+                    card.style.animation = `fadeIn 0.6s ease-out ${index * 0.1}s both`;
+                });
+            }, 100);
+        });
+
+        // Section Management
+        function showSection(sectionId) {
+            // Update active nav link
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('data-section') === sectionId) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Hide all sections
+            document.querySelectorAll('.page-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                setTimeout(() => {
+                    targetSection.classList.add('active');
+                    currentSection = sectionId;
+                    
+                    // Load section-specific data
+                    switch(sectionId) {
+                        case 'patients':
+                            loadPatients();
+                            break;
+                        case 'appointments':
+                            loadCalendar();
+                            loadAppointments();
+                            break;
+                        case 'reports':
+                            updateCharts();
+                            break;
+                    }
+                }, 50);
+            }
+        }
+
+        // Patient Management
+        function loadPatients() {
+            const patientsGrid = document.getElementById('patientsGrid');
+            if (!patientsGrid) return;
+            
+            patientsGrid.innerHTML = '';
+            
+            patients.forEach((patient, index) => {
+                const patientCard = document.createElement('div');
+                patientCard.className = 'patient-card fade-in';
+                patientCard.style.animationDelay = `${index * 0.1}s`;
+                
+                patientCard.innerHTML = `
+                    <div class="patient-header">
+                        <div class="patient-avatar">${patient.name.split(' ').map(n => n[0]).join('')}</div>
+                        <div class="patient-info">
+                            <h3>${patient.name}</h3>
+                            <p>Age: ${patient.age} | Last Visit: ${patient.lastVisit}</p>
+                            <p><strong>${patient.condition}</strong></p>
+                        </div>
+                    </div>
+                    <div class="patient-vitals">
+                        <div class="vital-item">
+                            <div class="vital-value">${patient.vitals.bp}</div>
+                            <div class="vital-label">Blood Pressure</div>
+                        </div>
+                        <div class="vital-item">
+                            <div class="vital-value">${patient.vitals.hr}</div>
+                            <div class="vital-label">Heart Rate</div>
+                        </div>
+                        <div class="vital-item">
+                            <div class="vital-value">${patient.vitals.temp}</div>
+                            <div class="vital-label">Temperature</div>
+                        </div>
+                        <div class="vital-item">
+                            <div class="vital-value">${patient.vitals.spo2}</div>
+                            <div class="vital-label">SpO2</div>
+                        </div>
+                    </div>
+                    <div class="patient-status status-${patient.status}">${patient.status.toUpperCase()}</div>
+                    <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
+                        <button class="btn-primary" onclick="viewPatientDetails(${patient.id})">
+                            <i class='bx bx-eye'></i> View
+                        </button>
+                        <button class="btn-secondary" onclick="editPatient(${patient.id})">
+                            <i class='bx bx-edit'></i> Edit
+                        </button>
+                        <button class="btn-warning" onclick="scheduleForPatient(${patient.id})">
+                            <i class='bx bx-calendar-plus'></i> Schedule
+                        </button>
+                    </div>
+                `;
+                patientsGrid.appendChild(patientCard);
+            });
+        }
+
+        function addNewPatient() {
+            const name = document.getElementById('newPatientName').value;
+            const dob = document.getElementById('newPatientDob').value;
+            const gender = document.getElementById('newPatientGender').value;
+            const phone = document.getElementById('newPatientPhone').value;
+            const email = document.getElementById('newPatientEmail').value;
+            const history = document.getElementById('newPatientHistory').value;
+            
+            if (!name || !dob || !phone) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            const newPatient = {
+                id: patients.length + 1,
+                name: name,
+                age: calculateAge(dob),
+                status: 'stable',
+                lastVisit: new Date().toISOString().split('T')[0],
+                condition: 'New Patient',
+                vitals: { bp: '--', hr: '--', temp: '--', spo2: '--' }
+            };
+            
+            patients.push(newPatient);
+            loadPatients();
+            closeModal('addPatientModal');
+            showNotification(`Patient ${name} added successfully!`, 'success');
+            
+            // Clear form
+            clearForm('addPatientModal');
+        }
+
+        function calculateAge(dob) {
+            const today = new Date();
+            const birthDate = new Date(dob);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            
+            return age;
+        }
+
+        function searchPatients() {
+            const searchTerm = document.getElementById('patientSearch').value.toLowerCase();
+            if (!searchTerm) {
+                loadPatients();
+                return;
+            }
+            
+            const filteredPatients = patients.filter(patient => 
+                patient.name.toLowerCase().includes(searchTerm) ||
+                patient.condition.toLowerCase().includes(searchTerm) ||
+                patient.id.toString().includes(searchTerm)
+            );
+            
+            displayFilteredPatients(filteredPatients);
+            showNotification(`Found ${filteredPatients.length} patient(s) matching "${searchTerm}"`, 'success');
+        }
+
+        function displayFilteredPatients(filteredPatients) {
+            const patientsGrid = document.getElementById('patientsGrid');
+            patientsGrid.innerHTML = '';
+            
+            if (filteredPatients.length === 0) {
+                patientsGrid.innerHTML = '<p style="text-align: center; color: #94a3b8; grid-column: 1/-1;">No patients found matching your search criteria.</p>';
+                return;
+            }
+            
+            filteredPatients.forEach(patient => {
+                const patientCard = document.createElement('div');
+                patientCard.className = 'patient-card';
+                patientCard.innerHTML = `
+                    <div class="patient-header">
+                        <div class="patient-avatar">${patient.name.split(' ').map(n => n[0]).join('')}</div>
+                        <div class="patient-info">
+                            <h3>${patient.name}</h3>
+                            <p>Age: ${patient.age} | Last Visit: ${patient.lastVisit}</p>
+                            <p><strong>${patient.condition}</strong></p>
+                        </div>
+                    </div>
+                    <div class="patient-status status-${patient.status}">${patient.status.toUpperCase()}</div>
+                `;
+                patientsGrid.appendChild(patientCard);
+            });
+        }
+
+        function viewPatientDetails(patientId) {
+            const patient = patients.find(p => p.id === patientId);
+            if (patient) {
+                showNotification(`Opening detailed view for ${patient.name}`, 'success');
+                // Here you would typically open a detailed patient modal
+            }
+        }
+
+        function editPatient(patientId) {
+            const patient = patients.find(p => p.id === patientId);
+            if (patient) {
+                showNotification(`Opening edit form for ${patient.name}`, 'success');
+                // Here you would typically open an edit modal
+            }
+        }
+
+        function scheduleForPatient(patientId) {
+            const patient = patients.find(p => p.id === patientId);
+            if (patient) {
+                document.getElementById('appointmentPatient').value = patient.name.toLowerCase().replace(' ', '-');
+                openModal('scheduleModal');
+            }
+        }
+
+        function exportPatients() {
+            showNotification('Exporting patient data...', 'success');
+            setTimeout(() => {
+                showNotification('Patient data exported successfully!', 'success');
+            }, 2000);
+        }
+
+        // Calendar Management
+        function loadCalendar() {
+            const calendarGrid = document.getElementById('calendarGrid');
+            const currentMonthElement = document.getElementById('currentMonth');
+            
+            if (!calendarGrid || !currentMonthElement) return;
+            
+            currentMonthElement.textContent = `${months[currentMonth]} ${currentYear}`;
+            calendarGrid.innerHTML = '';
+            
+            // Add day headers
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayHeaders.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'calendar-day-header';
+                dayHeader.textContent = day;
+                calendarGrid.appendChild(dayHeader);
+            });
+            
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            
+            // Add empty cells
+            for (let i = 0; i < firstDay; i++) {
+                const emptyDay = document.createElement('div');
+                calendarGrid.appendChild(emptyDay);
+            }
+            
+            // Add days
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = day;
+                
+                const today = new Date();
+                if (currentYear === today.getFullYear() && 
+                    currentMonth === today.getMonth() && 
+                    day === today.getDate()) {
+                    dayElement.classList.add('today');
+                }
+                
+                const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                if (appointments.some(apt => apt.date === dateStr)) {
+                    dayElement.classList.add('has-appointment');
+                }
+                
+                dayElement.onclick = () => selectDate(day);
+                calendarGrid.appendChild(dayElement);
+            }
+        }
+
+        function changeMonth(direction) {
+            currentMonth += direction;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            } else if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            loadCalendar();
+        }
+
+        function goToToday() {
+            const today = new Date();
+            currentMonth = today.getMonth();
+            currentYear = today.getFullYear();
+            loadCalendar();
+        }
+
+        function selectDate(day) {
+            const selectedDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            document.getElementById('appointmentDate').value = selectedDate;
+            openModal('scheduleModal');
+        }
+
+        // Appointment Management
+        function loadAppointments() {
+            const appointmentsList = document.getElementById('appointmentsList');
+            if (!appointmentsList) return;
+            
+            appointmentsList.innerHTML = '';
+            
+            const today = new Date().toISOString().split('T')[0];
+            const todayAppointments = appointments.filter(apt => apt.date === today);
+            
+            if (todayAppointments.length === 0) {
+                appointmentsList.innerHTML = '<p style="color: #94a3b8; text-align: center; padding: 40px;">No appointments scheduled for today</p>';
+                return;
+            }
+            
+            todayAppointments.forEach((appointment, index) => {
+                const appointmentItem = document.createElement('div');
+                appointmentItem.className = 'appointment-item slide-in';
+                appointmentItem.style.animationDelay = `${index * 0.1}s`;
+                
+                appointmentItem.innerHTML = `
+                    <div class="appointment-info">
+                        <div class="appointment-time">${appointment.time}</div>
+                        <div class="appointment-details">
+                            <h4>${appointment.patient}</h4>
+                            <p>${appointment.type}</p>
+                        </div>
+                    </div>
+                    <div class="appointment-actions">
+                        <button class="btn-success" onclick="startAppointment(${appointment.id})">
+                            <i class='bx bx-play'></i> Start
+                        </button>
+                        <button class="btn-secondary" onclick="rescheduleAppointment(${appointment.id})">
+                            <i class='bx bx-calendar-edit'></i> Reschedule
+                        </button>
+                        ${appointment.type === 'Telemedicine' ? 
+                            `<button class="btn-primary" onclick="startVideoConsultation(${appointment.id})">
+                                <i class='bx bx-video'></i> Video
+                            </button>` : ''}
+                    </div>
+                `;
+                appointmentsList.appendChild(appointmentItem);
+            });
+        }
+
+        function scheduleNewAppointment() {
+            const patient = document.getElementById('appointmentPatient').value;
+            const date = document.getElementById('appointmentDate').value;
+            const time = document.getElementById('appointmentTime').value;
+            const type = document.getElementById('appointmentType').value;
+            const notes = document.getElementById('appointmentNotes').value;
+            
+            if (!patient || !date || !time) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            const newAppointment = {
+                id: appointments.length + 1,
+                patient: patient.split('-').map(word => 
+                    word.charAt(0).toUpperCase() + word.slice(1)
+                ).join(' '),
+                time: formatTime(time),
+                type: type,
+                date: date,
+                status: 'confirmed',
+                notes: notes
+            };
+            
+            appointments.push(newAppointment);
+            loadAppointments();
+            loadCalendar();
+            closeModal('scheduleModal');
+            showNotification('Appointment scheduled successfully!', 'success');
+            
+            clearForm('scheduleModal');
+        }
+
+        function formatTime(time24) {
+            const [hours, minutes] = time24.split(':');
+            const hour12 = ((parseInt(hours) + 11) % 12) + 1;
+            const ampm = parseInt(hours) >= 12 ? 'PM' : 'AM';
+            return `${hour12}:${minutes} ${ampm}`;
+        }
+
+        function startAppointment(appointmentId) {
+            const appointment = appointments.find(apt => apt.id === appointmentId);
+            if (appointment) {
+                showNotification(`Starting appointment with ${appointment.patient}`, 'success');
+                if (appointment.type === 'Telemedicine') {
+                    showSection('telemedicine');
+                }
+            }
+        }
+
+        function rescheduleAppointment(appointmentId) {
+            const appointment = appointments.find(apt => apt.id === appointmentId);
+            if (appointment) {
+                showNotification(`Rescheduling appointment for ${appointment.patient}`, 'warning');
+            }
+        }
+
+        function startVideoConsultation(appointmentId) {
+            showSection('telemedicine');
+            setTimeout(() => {
+                startVideoCall();
+            }, 500);
+        }
+
+        // Telemedicine Functions
+        function startVideoCall() {
+            const videoPlaceholder = document.getElementById('videoPlaceholder');
+            if (videoPlaceholder) {
+                videoPlaceholder.innerHTML = `
+                    <div style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; padding: 50px; text-align: center; border-radius: 15px; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center;">
+                        <i class='bx bx-video' style="font-size: 48px; margin-bottom: 20px;"></i>
+                        <h3>Video Call Active</h3>
+                        <p>Connected with John Smith</p>
+                        <div style="margin-top: 20px; font-size: 14px; opacity: 0.8;">
+                            <strong>Status:</strong> Connected • <strong>Quality:</strong> HD
+                        </div>
+                    </div>
+                `;
+                
+                isCallActive = true;
+                sessionStartTime = new Date();
+                startSessionTimer();
+                showNotification('Video call started successfully!', 'success');
+            }
+        }
+
+        function startSessionTimer() {
+            const timer = setInterval(() => {
+                if (!isCallActive) {
+                    clearInterval(timer);
+                    return;
+                }
+                
+                const now = new Date();
+                const elapsed = now - sessionStartTime;
+                const minutes = Math.floor(elapsed / 60000);
+                const seconds = Math.floor((elapsed % 60000) / 1000);
+                
+                const timerElement = document.getElementById('sessionTimer');
+                if (timerElement) {
+                    timerElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                }
+            }, 1000);
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            const micIcon = document.getElementById('micIcon');
+            if (micIcon) {
+                micIcon.className = isMuted ? 'bx bx-microphone-off' : 'bx bx-microphone';
+            }
+            showNotification(isMuted ? 'Microphone muted' : 'Microphone unmuted', 'success');
+        }
+
+        function toggleVideo() {
+            isVideoOn = !isVideoOn;
+            const videoIcon = document.getElementById('videoIcon');
+            if (videoIcon) {
+                videoIcon.className = isVideoOn ? 'bx bx-video' : 'bx bx-video-off';
+            }
+            showNotification(isVideoOn ? 'Camera enabled' : 'Camera disabled', 'success');
+        }
+
+        function endCall() {
+            isCallActive = false;
+            sessionStartTime = null;
+            
+            const videoPlaceholder = document.getElementById('videoPlaceholder');
+            if (videoPlaceholder) {
+                videoPlaceholder.innerHTML = `
+                    <div>
+                        <i class='bx bx-video-off'></i>
+                        <h3>Video Consultation Ended</h3>
+                        <p>Session completed successfully</p>
+                        <button class="btn-primary" onclick="startVideoCall()" style="margin-top: 20px;">
+                            <i class='bx bx-video'></i> Start New Call
+                        </button>
+                    </div>
+                `;
+            }
+            
+            const timerElement = document.getElementById('sessionTimer');
+            if (timerElement) {
+                timerElement.textContent = '00:00';
+            }
+            
+            // Reset controls
+            isVideoOn = true;
+            isMuted = false;
+            const micIcon = document.getElementById('micIcon');
+            const videoIcon = document.getElementById('videoIcon');
+            if (micIcon) micIcon.className = 'bx bx-microphone';
+            if (videoIcon) videoIcon.className = 'bx bx-video';
+            
+            showNotification('Video call ended', 'success');
+        }
+
+        function saveSessionData() {
+            const notes = document.getElementById('sessionNotes').value;
+            const bp = document.getElementById('bp').value;
+            const hr = document.getElementById('hr').value;
+            const temp = document.getElementById('temp').value;
+            const spo2 = document.getElementById('spo2').value;
+            
+            if (notes.trim() || bp || hr || temp || spo2) {
+                showNotification('Session data saved successfully!', 'success');
+                // Clear form
+                document.getElementById('sessionNotes').value = '';
+                document.getElementById('bp').value = '';
+                document.getElementById('hr').value = '';
+                document.getElementById('temp').value = '';
+                document.getElementById('spo2').value = '';
+            } else {
+                showNotification('Please enter session data before saving', 'warning');
+            }
+        }
+
+        function scheduleFollowUp() {
+            showNotification('Opening follow-up appointment scheduler...', 'success');
+            setTimeout(() => {
+                showSection('appointments');
+                openModal('scheduleModal');
+            }, 1000);
+        }
+
+        function joinPatient(patientName) {
+            showNotification(`Connecting to ${patientName}...`, 'success');
+            setTimeout(() => {
+                startVideoCall();
+            }, 1500);
+        }
+
+        // Prescription Management
+        function createPrescription() {
+            const patient = document.getElementById('prescriptionPatient').value;
+            const medication = document.getElementById('medication').value;
+            const dosage = document.getElementById('dosage').value;
+            const duration = document.getElementById('duration').value;
+            const instructions = document.getElementById('instructions').value;
+            
+            if (!patient || !medication || !dosage) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            showNotification('Prescription created and sent to pharmacy!', 'success');
+            
+            // Clear form
+            document.getElementById('prescriptionPatient').value = '';
+            document.getElementById('medication').value = '';
+            document.getElementById('dosage').value = '';
+            document.getElementById('instructions').value = '';
+        }
+
+        function checkDrugInteractions() {
+            const medication = document.getElementById('medication').value;
+            if (!medication) {
+                showNotification('Please enter a medication first', 'warning');
+                return;
+            }
+            
+            showNotification('Checking drug interactions...', 'success');
+            setTimeout(() => {
+                showNotification('No dangerous interactions found ✓', 'success');
+            }, 2000);
+        }
+
+        function prescribeMedication() {
+            showNotification('Opening prescription form...', 'success');
+            showSection('prescriptions');
+        }
+
+        function viewAllPrescriptions() {
+            showNotification('Loading prescription history...', 'success');
+        }
+
+        // Reports Management
+        function initializeCharts() {
+            // Practice Overview Chart
+            const practiceCtx = document.getElementById('practiceChart');
+            if (practiceCtx) {
+                new Chart(practiceCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan'],
+                        datasets: [{
+                            label: 'Patients Seen',
+                            data: [185, 195, 210, 220, 235, 247],
+                            borderColor: '#22c55e',
+                            backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#e2e8f0'
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                ticks: {
+                                    color: '#94a3b8'
+                                },
+                                grid: {
+                                    color: 'rgba(148, 163, 184, 0.1)'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: '#94a3b8'
+                                },
+                                grid: {
+                                    color: 'rgba(148, 163, 184, 0.1)'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Demographics Chart
+            const demoCtx = document.getElementById('demographicsChart');
+            if (demoCtx) {
+                new Chart(demoCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['18-30', '31-45', '46-60', '60+'],
+                        datasets: [{
+                            data: [35, 45, 85, 82],
+                            backgroundColor: [
+                                '#22c55e',
+                                '#3b82f6',
+                                '#f59e0b',
+                                '#ef4444'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#e2e8f0'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function updateCharts() {
+            // This would typically update chart data
+            showNotification('Charts updated with latest data', 'success');
+        }
+
+        function generatePatientReport() {
+            showNotification('Generating patient reports...', 'success');
+            setTimeout(() => {
+                showNotification('Patient reports generated successfully!', 'success');
+            }, 2000);
+        }
+
+        function generatePracticeAnalytics() {
+            showNotification('Analyzing practice performance...', 'success');
+            setTimeout(() => {
+                showNotification('Practice analytics report ready!', 'success');
+            }, 2500);
+        }
+
+        function generateFinancialReport() {
+            showNotification('Generating financial reports...', 'success');
+            setTimeout(() => {
+                showNotification('Financial analysis completed!', 'success');
+            }, 2200);
+        }
+
+        function generateMedicationAnalysis() {
+            showNotification('Analyzing medication patterns...', 'success');
+            setTimeout(() => {
+                showNotification('Medication analysis ready!', 'success');
+            }, 1800);
+        }
+
+        function generateAppointmentReport() {
+            showNotification('Processing appointment data...', 'success');
+            setTimeout(() => {
+                showNotification('Appointment analytics generated!', 'success');
+            }, 1600);
+        }
+
+        function generateComplianceReport() {
+            showNotification('Running compliance audit...', 'success');
+            setTimeout(() => {
+                showNotification('Compliance report completed!', 'success');
+            }, 2800);
+        }
+
+        // Settings Management
+        function saveSettings() {
+            showNotification('Saving all settings...', 'success');
+            setTimeout(() => {
+                showNotification('Settings saved successfully!', 'success');
+            }, 1500);
+        }
+
+        function resetSettings() {
+            if (confirm('Are you sure you want to reset all settings to default values?')) {
+                showNotification('Settings reset to default values', 'warning');
+            }
+        }
+
+        function exportSettings() {
+            showNotification('Exporting settings configuration...', 'success');
+            setTimeout(() => {
+                showNotification('Settings exported successfully!', 'success');
+            }, 1200);
+        }
+
+        // Modal Management
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('active');
+            }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+
+        function clearForm(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                const inputs = modal.querySelectorAll('input, textarea, select');
+                inputs.forEach(input => {
+                    if (input.type !== 'checkbox') {
+                        input.value = '';
+                    }
+                });
+            }
+        }
+
+        // Notification System
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            if (!notification) return;
+            
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Event Listeners
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal.active').forEach(modal => {
+                    modal.classList.remove('active');
+                });
+            }
+        });
+
+        // Make functions globally available
+        window.showSection = showSection;
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+    </script>
+</body>
+</html>
