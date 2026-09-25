@@ -1,0 +1,100 @@
+.voice-assistant {
+  bottom: 1.35rem;
+  position: fixed;
+  right: 1.35rem;
+  z-index: 60;
+}
+
+.voice-launcher,
+.voice-listen {
+  align-items: center;
+  background: #087d55;
+  border: 0;
+  border-radius: 999px;
+  box-shadow: 0 16px 35px rgba(5, 89, 59, .25);
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-weight: 800;
+  gap: .65rem;
+  padding: .7rem 1rem .7rem .75rem;
+}
+
+.voice-launcher:hover,
+.voice-listen:hover { background: #056445; transform: translateY(-1px); }
+
+.voice-orb,
+.mic-state {
+  align-items: center;
+  background: rgba(255, 255, 255, .16);
+  border-radius: 50%;
+  display: inline-flex;
+  height: 2rem;
+  justify-content: center;
+  width: 2rem;
+}
+
+.voice-orb.speaking,
+.mic-state.active { animation: medi-pulse 1.15s ease-in-out infinite; }
+
+.voice-panel {
+  max-height: calc(100dvh - 7rem);
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #dcebe4;
+  border-radius: 1.25rem;
+  bottom: calc(100% + .8rem);
+  box-shadow: 0 24px 60px rgba(21, 54, 42, .22);
+  max-width: calc(100vw - 2rem);
+  padding: 1.15rem;
+  position: absolute;
+  right: 0;
+  width: 23rem;
+}
+
+.voice-panel header { align-items: flex-start; display: flex; justify-content: space-between; gap: 1rem; }
+.voice-panel h2 { color: #164334; font-size: 1.1rem; line-height: 1.2; margin: .35rem 0 0; }
+.voice-panel > p { color: #547066; font-size: .87rem; line-height: 1.5; margin: .9rem 0; }
+.voice-panel .eyebrow { color: #087d55; font-size: .68rem; letter-spacing: .08em; }
+
+.voice-status {
+  align-items: center;
+  background: #f1f8f4;
+  border-radius: .85rem;
+  display: flex;
+  gap: .7rem;
+  margin: .8rem 0;
+  padding: .75rem;
+}
+
+.mic-state { background: #d9f3e7; color: #087d55; flex: 0 0 auto; }
+.voice-status b { color: #1a4336; display: block; font-size: .85rem; }
+.voice-status small { color: #668177; display: block; font-size: .76rem; margin-top: .15rem; max-width: 15rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.voice-listen { justify-content: center; padding: .75rem 1rem; width: 100%; }
+.voice-listen.listening { background: #be3131; }
+.voice-examples { display: grid; gap: .42rem; margin-top: .95rem; }
+.voice-mic-off { margin-left: .4rem; padding: .7rem; border: 0; border-radius: 999px; background: #be3131; color: white; cursor: pointer; font-weight: 700; }
+.voice-examples > span { color: #779087; font-size: .71rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
+.voice-examples button { background: #fff; border: 1px solid #dcebe4; border-radius: .55rem; color: #25634d; cursor: pointer; font: inherit; font-size: .79rem; padding: .5rem .6rem; text-align: left; }
+.voice-examples button:hover { background: #f1f8f4; }
+.voice-privacy { align-items: center; color: #668177; display: flex; font-size: .7rem; gap: .3rem; line-height: 1.35; margin-top: .9rem; }
+
+@keyframes medi-pulse { 50% { box-shadow: 0 0 0 7px rgba(8, 125, 85, .12); transform: scale(1.04); } }
+
+@media (max-width: 600px) {
+  .voice-assistant { bottom: .8rem; right: .8rem; }
+  .voice-launcher { font-size: .85rem; }
+  .voice-panel { bottom: calc(100% + .6rem); padding: 1rem; width: min(23rem, calc(100vw - 1.6rem)); }
+}
+
+.voice-error:not(:empty) { margin-top: .7rem; padding: .7rem; border-radius: .6rem; color: #8d2525; background: #fff0ee; font-size: .82rem; line-height: 1.5; }
+
+.page-welcome { position: relative; border: 1px solid #cce3d7; background: #f1f8f4; padding: 1rem; border-radius: 1rem; margin-top: .8rem; color: #164334; }
+.page-welcome.floating { position: absolute; bottom: calc(100% + .8rem); right: 0; width: 22rem; max-width: calc(100vw - 2rem); box-shadow: 0 12px 32px #15362a22; }
+.page-welcome p { padding-right: 1rem; margin: 0 0 .8rem; font-size: .9rem; line-height: 1.5; }
+.page-welcome > div { display: flex; gap: .5rem; flex-wrap: wrap; }
+.page-welcome button { border: 1px solid #cce3d7; border-radius: .5rem; padding: .5rem .7rem; background: white; color: #164334; cursor: pointer; }
+.page-welcome > div button:first-child { background: #087d55; color: white; }
+.page-welcome .page-welcome-close { position: absolute; top: .2rem; right: .3rem; border: 0; padding: .2rem .4rem; background: transparent; font-size: 1.2rem; }

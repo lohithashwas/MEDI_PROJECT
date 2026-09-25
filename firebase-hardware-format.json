@@ -1,0 +1,40 @@
+{
+  "cards": {
+    "A1B2C3D4": {
+      "patientId": "patient_001",
+      "enabled": true
+    }
+  },
+  "users": {
+    "patient_001": {
+      "profile": {
+        "name": "Example Patient",
+        "role": "patient",
+        "abhaId": "",
+        "email": ""
+      },
+      "vitals": {
+        "latest": {
+          "cardUid": "A1B2C3D4",
+          "readerId": "kiosk-01",
+          "heartRate": 72,
+          "spo2": 98,
+          "temperature": 36.7,
+          "glucose": 96,
+          "stressLevel": 28,
+          "steps": 4820,
+          "updatedAt": { ".sv": "timestamp" }
+        }
+      }
+    }
+  },
+  "readers": {
+    "kiosk-01": {
+      "latestTap": {
+        "eventId": "example-unique-tap-id-001",
+        "cardUid": "A1B2C3D4",
+        "tappedAt": { ".sv": "timestamp" }
+      }
+    }
+  }
+}

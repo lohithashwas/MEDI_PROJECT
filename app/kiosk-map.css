@@ -1,0 +1,24 @@
+.kiosk-section { background: #fff; border: 1px solid #dcebe4; border-radius: 1.2rem; margin: 1.4rem 0; padding: clamp(1rem, 2vw, 1.5rem); }
+.kiosk-heading { align-items: flex-start; display: flex; gap: 1rem; justify-content: space-between; }
+.kiosk-heading h2 { color: #174635; margin: .4rem 0; }
+.kiosk-heading p { color: #60796f; line-height: 1.55; margin: 0; max-width: 44rem; }
+.kiosk-location-button { flex: 0 0 auto; white-space: nowrap; }
+.kiosk-location-button:disabled { cursor: wait; opacity: .65; }
+.kiosk-map-grid { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1.35fr) minmax(17rem, .9fr); margin-top: 1.2rem; }
+.kiosk-map-wrap { border-radius: .9rem; min-height: 19rem; overflow: hidden; position: relative; }
+.kiosk-map { height: 100%; min-height: 19rem; width: 100%; }
+.map-demo-badge { background: rgba(255,255,255,.94); border-radius: 999px; bottom: .7rem; box-shadow: 0 3px 14px rgba(16,62,43,.15); color: #567168; font-size: .7rem; font-weight: 800; left: .7rem; padding: .36rem .6rem; position: absolute; z-index: 500; }
+.kiosk-map-marker { align-items: center; background: #e86a4a; border: 3px solid #fff; border-radius: 50%; box-shadow: 0 3px 9px rgba(46, 42, 36, .3); color: #fff; display: flex; font-size: 1rem; font-weight: 900; height: 28px; justify-content: center; width: 28px; }
+.kiosk-list { display: grid; gap: .65rem; }
+.kiosk-card { border: 1px solid #dcebe4; border-radius: .8rem; overflow: hidden; transition: border-color .2s, box-shadow .2s; }
+.kiosk-card.selected { border-color: #0c8a60; box-shadow: 0 8px 20px rgba(8,125,85,.1); }
+.kiosk-card-main { align-items: center; background: #fff; border: 0; cursor: pointer; display: flex; font: inherit; gap: .65rem; padding: .8rem; text-align: left; width: 100%; }
+.kiosk-icon { align-items: center; background: #e4f4ea; border-radius: .65rem; color: #087d55; display: inline-flex; height: 2.2rem; justify-content: center; width: 2.2rem; }
+.kiosk-card-main b { color: #1a4436; display: block; font-size: .86rem; }
+.kiosk-card-main small { color: #678077; display: block; font-size: .72rem; margin-top: .16rem; }
+.kiosk-directions { align-items: center; border-top: 1px solid #edf3ef; color: #087d55; display: flex; font-size: .74rem; font-weight: 800; gap: .3rem; justify-content: space-between; padding: .52rem .8rem; text-decoration: none; }
+.kiosk-directions:hover { background: #f4faf6; }
+.kiosk-location-note { align-items: flex-start; color: #557267; display: flex; font-size: .76rem; gap: .4rem; line-height: 1.4; margin: .85rem 0 0; }
+.kiosk-demo-note { align-items: flex-start; background: #fff8ea; border-radius: .7rem; color: #6f5a29; display: flex; font-size: .75rem; gap: .35rem; line-height: 1.4; margin-top: .8rem; padding: .65rem .75rem; }
+.kiosk-demo-note b { flex: 0 0 auto; }
+@media (max-width: 760px) { .kiosk-heading { align-items: stretch; flex-direction: column; } .kiosk-location-button { align-self: flex-start; } .kiosk-map-grid { grid-template-columns: 1fr; } .kiosk-map-wrap, .kiosk-map { min-height: 15rem; } }

@@ -1,0 +1,29 @@
+.card-tap-welcome { display: grid; grid-template-columns: 1.1fr 1fr; align-items: center; gap: 3rem; min-height: 680px; padding: 65px max(6vw, 24px); background: linear-gradient(120deg,#f7fbf8,#edf6ef); }
+.card-tap-copy { max-width: 560px; }
+.card-tap-copy h1 { font-size: clamp(2.6rem,5vw,4.8rem); line-height: 1.07; letter-spacing: -.045em; color: #173e30; margin: 20px 0; }
+.card-tap-description { color: #587063; font-size: 1.15rem; line-height: 1.7; margin-bottom: 24px; }
+.card-tap-steps { list-style: none; padding: 0; margin: 30px 0; display: flex; gap: 15px; }
+.card-tap-steps li { flex: 1; color: #355a49; font-size: .85rem; line-height: 1.5; }
+.card-tap-steps li span { display: block; width: 28px; height: 28px; border-radius: 50%; background: #d8eadf; text-align: center; line-height: 28px; font-weight: 700; margin-bottom: 9px; }
+.card-reader-status { border-left: 3px solid #b28942; padding: 8px 15px; margin-bottom: 22px; color: #655532; }
+.card-reader-status p { margin: 6px 0 0; font-size: .85rem; line-height: 1.6; }
+.card-tap-art { position: relative; height: 480px; width: min(100%,460px); justify-self: center; }
+.card-tap-halo { position: absolute; inset: 25px 0; border: 1px solid #c6dfd1; border-radius: 50%; background: #e0efe64d; }
+.abha-tap-card { position: absolute; top: 30px; left: calc(50% - 140px); width: 280px; height: 174px; padding: 23px; background: linear-gradient(130deg,#fff,#e4f3e9); border: 1px solid #c1d9ca; border-radius: 18px; box-shadow: 0 22px 40px #234d3320; z-index: 2; animation: card-tap 3.6s ease-in-out infinite; }
+.abha-tap-card > div { display: flex; align-items: center; gap: 12px; color: #245b40; }
+.abha-tap-card > div > svg { margin-left: auto; }
+.card-chip { display: block; margin: 17px 0 10px; width: 30px; height: 23px; border: 1px solid #bfa565; border-radius: 5px; background: #e4d6ab; }
+.card-placeholder { display: block; width: 90px; height: 5px; border-radius: 4px; background: #b6d0c0; margin-top: 6px; }
+.card-placeholder.wide { width: 150px; }
+.abha-tap-card small { position: absolute; right: 20px; bottom: 22px; font-size: 8px; letter-spacing: 2px; color: #557660; }
+.rfid-reader { position: absolute; top: 260px; left: calc(50% - 112px); width: 224px; height: 175px; background: #214e3d; border: 7px solid #36634f; border-radius: 26px; box-shadow: 0 22px 32px #244c3526; text-align: center; padding: 18px; color: #d7eddd; }
+.reader-pad { display: flex; align-items: center; justify-content: center; gap: 15px; border: 1px dashed #80a990; border-radius: 16px; padding: 15px 5px; font-size: 11px; letter-spacing: 1px; }
+.reader-light { display: block; margin: 14px auto 9px; width: 28px; height: 4px; background: #b6d8c3; border-radius: 4px; }
+.rfid-reader > small { font-size: 8px; letter-spacing: 2px; }
+.tap-signal { position: absolute; top: 214px; left: calc(50% - 18px); display: flex; gap: 5px; }
+.tap-signal i { height: 7px; width: 7px; border-radius: 50%; background: #55976e; animation: tap-signal 1.8s infinite; }
+.tap-signal i:nth-child(2) { animation-delay: .2s; }.tap-signal i:nth-child(3) { animation-delay: .4s; }
+@keyframes card-tap { 0%,100% { transform: translateY(0) rotate(-7deg); } 50% { transform: translateY(45px) rotate(-2deg); } }
+@keyframes tap-signal { 50% { opacity: .25; transform: translateY(6px); } }
+@media(max-width:760px) { .card-tap-welcome { grid-template-columns: 1fr; gap: 0; padding: 36px 24px; }.card-tap-art { height: 450px; grid-row: 1; transform: scale(.85); margin: -35px 0; }.card-tap-copy h1 { font-size: 2.8rem; } }
+@media(prefers-reduced-motion:reduce) { .abha-tap-card,.tap-signal i { animation: none; } }
