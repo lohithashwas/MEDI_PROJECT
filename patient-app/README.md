@@ -1,41 +1,47 @@
-# MediKet Care — Android 1.1
+# MediKet Care Master — Android 1.2
 
-Install `dist/MediKet-Care-v1.1.0.apk`. This direct-install release uses the existing development signing certificate. A store release requires your own signing setup.
+This private master edition connects directly to the configured Firebase Realtime Databases. It does not need the website, ML server, mobile adapter, a local PC, or manual pairing. Internet access and valid configured credentials are required.
 
-## Device measurements
+## Install
 
-The dashboard starts empty, reads actual Firebase measurements through the authenticated server adapter, and refreshes every five seconds while running. Pull down to refresh manually. No substitute vital readings are generated. Recent, older, unknown-time and future-clock readings have distinct labels; per-sensor timestamps take priority.
+Install `dist/MediKet-Care-Master-v1.2.0.apk` on Android. Version 1.2.0 / version code 3 uses the same development signing certificate as earlier direct-install builds, allowing an update without uninstalling. It is not a Play Store production-signed release.
 
-The server reads Firebase credentials from the website's `../.env.local`. Never put Firebase database secrets into Flutter assets or an APK.
+**Private build:** Firebase credentials requested by the owner are embedded at build time. They can be extracted from an APK. Do not publish or share this master APK outside trusted devices. Source files contain environment-variable names only. Other website credentials (voice, translation, etc.) are not included. Clearing local app data disconnects the app but cannot remove credentials compiled into the installed APK.
 
-- BP uses `BP_FIREBASE_URL` and `BP_FIREBASE_AUTH`. Only `sys`, `dia`, `datetime` are used. This hardware feed has no patient identity, so BP remains explicitly unassigned.
-- Other vitals use `MEDIKET_FIREBASE_URL`, `MEDIKET_FIREBASE_AUTH` and the explicit `MOBILE_PATIENT_ID` at `users/{id}/vitals/latest`. No patient ID is guessed.
-- Configure `MOBILE_PAIRING_TOKEN` (at least 24 random characters) in `patient-app/.env.local`.
-- Run `node server/server.mjs`. The adapter binds to loopback port 3020 by default. Expose it through your HTTPS server/reverse proxy.
-- In the Android profile settings, enter the HTTPS origin and pairing code. Both persist in encrypted device storage. Clearing local data disconnects the device.
-- A public server origin can optionally be supplied at build time with `--dart-define=MEDIKET_SERVER=https://your-host`. Do not compile pairing codes or Firebase credentials into the app.
+## Exact mappings
 
-The adapter currently serves one explicitly configured patient/device pair. It is not a multi-patient account system. No public HTTPS deployment is configured in this workspace. The BP source was successfully read during verification; other vitals require the missing patient ID.
+| Database | Path | App behavior |
+|---|---|---|
+| project-a0538 | `/latest` | `sys` + `dia` -> BP in mmHg; `datetime` -> measurement time |
+| bp-and-temp | `/control/state` | BP ON sends `"ON"`, waits 2 seconds after acknowledgement, then attempts `"OFF"`; separate OFF button |
+| temperture-89982 | `/temperature` | Scalar Fahrenheit -> Celsius display, original Fahrenheit also shown |
+| temperture-89982 | `/control/state` | Independent Temperature ON/OFF buttons and returned state |
+| Existing MEDIKET Firebase | Explicit `MEDIKET_VITALS_PATH` from local configuration | Patient details, HR, SpO2, steps, stress, glucose, BMI and ECG when supplied |
 
-## Nearby care
+The source-details expander shows all received fields at these five paths, including BP flags, source pulse, power telemetry and other diagnostics. It does not browse other patients or copy the entire Firebase database. Unknown-unit patient temperature remains raw source data and never overrides the independent Fahrenheit sensor.
 
-An interactive OpenStreetMap covers Kelambakkam, Thiruporur and the SSN College corridor. Government facilities and private hospitals have distinct markers. Three amber Mediket pins are proposed locations, not operating centers. Pins indicate approximate areas; directions search the facility name rather than navigating to an unverified exact entrance.
+Device feeds refresh independently every five seconds while the app is foregrounded; pull down or tap Refresh for a manual update. An unavailable source clears its readings without discarding the other connected feeds. Zero HR/SpO2, malformed numbers, reversed BP, unsupported units and missing values never become invented measurements. Zero steps/stress remain valid.
 
-Facility identity sources are linked in the app:
-- Kelambakkam PHC: https://www.nhm.gov.in/images/pdf/nrhm-in-state/state-wise-information/tamilnadu/24x7_phc_tamilnadu.pdf
-- Thiruporur government facility: https://imhd.tn.gov.in/ayurveda-hospitals/
-- Chettinad: https://www.chettinadhospital.com/contact
+The scalar temperature source has no timestamp: its freshness is shown as unknown. Fetch time is separate from measurement time. BP and temperature sources carry no patient ID, so they are not automatically assigned to a patient's health record.
 
-CMCHIS and PM-JAY coverage is marked unverified until current empanelment, individual eligibility and treatment coverage are confirmed. ABHA is identified as a health identity, not insurance. No suitability decision is invented.
+## Controls and limits
 
-## Other features
+Controls write only the specified `/control/state` string. A Firebase acknowledgement confirms a saved command, not physical device operation or a finished reading. Actual hardware must implement the same paths. BP automatic OFF is best-effort while the app runs; a killed process or lost network can prevent OFF, so a firmware timeout is required for a guaranteed hardware cutoff. Controls are exercised against mocks during tests; read-only live checks do not start the cuff or temperature hardware.
 
-Encrypted personal health notes, prescribed medicine checklists, water logging, scheme bookmarks, emergency dialler and official eSanjeevani/clinic consultation links. Invented doctor profiles, local pretend bookings, prefilled medical records, fabricated charts and simulated video calls have been removed. Existing sample records are excluded on migration; user-created notes are retained.
+Health notes, medicine checklists, bookmarks, water logging, nearby maps and official care links remain available. Actual clinical consultations and schemes use external services. The app does not invent consultations, clinical outcomes, ML diagnoses or missing readings.
 
-## Verification
+## Build locally
 
-`flutter analyze`
-`flutter test`
-`node --test server/vitals.test.mjs`
-`node server/check-live.mjs` (prints connection status only)
-`flutter build apk --release`
+From `patient-app`:
+
+```powershell
+node server/prepare-master.mjs
+flutter analyze --no-pub
+flutter test --no-pub
+flutter test test/firebase_live_test.dart --no-pub --dart-define=LIVE_FIREBASE_TEST=true --dart-define-from-file=.private/firebase-defines.json
+flutter build apk --release --no-pub --dart-define-from-file=.private/firebase-defines.json
+```
+
+Preparation reads only the nine required Firebase settings from `../.env.local`, verifies the five paths using read-only GET requests, and writes an ignored `.private/firebase-defines.json`. It does not print secrets. The APK and intermediate build files contain the compiled configuration; keep them private. Rebuild after rotating credentials. Building without defines retains the earlier HTTPS server/pairing mode.
+
+Implementation references: [Firebase REST authentication](https://firebase.google.com/docs/database/rest/auth), [Firebase REST writes](https://firebase.google.com/docs/database/rest/save-data), [Flutter Android releases](https://docs.flutter.dev/deployment/android).

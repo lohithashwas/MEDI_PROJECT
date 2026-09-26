@@ -1,0 +1,22 @@
+{
+  "diabetes.joblib": {
+    "bytes": 105355,
+    "sha256": "6416a83aba02a561d9c3bf1152220bd7d3381deced699b3ceda12e58a16a098c",
+    "individual_inference": "research_only"
+  },
+  "diabetes_xgboost.joblib": {
+    "bytes": 108557,
+    "sha256": "3b941f0a11d9b267e64eb233bad70587e2485cf686f7e2a574c31761d9bd50a0",
+    "individual_inference": "research_only"
+  },
+  "sepsis.joblib": {
+    "bytes": 152816,
+    "sha256": "0abc31116157b9791d3625874a0efc6bc82d1c91b5601f6f229beee1fe333136",
+    "individual_inference": "withheld; illustrative demo only"
+  },
+  "sepsis_xgboost.joblib": {
+    "bytes": 29320,
+    "sha256": "00157c65db2b6a689836d03f058e750c822b6fa3f1f01c25a95bfeb303b54535",
+    "individual_inference": "withheld; illustrative demo only"
+  }
+}

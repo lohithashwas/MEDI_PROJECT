@@ -1,0 +1,15 @@
+{
+  "model": "diabetes",
+  "research_only": true,
+  "context": "adult_brfss_style_survey",
+  "measurements": {
+    "bmi": 27,
+    "age_band": 7,
+    "sex_code": 1,
+    "high_bp_history": 1,
+    "high_cholesterol_history": 0,
+    "ever_smoked_100": 0,
+    "physical_activity_30d": 1,
+    "general_health": 2
+  }
+}

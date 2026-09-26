@@ -6,12 +6,18 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "ganache": "ganache --server.host 127.0.0.1 --server.port 7447 --chain.chainId 1337 --chain.networkId 5777 --wallet.deterministic --database.dbPath .blockchain/ganache-7447 --logging.quiet",
+    "blockchain:collect": "node blockchain/collector.mjs",
+    "blockchain:test": "node --test blockchain/ledger.test.mjs"
   },
   "dependencies": {
     "leaflet": "^1.9.4",
     "next": "14.2.35",
     "react": "18.3.1",
     "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "ganache": "7.9.2"
   }
 }

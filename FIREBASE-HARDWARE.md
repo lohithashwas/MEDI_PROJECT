@@ -2,8 +2,31 @@
 
 Database: `https://mediket-fyp-default-rtdb.asia-southeast1.firebasedatabase.app`
 
-This is the agreed target schema for the hardware integration, not a claim that
-RFID login is already connected. The database was empty when inspected.
+The current website displays `patientId`, `name`, `cardUid`, `readerId`,
+`latitude`, `longitude`, `heartRate`, `spo2`, `steps`, and `updatedAt` from
+`users/patient_001/vitals/latest`. Zero steps and zero coordinates are preserved.
+The `inaVoltage`, `inaCurrent`, and `inaPower` fields are ignored and are not
+returned to the browser. Temperature at this path is also ignored: the website
+continues to use the separate temperature database described below. The live
+dashboard shows device-reported glucose/stress and ECG in the additional health section. It does not generate simulated measurements.
+
+The web dashboard now reads the configured kiosk measurement path through
+`/api/vitals`, refreshing every 10 seconds and on manual refresh. Set the following
+server environment variables locally and on the hosting service:
+
+```text
+MEDIKET_FIREBASE_URL=https://mediket-fyp-default-rtdb.asia-southeast1.firebasedatabase.app
+MEDIKET_FIREBASE_AUTH=<server credential>
+MEDIKET_VITALS_PATH=users/patient_001/vitals/latest
+```
+
+This path selects the existing patient_001 kiosk feed; it does not implement
+per-user routing or RFID authentication. Change it when configuring another kiosk.
+Firebase takes precedence over `VITALS_API_URL`. Missing or unreachable readings
+show as unavailable, never as demo measurements. GitHub Secrets do not automatically
+configure the hosting service's runtime environment.
+
+The remaining schema describes the hardware integration; RFID login is not yet connected.
 `firebase-hardware-format.json` contains illustrative data only; replace it with
 real registered cards, patients and measurements. Do not upload the example tap
 as a real patient tap or the example readings as actual measurements.
@@ -116,7 +139,30 @@ results. Hardware should not write these. Check IDs are `diabetes`, `pressure`,
 The website will store answers, the calculated summary and completion timestamp
 under the signed-in patient, rather than a shared kiosk history.
 
-## Blood pressure remains separate
+## Dashboard data sources and controls
+
+| Data / action | Firebase database | Path |
+| --- | --- | --- |
+| Heart rate, SpO2, glucose, stress, steps | `mediket-fyp-default-rtdb` | `users/patient_001/vitals/latest` (configured kiosk path) |
+| BP reading | `project-a0538-default-rtdb` | `latest` (`sys`, `dia`, `datetime`) |
+| BP ON/OFF trigger | `bp-and-temp-default-rtdb` | `control/state` |
+| Temperature reading, Fahrenheit | `temperture-89982-default-rtdb` | `temperature` |
+
+BP control uses server-only `BP_CONTROL_FIREBASE_URL` and
+`BP_CONTROL_FIREBASE_AUTH`. An explicit BP on button or voice command sends ON,
+waits two seconds, then sends OFF, matching the supplied HTML. BP off sends OFF
+directly. Opening or refreshing the page never triggers a device. Control success
+confirms the command, not completion of a measurement. Measurements continue to
+refresh from the independent BP reading source every ten seconds.
+
+Temperature uses server-only `TEMPERATURE_FIREBASE_URL` and
+`TEMPERATURE_FIREBASE_AUTH`. The device sends Fahrenheit; the UI displays °F.
+The reading uses `/temperature`. Explicit Temperature ON/OFF buttons write the
+string ON or OFF to `/control/state` in this same temperature database. ON stays
+on until OFF is pressed; opening the page and refreshing never write controls.
+Neither BP nor temperature falls back to the general vitals database.
+
+## Existing BP reading connection
 
 Do not send BP to this database for the website. Retain the existing BP source:
 `https://project-a0538-default-rtdb.asia-southeast1.firebasedatabase.app/latest.json`
@@ -136,3 +182,9 @@ not official ABHA identity verification.
 
 When the hardware is ready, publish one real registered card tap and a measurement
 snapshot, then verify these exact paths before enabling automatic login.
+
+## Additional health measurements
+
+At the configured patient vitals path, optional `stressLevel` is a device-provided score from 0 to 100, and `glucose` is a measured value in mg/dL. ECG accepts `ecg: [numeric samples]` or `ecg: {"samples": [numeric samples]}`; the latest 1,000 samples are displayed with auto-scaled amplitude, without rhythm interpretation. Missing values show waiting states. No glucose inference model is installed.
+
+Both patient dashboards include height in cm and weight in kg inputs. BMI is calculated as weight / (height / 100)^2. Inputs are not persisted and reset when the displayed patient changes.

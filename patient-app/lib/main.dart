@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'data.dart';
+import 'firebase_device.dart';
+import 'device_panel.dart';
 import 'hospital_map.dart';
 
 const ink = Color(0xff142c39),
@@ -88,6 +90,10 @@ class PatientHome extends StatefulWidget {
 
 class _PatientHomeState extends State<PatientHome> with WidgetsBindingObserver {
   final storage = const FlutterSecureStorage();
+  final firebase = FirebaseDevice(const FirebaseDeviceConfig());
+  bool directEnabled = true;
+  bool get direct => firebase.config.configured && directEnabled;
+  bool get connectedConfig => direct || (base.isNotEmpty && token.isNotEmpty);
   final scroll = ScrollController();
   final vitalsKey = GlobalKey();
   int tab = 0, water = 0, generation = 0;
@@ -110,8 +116,7 @@ class _PatientHomeState extends State<PatientHome> with WidgetsBindingObserver {
     restore();
     polling = Timer.periodic(const Duration(seconds: 5), (_) {
       if (!loading &&
-          base.isNotEmpty &&
-          token.isNotEmpty &&
+          connectedConfig &&
           WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed) {
         refresh();
       }
@@ -128,11 +133,9 @@ class _PatientHomeState extends State<PatientHome> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed &&
-        loaded &&
-        base.isNotEmpty &&
-        token.isNotEmpty)
+    if (state == AppLifecycleState.resumed && loaded && connectedConfig) {
       refresh();
+    }
   }
 
   String dayKey() => DateTime.now().toIso8601String().substring(0, 10);
@@ -143,6 +146,7 @@ class _PatientHomeState extends State<PatientHome> with WidgetsBindingObserver {
         final d = jsonDecode(raw);
         setState(() {
           name = d['name'] ?? 'there';
+          directEnabled = d['directEnabled'] ?? true;
           base = d['base'] ?? base;
           token = d['token'] ?? '';
           records = List<Map<String, dynamic>>.from(
@@ -165,7 +169,7 @@ class _PatientHomeState extends State<PatientHome> with WidgetsBindingObserver {
     }
     if (mounted) {
       setState(() => loaded = true);
-      if (base.isNotEmpty && token.isNotEmpty) refresh();
+      if (connectedConfig) refresh();
     }
   }
 
@@ -175,6 +179,7 @@ class _PatientHomeState extends State<PatientHome> with WidgetsBindingObserver {
         key: 'mediket-care-v1',
         value: jsonEncode({
           'name': name,
+          'directEnabled': directEnabled,
           'base': base,
           'token': token,
           'records': records,
@@ -227,7 +232,7 @@ class _PatientHomeState extends State<PatientHome> with WidgetsBindingObserver {
   }
 
   Future<void> refresh() async {
-    if (base.isEmpty || token.isEmpty) {
+    if (!connectedConfig) {
       setState(
         () => connectionError =
             'Connect your device in Profile to receive measurements.',
@@ -241,7 +246,9 @@ class _PatientHomeState extends State<PatientHome> with WidgetsBindingObserver {
       connectionError = '';
     });
     try {
-      final result = await VitalFeed.fetch(base, token);
+      final result = direct
+          ? await firebase.fetch()
+          : await VitalFeed.fetch(base, token);
       if (mounted && version == generation) {
         setState(() => feed = result);
       }
@@ -626,7 +633,7 @@ class _PatientHomeState extends State<PatientHome> with WidgetsBindingObserver {
         onTap: loading ? null : refresh,
       ),
     ),
-    if (base.isEmpty)
+    if (!connectedConfig)
       Padding(
         padding: const EdgeInsets.only(bottom: 12),
         child: FilledButton.icon(
@@ -721,7 +728,7 @@ class _PatientHomeState extends State<PatientHome> with WidgetsBindingObserver {
               const SizedBox(width: 8),
               const Expanded(
                 child: Text(
-                  'Two devices. One clear view.',
+                  'Independent feeds. One clear view.',
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
                 ),
               ),
@@ -729,7 +736,14 @@ class _PatientHomeState extends State<PatientHome> with WidgetsBindingObserver {
           ),
           const SizedBox(height: 8),
           small('BP · ${feed.bpStatus}'),
+          small('Temperature · ${feed.temperatureStatus}'),
           small('Other vitals · ${feed.vitalsStatus}'),
+          if (feed.values['temperatureF'] != null)
+            small('Temperature source: ${feed.values['temperatureF']} °F'),
+          if (feed.fetchedAt != null)
+            small(
+              'Last fetched: ${readableTime(feed.fetchedAt!.toIso8601String())} · fetch time is not measurement time',
+            ),
           ...[
             const SizedBox(height: 6),
             small('BP measured: ${readableTime(feed.bpAt)}'),
@@ -743,6 +757,7 @@ class _PatientHomeState extends State<PatientHome> with WidgetsBindingObserver {
       ),
       padding: const EdgeInsets.all(16),
     ),
+    if (direct) DevicePanel(device: firebase, feed: feed, onRefresh: refresh),
     heading('Care around you'),
     box(
       Column(
@@ -1600,7 +1615,7 @@ class _PatientHomeState extends State<PatientHome> with WidgetsBindingObserver {
           const Divider(),
           title('Device connection'),
           small(
-            base.isEmpty
+            !connectedConfig
                 ? 'Open profile settings to connect your device.'
                 : 'Automatic refresh is enabled. Measurement timestamps show freshness.',
           ),
@@ -1639,6 +1654,7 @@ class _PatientHomeState extends State<PatientHome> with WidgetsBindingObserver {
         endpoint = TextEditingController(text: base),
         code = TextEditingController(text: token);
     final form = GlobalKey<FormState>();
+    bool useDirect = directEnabled;
     sheet(
       'Your profile & devices',
       StatefulBuilder(
@@ -1656,7 +1672,17 @@ class _PatientHomeState extends State<PatientHome> with WidgetsBindingObserver {
                 validator: (v) => v!.trim().isEmpty ? 'Enter your name' : null,
               ),
               const SizedBox(height: 14),
-              ...[
+              if (firebase.config.configured)
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Direct Firebase connection'),
+                  subtitle: const Text(
+                    'Private master configuration · no server pairing required',
+                  ),
+                  value: useDirect,
+                  onChanged: (value) => setLocal(() => useDirect = value),
+                ),
+              if (!firebase.config.configured || !useDirect) ...[
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: endpoint,
@@ -1699,6 +1725,7 @@ class _PatientHomeState extends State<PatientHome> with WidgetsBindingObserver {
                   }
                   generation++;
                   setState(() {
+                    directEnabled = useDirect;
                     name = profile.text.trim();
                     base = endpoint.text.trim();
                     token = code.text.trim();
@@ -1716,7 +1743,9 @@ class _PatientHomeState extends State<PatientHome> with WidgetsBindingObserver {
               title('Privacy & local storage'),
               const SizedBox(height: 8),
               small(
-                'Your profile, pairing code, notes and medicine checklists use encrypted device storage. Measurements are read from your connected devices and are not copied into notes. Alerts and medicine notifications are not enabled.',
+                firebase.config.configured
+                    ? 'Private master build: Firebase credentials are included in this APK. Do not distribute it publicly. Local notes and profile use encrypted storage. Clear local data disconnects the app but cannot erase credentials from the installed APK.'
+                    : 'Your profile, pairing code, notes and medicine checklists use encrypted device storage. Measurements are read from connected devices. Alerts and medicine notifications are not enabled.',
               ),
               const SizedBox(height: 18),
               TextButton.icon(
@@ -1731,6 +1760,7 @@ class _PatientHomeState extends State<PatientHome> with WidgetsBindingObserver {
                       return;
                     }
                     setState(() {
+                      directEnabled = false;
                       name = 'there';
                       records = [];
                       appointments = [];
@@ -1743,6 +1773,7 @@ class _PatientHomeState extends State<PatientHome> with WidgetsBindingObserver {
                       loading = false;
                       connectionError = '';
                     });
+                    await persist();
                     if (ctx.mounted) {
                       Navigator.pop(ctx);
                     }

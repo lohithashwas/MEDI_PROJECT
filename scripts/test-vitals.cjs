@@ -1,0 +1,61 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+
+(async () => {
+  const source = fs.readFileSync('app/api/vitals/route.js', 'utf8');
+  const { GET } = await import(`data:text/javascript;base64,${Buffer.from(source).toString('base64')}`);
+  process.env.MEDIKET_FIREBASE_URL = 'https://example.firebaseio.com';
+  process.env.MEDIKET_FIREBASE_AUTH = 'test-secret';
+  process.env.MEDIKET_VITALS_PATH = 'users/patient_001/vitals/latest';
+  process.env.VITALS_API_URL = 'http://localhost:5000/api/health';
+  let payload = { patientId: 'patient_001', name: 'Test Patient', cardUid: 'A1B2', readerId: 'kiosk-01', latitude: 0, longitude: 80.27, heartRate: 95, spo2: 96, temperature: 37.3, glucose: 90, stressLevel: 15, steps: 5580, updatedAt: 1790334586248 };
+  global.fetch = async (url, options) => {
+    assert.equal(url.pathname, '/users/patient_001/vitals/latest.json');
+    assert.equal(url.searchParams.get('auth'), 'test-secret');
+    assert.equal(options.cache, 'no-store');
+    return Response.json(payload);
+  };
+  const first = await GET();
+  assert.equal(first.headers.get('cache-control'), 'no-store');
+  assert.deepEqual(await first.json(), { ...payload, ecg: null, bloodPressure: null, temperature: null, source: 'Connected device' });
+  payload = { heartRate: 92, steps: 0, stressLevel: 0 };
+  const next = await (await GET()).json();
+  assert.equal(next.heartRate, 92);
+  assert.equal(next.steps, 0);
+  assert.equal(next.stressLevel, 0);
+  assert.equal(next.temperature, null);
+  assert.equal(next.updatedAt, null);
+  payload = { steps: 0, latitude: 0, longitude: '80.27', name: { invalid: true }, inaVoltage: 12, inaCurrent: 2, inaPower: 24, temperature: 37 };
+  const schema = await (await GET()).json();
+  assert.equal(schema.steps, 0);
+  assert.equal(schema.latitude, 0);
+  assert.equal(schema.longitude, 80.27);
+  assert.equal(schema.name, null);
+  assert.equal(schema.temperature, null);
+  for (const key of ['inaVoltage', 'inaCurrent', 'inaPower']) assert.equal(key in schema, false);
+  payload = { ecg: { samples: [0, 0.2, -0.5, 1, 0] }, stressLevel: 28, glucose: 96 };
+  const signals = await (await GET()).json();
+  assert.deepEqual(signals.ecg, payload.ecg.samples);
+  assert.equal(signals.stressLevel, 28);
+  assert.equal(signals.glucose, 96);
+  payload = { ecg: [0, 'bad'], steps: 0 };
+  assert.equal((await (await GET()).json()).ecg, null);
+  for (const invalid of [null, {}, [], { heartRate: 'bad' }]) {
+    payload = invalid;
+    const response = await GET();
+    assert.equal(response.status, 502);
+    assert.equal((await response.json()).heartRate, undefined);
+  }
+  global.fetch = async () => new Response('Permission denied', { status: 401 });
+  assert.equal((await GET()).status, 502);
+  global.fetch = async () => { throw new Error('Network failure'); };
+  assert.equal((await GET()).status, 502);
+  delete process.env.MEDIKET_VITALS_PATH;
+  assert.equal((await GET()).status, 503);
+  delete process.env.MEDIKET_FIREBASE_URL;
+  global.fetch = async () => Response.json({ 'Heart Rate': '83', SpO2: 98 });
+  assert.equal((await (await GET()).json()).heartRate, 83);
+  delete process.env.VITALS_API_URL;
+  assert.equal((await GET()).status, 503);
+  console.log('PASS: authenticated Firebase path, changing readings, zero values, missing data, no demo fallback, and legacy source.');
+})().catch(error => { console.error(error); process.exitCode = 1; });

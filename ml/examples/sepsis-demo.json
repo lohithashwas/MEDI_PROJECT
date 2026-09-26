@@ -1,0 +1,17 @@
+{
+  "model": "sepsis",
+  "variant": "xgboost",
+  "research_only": true,
+  "demonstration": true,
+  "context": "synthetic_icu_demo",
+  "measurements": {
+    "heart_rate_bpm": 85,
+    "spo2_percent": 97,
+    "temperature_c": 37.2,
+    "systolic_bp_mmhg": 120,
+    "diastolic_bp_mmhg": 75,
+    "glucose_mg_dl": 110,
+    "bmi": 24,
+    "stress_level": 20
+  }
+}

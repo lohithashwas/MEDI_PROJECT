@@ -1,0 +1,14 @@
+[
+  {
+    "patient_file": "p000001",
+    "site": "A",
+    "normalized_content_matches": true,
+    "official_source": "https://physionet.org/files/challenge-2019/1.0.0/training/training_setA/p000001.psv"
+  },
+  {
+    "patient_file": "p100001",
+    "site": "B",
+    "normalized_content_matches": true,
+    "official_source": "https://physionet.org/files/challenge-2019/1.0.0/training/training_setB/p100001.psv"
+  }
+]

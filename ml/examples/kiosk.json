@@ -1,0 +1,15 @@
+{
+  "model": "sepsis",
+  "research_only": true,
+  "context": "kiosk",
+  "measurements": {
+    "heart_rate_bpm": 72,
+    "spo2_percent": 98,
+    "temperature_c": 37,
+    "glucose_mg_dl": 100,
+    "bmi": 23,
+    "systolic_bp_mmhg": 120,
+    "diastolic_bp_mmhg": 80,
+    "stress_level": 15
+  }
+}

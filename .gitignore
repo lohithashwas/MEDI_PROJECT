@@ -11,3 +11,11 @@ node_modules/
 .next-voice-test/
 .env.local
 .env.*.local
+
+.next-health-preview/
+
+.ml-venv/
+ml/data/
+ml/runtime/
+.blockchain/
+.npm-cache/

@@ -1,0 +1,26 @@
+[
+  {
+    "file": "kaggle-diabetes-health-indicators.zip",
+    "url": "https://www.kaggle.com/api/v1/datasets/download/alexteboul/diabetes-health-indicators-dataset",
+    "origin": "Kaggle derivative of CDC BRFSS 2015",
+    "license_note": "CC0 per Kaggle API metadata",
+    "sha256": "ecbd65727a3b9b730bfd3ba547a181767522f1188fb16077e885945c1030f046",
+    "bytes": 6324278
+  },
+  {
+    "file": "kaggle-sepsis.zip",
+    "url": "https://www.kaggle.com/api/v1/datasets/download/salikhussaini49/prediction-of-sepsis",
+    "origin": "Kaggle mirror of PhysioNet Challenge 2019",
+    "license_note": "Mirror includes ODbL LICENSE.txt; current PhysioNet landing page says CC BY 4.0. Preserve both notices; resolve terms before redistribution.",
+    "sha256": "1a0eb8040c76fdab84ee6c7dd6afdab4ad457a33d363cb7e4e200af713345897",
+    "bytes": 78283714
+  },
+  {
+    "file": "cdc-LLCP2015ASC.zip",
+    "url": "https://www.cdc.gov/brfss/annual_data/2015/files/LLCP2015ASC.zip",
+    "origin": "Original CDC BRFSS 2015 archive",
+    "license_note": "US federal public-use survey; follow CDC acknowledgement and privacy requirements",
+    "sha256": "d8850a49e469517260ab2bc4619f270115ebdfb2a0945683fe430cfa297a54e4",
+    "bytes": 65857111
+  }
+]

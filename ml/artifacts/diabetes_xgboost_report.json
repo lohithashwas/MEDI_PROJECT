@@ -1,0 +1,437 @@
+{
+  "task": "diabetes",
+  "seed": 20260925,
+  "selected": "xgboost_depth4",
+  "selection_metric": "Mean 3-fold grouped CV average precision; test sets never used for selection",
+  "features": [
+    "bmi",
+    "age_band",
+    "sex_code",
+    "high_bp_history",
+    "high_cholesterol_history",
+    "ever_smoked_100",
+    "physical_activity_30d",
+    "general_health"
+  ],
+  "split_sizes": {
+    "fit": 152209,
+    "calibration": 50734,
+    "test": 50737
+  },
+  "leaderboard": [
+    {
+      "name": "xgboost_depth2",
+      "mean_average_precision": 0.4236756499853814,
+      "mean_roc_auc": 0.8239689017236437,
+      "folds": [
+        {
+          "n": 50733,
+          "positives": 7069,
+          "prevalence": 0.1393373149626476,
+          "roc_auc": 0.8240015263226674,
+          "average_precision": 0.42357599917289057,
+          "brier": 0.0976560190320015,
+          "accuracy_at_0_5": 0.8664971517552678,
+          "precision_at_0_5": 0.5884109916367981,
+          "recall_at_0_5": 0.13934078370349412,
+          "confusion_matrix_at_0_5": [
+            [
+              42975,
+              689
+            ],
+            [
+              6084,
+              985
+            ]
+          ]
+        },
+        {
+          "n": 50742,
+          "positives": 7072,
+          "prevalence": 0.13937172362145758,
+          "roc_auc": 0.8268957693939636,
+          "average_precision": 0.4279047149277116,
+          "brier": 0.09723655879497528,
+          "accuracy_at_0_5": 0.8665405384099957,
+          "precision_at_0_5": 0.5813449023861171,
+          "recall_at_0_5": 0.1515837104072398,
+          "confusion_matrix_at_0_5": [
+            [
+              42898,
+              772
+            ],
+            [
+              6000,
+              1072
+            ]
+          ]
+        },
+        {
+          "n": 50734,
+          "positives": 7068,
+          "prevalence": 0.13931485788623013,
+          "roc_auc": 0.8210094094542999,
+          "average_precision": 0.4195462358555419,
+          "brier": 0.09805751591920853,
+          "accuracy_at_0_5": 0.8656128040367407,
+          "precision_at_0_5": 0.5699888017917133,
+          "recall_at_0_5": 0.144029428409734,
+          "confusion_matrix_at_0_5": [
+            [
+              42898,
+              768
+            ],
+            [
+              6050,
+              1018
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "xgboost_depth4",
+      "mean_average_precision": 0.4251658447130411,
+      "mean_roc_auc": 0.8248600619776917,
+      "folds": [
+        {
+          "n": 50733,
+          "positives": 7069,
+          "prevalence": 0.1393373149626476,
+          "roc_auc": 0.8253429761554185,
+          "average_precision": 0.42583618740084156,
+          "brier": 0.09741470962762833,
+          "accuracy_at_0_5": 0.8668519504070329,
+          "precision_at_0_5": 0.5913853317811408,
+          "recall_at_0_5": 0.14372612816522845,
+          "confusion_matrix_at_0_5": [
+            [
+              42962,
+              702
+            ],
+            [
+              6053,
+              1016
+            ]
+          ]
+        },
+        {
+          "n": 50742,
+          "positives": 7072,
+          "prevalence": 0.13937172362145758,
+          "roc_auc": 0.8275539477099431,
+          "average_precision": 0.4296317166503409,
+          "brier": 0.09707074612379074,
+          "accuracy_at_0_5": 0.8664617082495762,
+          "precision_at_0_5": 0.5792291220556746,
+          "recall_at_0_5": 0.1529977375565611,
+          "confusion_matrix_at_0_5": [
+            [
+              42884,
+              786
+            ],
+            [
+              5990,
+              1082
+            ]
+          ]
+        },
+        {
+          "n": 50734,
+          "positives": 7068,
+          "prevalence": 0.13931485788623013,
+          "roc_auc": 0.8216832620677136,
+          "average_precision": 0.42002963008794086,
+          "brier": 0.09791646152734756,
+          "accuracy_at_0_5": 0.8663420980013403,
+          "precision_at_0_5": 0.5788894997251237,
+          "recall_at_0_5": 0.14898132427843802,
+          "confusion_matrix_at_0_5": [
+            [
+              42900,
+              766
+            ],
+            [
+              6015,
+              1053
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "xgboost_depth6",
+      "mean_average_precision": 0.42337255688870895,
+      "mean_roc_auc": 0.8242088635332999,
+      "folds": [
+        {
+          "n": 50733,
+          "positives": 7069,
+          "prevalence": 0.1393373149626476,
+          "roc_auc": 0.8247687017713321,
+          "average_precision": 0.42434318627651146,
+          "brier": 0.09754450619220734,
+          "accuracy_at_0_5": 0.8668716614432421,
+          "precision_at_0_5": 0.5900514579759862,
+          "recall_at_0_5": 0.14598953175838167,
+          "confusion_matrix_at_0_5": [
+            [
+              42947,
+              717
+            ],
+            [
+              6037,
+              1032
+            ]
+          ]
+        },
+        {
+          "n": 50742,
+          "positives": 7072,
+          "prevalence": 0.13937172362145758,
+          "roc_auc": 0.8269040456783548,
+          "average_precision": 0.42767966536916924,
+          "brier": 0.09723256528377533,
+          "accuracy_at_0_5": 0.8661069725276891,
+          "precision_at_0_5": 0.5740149094781682,
+          "recall_at_0_5": 0.1524321266968326,
+          "confusion_matrix_at_0_5": [
+            [
+              42870,
+              800
+            ],
+            [
+              5994,
+              1078
+            ]
+          ]
+        },
+        {
+          "n": 50734,
+          "positives": 7068,
+          "prevalence": 0.13931485788623013,
+          "roc_auc": 0.8209538431502124,
+          "average_precision": 0.41809481902044604,
+          "brier": 0.0980542004108429,
+          "accuracy_at_0_5": 0.8663223873536484,
+          "precision_at_0_5": 0.5835280373831776,
+          "recall_at_0_5": 0.14134125636672326,
+          "confusion_matrix_at_0_5": [
+            [
+              42953,
+              713
+            ],
+            [
+              6069,
+              999
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "test": {
+    "n": 50737,
+    "positives": 7069,
+    "prevalence": 0.1393263298973136,
+    "roc_auc": 0.823395510522283,
+    "average_precision": 0.4168266778038664,
+    "brier": 0.09796927869319916,
+    "accuracy_at_0_5": 0.8652462699804876,
+    "precision_at_0_5": 0.5722291407222914,
+    "recall_at_0_5": 0.13000424388173717,
+    "confusion_matrix_at_0_5": [
+      [
+        42981,
+        687
+      ],
+      [
+        6150,
+        919
+      ]
+    ]
+  },
+  "test_ci95_bootstrap": {
+    "roc_auc": [
+      0.8132114971822755,
+      0.831531838267543
+    ],
+    "average_precision": [
+      0.4031536455817298,
+      0.4316866520263015
+    ],
+    "replicates": 200,
+    "unit": "feature-profile cluster"
+  },
+  "calibration_bins": [
+    {
+      "count": 27531,
+      "mean_score": 0.03391880542039871,
+      "observed_rate": 0.03265409901565508
+    },
+    {
+      "count": 9572,
+      "mean_score": 0.14396695792675018,
+      "observed_rate": 0.14855829502716256
+    },
+    {
+      "count": 5904,
+      "mean_score": 0.24652020633220673,
+      "observed_rate": 0.24949186991869918
+    },
+    {
+      "count": 3878,
+      "mean_score": 0.3421555459499359,
+      "observed_rate": 0.35018050541516244
+    },
+    {
+      "count": 2246,
+      "mean_score": 0.44216346740722656,
+      "observed_rate": 0.44434550311665183
+    },
+    {
+      "count": 982,
+      "mean_score": 0.5397585034370422,
+      "observed_rate": 0.5366598778004074
+    },
+    {
+      "count": 508,
+      "mean_score": 0.6439579129219055,
+      "observed_rate": 0.6240157480314961
+    },
+    {
+      "count": 116,
+      "mean_score": 0.7337386608123779,
+      "observed_rate": 0.646551724137931
+    }
+  ],
+  "subgroups": {
+    "sex_0": {
+      "n": 27552,
+      "positives": 3537,
+      "prevalence": 0.1283754355400697,
+      "roc_auc": 0.8299998510731943,
+      "average_precision": 0.40514082467679574,
+      "brier": 0.09146921336650848,
+      "accuracy_at_0_5": 0.875,
+      "precision_at_0_5": 0.5562273276904474,
+      "recall_at_0_5": 0.13005371783997738,
+      "confusion_matrix_at_0_5": [
+        [
+          23648,
+          367
+        ],
+        [
+          3077,
+          460
+        ]
+      ]
+    },
+    "sex_1": {
+      "n": 23185,
+      "positives": 3532,
+      "prevalence": 0.15233987491912876,
+      "roc_auc": 0.8149134727038466,
+      "average_precision": 0.4287735063233632,
+      "brier": 0.10569367557764053,
+      "accuracy_at_0_5": 0.8536553806340306,
+      "precision_at_0_5": 0.5892169448010269,
+      "recall_at_0_5": 0.1299546998867497,
+      "confusion_matrix_at_0_5": [
+        [
+          19333,
+          320
+        ],
+        [
+          3073,
+          459
+        ]
+      ]
+    },
+    "age_band_1_6": {
+      "n": 14795,
+      "positives": 795,
+      "prevalence": 0.05373436971949983,
+      "roc_auc": 0.8603488319856244,
+      "average_precision": 0.30449286002745946,
+      "brier": 0.04284077137708664,
+      "accuracy_at_0_5": 0.9465359918891517,
+      "precision_at_0_5": 0.5217391304347826,
+      "recall_at_0_5": 0.06037735849056604,
+      "confusion_matrix_at_0_5": [
+        [
+          13956,
+          44
+        ],
+        [
+          747,
+          48
+        ]
+      ]
+    },
+    "age_band_7_13": {
+      "n": 35942,
+      "positives": 6274,
+      "prevalence": 0.1745590117411385,
+      "roc_auc": 0.7886920696146054,
+      "average_precision": 0.42898601592019436,
+      "brier": 0.1206621453166008,
+      "accuracy_at_0_5": 0.8317845417617272,
+      "precision_at_0_5": 0.5752972258916776,
+      "recall_at_0_5": 0.13882690468600573,
+      "confusion_matrix_at_0_5": [
+        [
+          29025,
+          643
+        ],
+        [
+          5403,
+          871
+        ]
+      ]
+    }
+  },
+  "permutation_importance_calibration": {
+    "bmi": 0.09020251014981408,
+    "age_band": 0.0463216199144737,
+    "sex_code": 0.0035635875651195783,
+    "high_bp_history": 0.0353955733451489,
+    "high_cholesterol_history": 0.03033191971302864,
+    "ever_smoked_100": 0.0005104025451905247,
+    "physical_activity_30d": 0.0006384681703284582,
+    "general_health": 0.10729636459571067
+  },
+  "versions": {
+    "python": "3.14.0",
+    "sklearn": "1.9.1",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "xgboost": "3.4.1"
+  },
+  "evaluation_note": "Exploratory follow-up on the same previously inspected holdout. Hyperparameters selected using development CV only; not a new independent validation.",
+  "baseline_comparison": {
+    "selected": "hist_gradient_15",
+    "test": {
+      "n": 50737,
+      "positives": 7069,
+      "prevalence": 0.1393263298973136,
+      "roc_auc": 0.8228407533104538,
+      "average_precision": 0.4154583404066984,
+      "brier": 0.09807306942282686,
+      "accuracy_at_0_5": 0.8654236553205747,
+      "precision_at_0_5": 0.5718545020870602,
+      "recall_at_0_5": 0.13566275286462018,
+      "confusion_matrix_at_0_5": [
+        [
+          42950,
+          718
+        ],
+        [
+          6110,
+          959
+        ]
+      ]
+    },
+    "mean_cv_average_precision": 0.4242012503335599
+  }
+}

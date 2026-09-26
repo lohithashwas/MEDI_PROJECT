@@ -1,0 +1,333 @@
+{
+  "task": "sepsis",
+  "seed": 20260925,
+  "selected": "xgboost_depth2",
+  "selection_metric": "Mean 3-fold grouped CV average precision; test sets never used for selection",
+  "features": [
+    "heart_rate_bpm",
+    "spo2_percent",
+    "temperature_c",
+    "systolic_bp_mmhg",
+    "diastolic_bp_mmhg",
+    "glucose_mg_dl"
+  ],
+  "split_sizes": {
+    "fit": 2958,
+    "calibration": 986,
+    "test": 986
+  },
+  "leaderboard": [
+    {
+      "name": "xgboost_depth2",
+      "mean_average_precision": 0.022878864855103948,
+      "mean_roc_auc": 0.6182833952618125,
+      "folds": [
+        {
+          "n": 986,
+          "positives": 13,
+          "prevalence": 0.013184584178498986,
+          "roc_auc": 0.6259388093920467,
+          "average_precision": 0.023830509910270643,
+          "brier": 0.01298251748085022,
+          "accuracy_at_0_5": 0.986815415821501,
+          "precision_at_0_5": 0.0,
+          "recall_at_0_5": 0.0,
+          "confusion_matrix_at_0_5": [
+            [
+              973,
+              0
+            ],
+            [
+              13,
+              0
+            ]
+          ]
+        },
+        {
+          "n": 986,
+          "positives": 13,
+          "prevalence": 0.013184584178498986,
+          "roc_auc": 0.5739979445015416,
+          "average_precision": 0.018577696157276318,
+          "brier": 0.013050228357315063,
+          "accuracy_at_0_5": 0.986815415821501,
+          "precision_at_0_5": 0.0,
+          "recall_at_0_5": 0.0,
+          "confusion_matrix_at_0_5": [
+            [
+              973,
+              0
+            ],
+            [
+              13,
+              0
+            ]
+          ]
+        },
+        {
+          "n": 986,
+          "positives": 13,
+          "prevalence": 0.013184584178498986,
+          "roc_auc": 0.6549134318918493,
+          "average_precision": 0.026228388497764887,
+          "brier": 0.013003498315811157,
+          "accuracy_at_0_5": 0.986815415821501,
+          "precision_at_0_5": 0.0,
+          "recall_at_0_5": 0.0,
+          "confusion_matrix_at_0_5": [
+            [
+              973,
+              0
+            ],
+            [
+              13,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "xgboost_depth4",
+      "mean_average_precision": 0.022878864855103948,
+      "mean_roc_auc": 0.6182833952618125,
+      "folds": [
+        {
+          "n": 986,
+          "positives": 13,
+          "prevalence": 0.013184584178498986,
+          "roc_auc": 0.6259388093920467,
+          "average_precision": 0.023830509910270643,
+          "brier": 0.01298251748085022,
+          "accuracy_at_0_5": 0.986815415821501,
+          "precision_at_0_5": 0.0,
+          "recall_at_0_5": 0.0,
+          "confusion_matrix_at_0_5": [
+            [
+              973,
+              0
+            ],
+            [
+              13,
+              0
+            ]
+          ]
+        },
+        {
+          "n": 986,
+          "positives": 13,
+          "prevalence": 0.013184584178498986,
+          "roc_auc": 0.5739979445015416,
+          "average_precision": 0.018577696157276318,
+          "brier": 0.013050228357315063,
+          "accuracy_at_0_5": 0.986815415821501,
+          "precision_at_0_5": 0.0,
+          "recall_at_0_5": 0.0,
+          "confusion_matrix_at_0_5": [
+            [
+              973,
+              0
+            ],
+            [
+              13,
+              0
+            ]
+          ]
+        },
+        {
+          "n": 986,
+          "positives": 13,
+          "prevalence": 0.013184584178498986,
+          "roc_auc": 0.6549134318918493,
+          "average_precision": 0.026228388497764887,
+          "brier": 0.013003498315811157,
+          "accuracy_at_0_5": 0.986815415821501,
+          "precision_at_0_5": 0.0,
+          "recall_at_0_5": 0.0,
+          "confusion_matrix_at_0_5": [
+            [
+              973,
+              0
+            ],
+            [
+              13,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "name": "xgboost_depth6",
+      "mean_average_precision": 0.022878864855103948,
+      "mean_roc_auc": 0.6182833952618125,
+      "folds": [
+        {
+          "n": 986,
+          "positives": 13,
+          "prevalence": 0.013184584178498986,
+          "roc_auc": 0.6259388093920467,
+          "average_precision": 0.023830509910270643,
+          "brier": 0.01298251748085022,
+          "accuracy_at_0_5": 0.986815415821501,
+          "precision_at_0_5": 0.0,
+          "recall_at_0_5": 0.0,
+          "confusion_matrix_at_0_5": [
+            [
+              973,
+              0
+            ],
+            [
+              13,
+              0
+            ]
+          ]
+        },
+        {
+          "n": 986,
+          "positives": 13,
+          "prevalence": 0.013184584178498986,
+          "roc_auc": 0.5739979445015416,
+          "average_precision": 0.018577696157276318,
+          "brier": 0.013050228357315063,
+          "accuracy_at_0_5": 0.986815415821501,
+          "precision_at_0_5": 0.0,
+          "recall_at_0_5": 0.0,
+          "confusion_matrix_at_0_5": [
+            [
+              973,
+              0
+            ],
+            [
+              13,
+              0
+            ]
+          ]
+        },
+        {
+          "n": 986,
+          "positives": 13,
+          "prevalence": 0.013184584178498986,
+          "roc_auc": 0.6549134318918493,
+          "average_precision": 0.026228388497764887,
+          "brier": 0.013003498315811157,
+          "accuracy_at_0_5": 0.986815415821501,
+          "precision_at_0_5": 0.0,
+          "recall_at_0_5": 0.0,
+          "confusion_matrix_at_0_5": [
+            [
+              973,
+              0
+            ],
+            [
+              13,
+              0
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "test": {
+    "n": 986,
+    "positives": 13,
+    "prevalence": 0.013184584178498986,
+    "roc_auc": 0.6092971776425014,
+    "average_precision": 0.09626457703243617,
+    "brier": 0.012994371354579926,
+    "accuracy_at_0_5": 0.986815415821501,
+    "precision_at_0_5": 0.0,
+    "recall_at_0_5": 0.0,
+    "confusion_matrix_at_0_5": [
+      [
+        973,
+        0
+      ],
+      [
+        13,
+        0
+      ]
+    ]
+  },
+  "test_ci95_bootstrap": {
+    "roc_auc": [
+      0.4641973101793002,
+      0.7724298506739891
+    ],
+    "average_precision": [
+      0.009515706300568926,
+      0.26267818379208885
+    ],
+    "replicates": 200,
+    "unit": "patient"
+  },
+  "calibration_bins": [
+    {
+      "count": 986,
+      "mean_score": 0.013203292153775692,
+      "observed_rate": 0.013184584178498986
+    }
+  ],
+  "external_site_B": {
+    "n": 13769,
+    "positives": 78,
+    "prevalence": 0.005664899411721984,
+    "roc_auc": 0.5454430104747832,
+    "average_precision": 0.006797616199483348,
+    "brier": 0.0056880805641412735,
+    "accuracy_at_0_5": 0.994335100588278,
+    "precision_at_0_5": 0.0,
+    "recall_at_0_5": 0.0,
+    "confusion_matrix_at_0_5": [
+      [
+        13691,
+        0
+      ],
+      [
+        78,
+        0
+      ]
+    ]
+  },
+  "permutation_importance_calibration": {
+    "heart_rate_bpm": -0.006849590187498031,
+    "spo2_percent": 0.005268430731673063,
+    "temperature_c": 0.0026300621849292345,
+    "systolic_bp_mmhg": 0.0034297686266738397,
+    "diastolic_bp_mmhg": 0.0017316065563189678,
+    "glucose_mg_dl": 0.0033002689914984375
+  },
+  "versions": {
+    "python": "3.14.0",
+    "sklearn": "1.9.1",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "xgboost": "3.4.1"
+  },
+  "evaluation_note": "Exploratory follow-up on the same previously inspected holdout. Hyperparameters selected using development CV only; not a new independent validation.",
+  "baseline_comparison": {
+    "selected": "random_forest",
+    "test": {
+      "n": 986,
+      "positives": 13,
+      "prevalence": 0.013184584178498986,
+      "roc_auc": 0.5265238358763539,
+      "average_precision": 0.015951306954129926,
+      "brier": 0.013050184668238948,
+      "accuracy_at_0_5": 0.986815415821501,
+      "precision_at_0_5": 0.0,
+      "recall_at_0_5": 0.0,
+      "confusion_matrix_at_0_5": [
+        [
+          973,
+          0
+        ],
+        [
+          13,
+          0
+        ]
+      ]
+    },
+    "mean_cv_average_precision": 0.050641699053635025
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "diabetes": {
+    "status": "research_result",
+    "model": "diabetes",
+    "algorithm": "hist_gradient_15",
+    "outcome": "Self-reported diabetes label in the 2015 BRFSS-derived dataset; not future diabetes onset or blood glucose",
+    "experimental_score": 0.048823,
+    "research_class_at_0_5": 0,
+    "used_inputs": [
+      "bmi",
+      "age_band",
+      "sex_code",
+      "high_bp_history",
+      "high_cholesterol_history",
+      "ever_smoked_100",
+      "physical_activity_30d",
+      "general_health"
+    ],
+    "imputed_inputs": [],
+    "unused_inputs": [],
+    "clinical_use": false,
+    "overall_health_status": null,
+    "limitation": "Not clinically validated. Test sensitivity at the 0.5 research threshold was only 13.6%. A negative class does not exclude disease. Do not map this score to normal, OK, doctor-needed, or treatment decisions. Stress is not modeled. No glucose value is inferred."
+  },
+  "sepsis": {
+    "status": "model_withheld",
+    "reason": "Held-out discrimination was inadequate (internal ROC-AUC 0.527; external 0.576). The fitted artifact is retained for research audit, but this interface does not issue individual scores.",
+    "clinical_use": false,
+    "overall_health_status": null,
+    "unused_inputs": [
+      "bmi",
+      "stress_level"
+    ]
+  },
+  "kiosk": {
+    "status": "abstain",
+    "reason": "This model requires first-six-ICU-hour medians from an adult ICU cohort. A kiosk or smartwatch snapshot is outside the training population.",
+    "missing_inputs": [],
+    "clinical_use": false,
+    "overall_health_status": null
+  }
+}

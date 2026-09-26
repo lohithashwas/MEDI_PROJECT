@@ -6,6 +6,11 @@ class VitalFeed {
   final String bpStatus, vitalsStatus;
   final String? bpAt, vitalsAt;
   final Map<String, dynamic> measuredAt;
+  final String temperatureStatus;
+  final Map<String, String> controls;
+  final Map<String, dynamic> patientDetails;
+  final Map<String, dynamic> sourceData;
+  final DateTime? fetchedAt;
   const VitalFeed(
     this.values,
     this.bpStatus,
@@ -13,6 +18,11 @@ class VitalFeed {
     this.bpAt,
     this.vitalsAt,
     this.measuredAt = const {},
+    this.temperatureStatus = 'Not connected',
+    this.controls = const {},
+    this.patientDetails = const {},
+    this.sourceData = const {},
+    this.fetchedAt,
   });
   String freshness(String key) {
     final timestamp = measuredAt.containsKey(key)

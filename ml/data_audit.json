@@ -1,0 +1,73 @@
+{
+  "archives": {
+    "cdc-LLCP2015ASC.zip": {
+      "bytes": 65857111,
+      "sha256": "d8850a49e469517260ab2bc4619f270115ebdfb2a0945683fe430cfa297a54e4"
+    },
+    "kaggle-diabetes-health-indicators.zip": {
+      "bytes": 6324278,
+      "sha256": "ecbd65727a3b9b730bfd3ba547a181767522f1188fb16077e885945c1030f046"
+    },
+    "kaggle-sepsis.zip": {
+      "bytes": 78283714,
+      "sha256": "1a0eb8040c76fdab84ee6c7dd6afdab4ad457a33d363cb7e4e200af713345897"
+    }
+  },
+  "sepsis": {
+    "source_records": 40336,
+    "included": 18699,
+    "excluded": {
+      "short_followup": 9675,
+      "already_positive": 0,
+      "insufficient_inputs": 5396,
+      "invalid_time": 6566
+    },
+    "site_counts": {
+      "count": {
+        "A": 4930,
+        "B": 13769
+      },
+      "sum": {
+        "A": 65,
+        "B": 78
+      }
+    },
+    "missing_fraction": {
+      "heart_rate_bpm": 0.0,
+      "spo2_percent": 0.0,
+      "temperature_c": 0.0940157227659233,
+      "systolic_bp_mmhg": 0.0,
+      "diastolic_bp_mmhg": 0.0,
+      "glucose_mg_dl": 0.31306486977913256
+    }
+  },
+  "diabetes": {
+    "rows": 253680,
+    "positives": 35346,
+    "features": [
+      "bmi",
+      "age_band",
+      "sex_code",
+      "high_bp_history",
+      "high_cholesterol_history",
+      "ever_smoked_100",
+      "physical_activity_30d",
+      "general_health"
+    ],
+    "exact_full_row_duplicates_original": 24206,
+    "note": "Identical selected feature profiles are grouped across all train/calibration/test splits. Duplicate profiles retained as survey observations, not treated as independent validation subjects."
+  },
+  "cdc_original": {
+    "records": 441456,
+    "DIABETE3_counts": {
+      "3": 372104,
+      "1": 57256,
+      "4": 7690,
+      "2": 3608,
+      "7": 598,
+      " ": 7,
+      "9": 193
+    },
+    "use": "Government provenance audit only. Same 2015 survey as Kaggle; not an independent external test and not pooled with its own derivative."
+  }
+}

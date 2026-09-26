@@ -79,15 +79,20 @@ class _HospitalMapState extends State<HospitalMap> {
 
   Future<void> open(String url) async {
     try {
-      if (await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication))
+      if (await launchUrl(
+        Uri.parse(url),
+        mode: LaunchMode.externalApplication,
+      )) {
         return;
+      }
     } catch (_) {}
-    if (mounted)
+    if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Unable to open this link. Please try again.'),
         ),
       );
+    }
   }
 
   void choose(CarePlace place) {
@@ -157,10 +162,11 @@ class _HospitalMapState extends State<HospitalMap> {
                   userAgentPackageName: 'com.mediket.mediket_patient',
                   maxNativeZoom: 19,
                   errorTileCallback: (_, _, _) {
-                    if (!tileFailed && mounted)
+                    if (!tileFailed && mounted) {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         if (mounted) setState(() => tileFailed = true);
                       });
+                    }
                   },
                 ),
                 MarkerLayer(

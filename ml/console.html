@@ -1,0 +1,761 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>MEDIKET ML · Live Health Monitor</title>
+  <meta name="description" content="MEDIKET ML research console — live device readings and separately labeled research model demonstrations">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    .status-card.NOT_ASSESSED { border-color: #3b82f6; }
+    .NOT_ASSESSED .status-name { color: #93c5fd; }
+    .signal-table-wrap { overflow-x: auto !important; }
+    .score-bar-fill.RESEARCH { background: #3b82f6; }
+    /* ── Reset & Tokens ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #050d1a;
+      --bg2:        #0a1628;
+      --bg3:        #0f1f38;
+      --border:     rgba(100,160,255,0.12);
+      --border2:    rgba(100,160,255,0.22);
+      --text:       #e2ecff;
+      --muted:      #6b82a8;
+      --accent:     #3b82f6;
+
+      --normal-bg:  rgba(16,185,129,0.12);
+      --normal-bd:  rgba(16,185,129,0.4);
+      --normal-glow:rgba(16,185,129,0.25);
+      --normal:     #10b981;
+      --normal-lt:  #34d399;
+
+      --ok-bg:      rgba(245,158,11,0.12);
+      --ok-bd:      rgba(245,158,11,0.4);
+      --ok-glow:    rgba(245,158,11,0.25);
+      --ok:         #f59e0b;
+      --ok-lt:      #fcd34d;
+
+      --emerg-bg:   rgba(239,68,68,0.12);
+      --emerg-bd:   rgba(239,68,68,0.45);
+      --emerg-glow: rgba(239,68,68,0.3);
+      --emerg:      #ef4444;
+      --emerg-lt:   #f87171;
+
+      --radius:     16px;
+      --radius-sm:  10px;
+    }
+
+    html { font-size: 16px; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Background mesh ─────────────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 900px 600px at 20% 10%, rgba(59,130,246,0.07) 0%, transparent 70%),
+        radial-gradient(ellipse 600px 500px at 80% 80%, rgba(16,185,129,0.05) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Layout ──────────────────────────────────────────────────── */
+    .wrap { position: relative; z-index: 1; max-width: 1280px; margin: 0 auto; padding: 24px 20px 60px; }
+
+    /* ── Top bar ─────────────────────────────────────────────────── */
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 32px; flex-wrap: wrap; gap: 12px;
+    }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo-icon {
+      width: 42px; height: 42px; border-radius: 12px;
+      background: linear-gradient(135deg, #1d4ed8, #0d9488);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; box-shadow: 0 0 20px rgba(59,130,246,0.3);
+    }
+    .logo-text h1 { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.02em; }
+    .logo-text p  { font-size: 0.75rem; color: var(--muted); font-weight: 400; }
+
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+
+    .conn-badge {
+      display: flex; align-items: center; gap: 7px;
+      padding: 6px 14px; border-radius: 99px;
+      border: 1px solid var(--border2);
+      background: var(--bg3);
+      font-size: 0.75rem; font-weight: 600;
+      color: var(--muted); transition: all .4s;
+    }
+    .conn-badge.connected { border-color: var(--normal-bd); color: var(--normal-lt); background: var(--normal-bg); }
+    .conn-badge.partial   { border-color: var(--ok-bd);    color: var(--ok-lt);     background: var(--ok-bg); }
+    .conn-badge.error     { border-color: var(--emerg-bd); color: var(--emerg-lt);  background: var(--emerg-bg); }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+    .dot.pulse { animation: dotpulse 1.5s ease-in-out infinite; }
+    @keyframes dotpulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .btn-refresh {
+      padding: 8px 18px; border-radius: 8px; border: 1px solid var(--border2);
+      background: var(--bg3); color: var(--text); font: 600 0.8rem 'Inter', sans-serif;
+      cursor: pointer; transition: all .2s; display: flex; align-items: center; gap: 6px;
+    }
+    .btn-refresh:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .btn-refresh:disabled { opacity: .5; cursor: wait; }
+
+    /* ── Main status card ────────────────────────────────────────── */
+    .status-card {
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--bg2);
+      padding: 40px 36px;
+      display: flex; align-items: center; gap: 36px;
+      margin-bottom: 24px;
+      position: relative; overflow: hidden;
+      transition: border-color .5s, background .5s, box-shadow .5s;
+    }
+    .status-card.NORMAL { border-color: var(--normal-bd); box-shadow: 0 0 60px var(--normal-glow); }
+    .status-card.OK     { border-color: var(--ok-bd);     box-shadow: 0 0 60px var(--ok-glow); }
+    .status-card.EMERGENCY { border-color: var(--emerg-bd); box-shadow: 0 0 60px var(--emerg-glow); }
+
+    .status-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      opacity: 0; transition: opacity .5s;
+      pointer-events: none;
+    }
+    .status-card.NORMAL::before  { background: linear-gradient(135deg, var(--normal-bg) 0%, transparent 60%); opacity: 1; }
+    .status-card.OK::before      { background: linear-gradient(135deg, var(--ok-bg)     0%, transparent 60%); opacity: 1; }
+    .status-card.EMERGENCY::before { background: linear-gradient(135deg, var(--emerg-bg) 0%, transparent 60%); opacity: 1; }
+
+    /* Pulse ring */
+    .pulse-ring-wrap { position: relative; flex-shrink: 0; }
+    .pulse-ring {
+      position: absolute; inset: -12px; border-radius: 50%;
+      border: 2px solid transparent; animation: none;
+    }
+    .NORMAL .pulse-ring  { border-color: var(--normal); animation: ringpulse 2s ease-in-out infinite; }
+    .OK .pulse-ring      { border-color: var(--ok);     animation: ringpulse 1.4s ease-in-out infinite; }
+    .EMERGENCY .pulse-ring { border-color: var(--emerg); animation: ringpulse 0.8s ease-in-out infinite; }
+    @keyframes ringpulse { 0%{opacity:1;transform:scale(1)} 100%{opacity:0;transform:scale(1.7)} }
+
+    .status-icon {
+      width: 100px; height: 100px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.8rem; position: relative; z-index: 1;
+      transition: background .5s;
+    }
+    .NORMAL  .status-icon { background: var(--normal-bg); border: 2px solid var(--normal-bd); }
+    .OK      .status-icon { background: var(--ok-bg);     border: 2px solid var(--ok-bd); }
+    .EMERGENCY .status-icon { background: var(--emerg-bg); border: 2px solid var(--emerg-bd); }
+
+    .status-text { flex: 1; position: relative; z-index: 1; }
+    .status-label {
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 6px;
+    }
+    .status-name {
+      font-size: clamp(2.4rem, 6vw, 3.8rem);
+      font-weight: 900; line-height: 1; letter-spacing: -0.03em;
+      transition: color .5s;
+    }
+    .NORMAL  .status-name { color: var(--normal-lt); }
+    .OK      .status-name { color: var(--ok-lt); }
+    .EMERGENCY .status-name { color: var(--emerg-lt); }
+
+    .status-reason {
+      margin-top: 10px; font-size: 0.875rem; color: var(--muted);
+      line-height: 1.6; max-width: 500px;
+    }
+    .status-meta {
+      margin-top: 14px; display: flex; gap: 20px; flex-wrap: wrap;
+    }
+    .meta-pill {
+      font-size: 0.72rem; font-weight: 600; padding: 4px 10px;
+      border-radius: 99px; border: 1px solid var(--border);
+      background: var(--bg3); color: var(--muted);
+    }
+    .meta-pill span { color: var(--text); }
+
+    /* ── Score badges ─────────────────────────────────────────────── */
+    .ml-scores {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+      margin-bottom: 24px;
+    }
+    @media(max-width:640px){ .ml-scores { grid-template-columns: 1fr; } }
+
+    .score-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 20px 22px;
+    }
+    .score-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+    .score-title  { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+    .score-value  { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.04em; font-family: 'JetBrains Mono', monospace; }
+    .score-value.NORMAL   { color: var(--normal-lt); }
+    .score-value.OK       { color: var(--ok-lt); }
+    .score-value.EMERGENCY{ color: var(--emerg-lt); }
+    .score-value.unknown  { color: var(--muted); }
+
+    .score-bar-track { height: 6px; border-radius: 3px; background: var(--bg3); overflow: hidden; }
+    .score-bar-fill  {
+      height: 100%; border-radius: 3px;
+      transition: width .8s cubic-bezier(.4,0,.2,1), background .5s;
+    }
+    .score-bar-fill.NORMAL   { background: linear-gradient(90deg, var(--normal), var(--normal-lt)); }
+    .score-bar-fill.OK       { background: linear-gradient(90deg, var(--ok), var(--ok-lt)); }
+    .score-bar-fill.EMERGENCY{ background: linear-gradient(90deg, var(--emerg), var(--emerg-lt)); }
+    .score-bar-fill.unknown  { background: var(--muted); }
+
+    .score-note { margin-top: 10px; font-size: 0.72rem; color: var(--muted); line-height: 1.5; }
+
+    /* ── Vitals grid ─────────────────────────────────────────────── */
+    .section-title {
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: 14px; display: flex; align-items: center; gap: 10px;
+    }
+    .section-title::after { content:''; flex:1; height:1px; background:var(--border); }
+
+    .vitals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 14px; margin-bottom: 24px;
+    }
+
+    .vital-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 18px 16px;
+      transition: border-color .4s, box-shadow .4s;
+      position: relative; overflow: hidden;
+    }
+    .vital-card.NORMAL   { border-color: rgba(16,185,129,0.3); }
+    .vital-card.OK       { border-color: rgba(245,158,11,0.4); }
+    .vital-card.EMERGENCY{ border-color: rgba(239,68,68,0.5); box-shadow: 0 0 20px rgba(239,68,68,0.15); }
+
+    .vital-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; width: 3px; bottom: 0;
+      border-radius: 3px 0 0 3px;
+    }
+    .vital-card.NORMAL::before   { background: var(--normal); }
+    .vital-card.OK::before       { background: var(--ok); }
+    .vital-card.EMERGENCY::before{ background: var(--emerg); }
+    .vital-card.unavailable::before { background: var(--border2); }
+
+    .vital-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 8px; }
+    .vital-value { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.04em; font-family: 'JetBrains Mono', monospace; line-height: 1; }
+    .vital-unit  { font-size: 0.7rem; font-weight: 500; color: var(--muted); margin-left: 3px; font-family: 'Inter', sans-serif; }
+    .vital-status-tag {
+      display: inline-block; margin-top: 8px;
+      font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em;
+      padding: 3px 8px; border-radius: 99px; text-transform: uppercase;
+    }
+    .vital-card.NORMAL   .vital-status-tag { background: var(--normal-bg); color: var(--normal-lt); }
+    .vital-card.OK       .vital-status-tag { background: var(--ok-bg);     color: var(--ok-lt); }
+    .vital-card.EMERGENCY .vital-status-tag{ background: var(--emerg-bg);  color: var(--emerg-lt); }
+    .vital-card.unavailable .vital-status-tag { background: var(--bg3);    color: var(--muted); }
+
+    /* EMERGENCY blink */
+    .vital-card.EMERGENCY { animation: cardflash 1.2s ease-in-out infinite alternate; }
+    @keyframes cardflash { from{background:var(--bg2)} to{background:rgba(239,68,68,0.06)} }
+
+    /* ── Signal breakdown table ──────────────────────────────────── */
+    .signal-table-wrap {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden; margin-bottom: 24px;
+    }
+    .signal-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    .signal-table th {
+      padding: 12px 16px; text-align: left;
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--muted);
+      border-bottom: 1px solid var(--border); background: var(--bg3);
+    }
+    .signal-table td { padding: 11px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .signal-table tr:last-child td { border-bottom: none; }
+    .signal-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .signal-pill {
+      display: inline-block; padding: 3px 10px; border-radius: 99px;
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .signal-pill.NORMAL   { background: var(--normal-bg); color: var(--normal-lt); border: 1px solid var(--normal-bd); }
+    .signal-pill.OK       { background: var(--ok-bg);     color: var(--ok-lt);     border: 1px solid var(--ok-bd); }
+    .signal-pill.EMERGENCY{ background: var(--emerg-bg);  color: var(--emerg-lt);  border: 1px solid var(--emerg-bd); }
+    .val-mono { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+
+    /* ── History log ─────────────────────────────────────────────── */
+    .history-log {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0;
+      overflow: hidden; margin-bottom: 24px;
+    }
+    .history-head {
+      padding: 14px 20px; border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--bg3);
+    }
+    .history-head h3 { font-size: 0.78rem; font-weight: 700; }
+    .history-clear { font-size: 0.72rem; color: var(--muted); cursor: pointer; padding: 4px 8px; border-radius: 6px; border: none; background: none; color: var(--muted); }
+    .history-clear:hover { color: var(--text); }
+    .history-entries { max-height: 220px; overflow-y: auto; }
+    .history-entry {
+      display: grid; grid-template-columns: auto 1fr auto;
+      gap: 14px; align-items: center;
+      padding: 10px 20px; border-bottom: 1px solid var(--border); font-size: 0.78rem;
+    }
+    .history-entry:last-child { border-bottom: none; }
+    .history-time { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--muted); white-space: nowrap; }
+    .history-reason { color: var(--muted); }
+    .history-empty { padding: 20px; text-align: center; font-size: 0.8rem; color: var(--muted); }
+
+    /* ── Manual playground ───────────────────────────────────────── */
+    .playground {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px; margin-bottom: 24px;
+    }
+    .playground h2 { font-size: 0.9rem; font-weight: 700; margin-bottom: 6px; }
+    .playground p  { font-size: 0.78rem; color: var(--muted); margin-bottom: 16px; line-height: 1.6; }
+    .pg-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+    select, textarea {
+      background: var(--bg3); border: 1px solid var(--border2);
+      border-radius: 8px; color: var(--text); font: 0.82rem 'Inter', sans-serif;
+      padding: 10px 14px; outline: none; width: 100%;
+      transition: border-color .2s;
+    }
+    select { cursor: pointer; }
+    select:focus, textarea:focus { border-color: var(--accent); }
+    textarea { font-family: 'JetBrains Mono', monospace; resize: vertical; }
+    .btn-run {
+      padding: 11px 24px; background: linear-gradient(135deg, #1d4ed8, #0d9488);
+      color: #fff; border: none; border-radius: 8px;
+      font: 700 0.84rem 'Inter', sans-serif; cursor: pointer;
+      transition: opacity .2s, transform .1s; white-space: nowrap;
+    }
+    .btn-run:hover { opacity: .88; }
+    .btn-run:active { transform: scale(.97); }
+    .btn-run:disabled { opacity: .5; cursor: wait; }
+    .pg-status { font-size: 0.75rem; color: var(--muted); margin-top: 8px; min-height: 18px; }
+    pre.pg-output {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 8px; padding: 16px;
+      font: 0.77rem/1.7 'JetBrains Mono', monospace;
+      white-space: pre-wrap; overflow-wrap: anywhere;
+      max-height: 320px; overflow-y: auto; margin-top: 12px; color: #a8c8ff;
+    }
+
+    /* ── Footer ──────────────────────────────────────────────────── */
+    .footer { text-align: center; font-size: 0.72rem; color: var(--muted); line-height: 1.8; }
+    .footer a { color: var(--accent); text-decoration: none; }
+
+    /* ── Skeleton / loading ──────────────────────────────────────── */
+    .skel { background: linear-gradient(90deg, var(--bg3) 25%, var(--bg2) 50%, var(--bg3) 75%); background-size:200% 100%; animation: skel 1.2s infinite; border-radius: 6px; }
+    @keyframes skel { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+    /* ── Responsive tweaks ───────────────────────────────────────── */
+    @media(max-width:640px){
+      .status-card { flex-direction: column; text-align: center; padding: 28px 20px; }
+      .status-reason { max-width: 100%; }
+      .status-meta { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Top Bar -->
+  <header class="topbar">
+    <div class="logo">
+      <div class="logo-icon">⚕</div>
+      <div class="logo-text">
+        <h1>MEDIKET ML Monitor</h1>
+        <p>Live Readings & Research · XGBoost Models</p>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="conn-badge" id="conn-badge">
+        <span class="dot" id="conn-dot"></span>
+        <span id="conn-label">Connecting…</span>
+      </div>
+      <button class="btn-refresh" id="btn-refresh" onclick="manualRefresh()">
+        ↻ Refresh
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Status Card -->
+  <section class="status-card" id="status-card" aria-live="assertive" aria-label="Research assessment status">
+    <div class="pulse-ring-wrap">
+      <div class="pulse-ring" id="pulse-ring"></div>
+      <div class="status-icon" id="status-icon">⏳</div>
+    </div>
+    <div class="status-text">
+      <div class="status-label">Live Model Assessment</div>
+      <div class="status-name" id="status-name">Loading…</div>
+      <div class="status-reason" id="status-reason">Connecting to MEDIKET device…</div>
+      <div class="status-meta" id="status-meta"></div>
+    </div>
+  </section>
+
+  <!-- ML Model Scores -->
+  <p class="section-title">ML Research Scores</p>
+  <div class="ml-scores" id="ml-scores">
+    <div class="score-card">
+      <div class="score-header">
+        <div class="score-title">Sepsis Research · XGBoost</div>
+        <div class="score-value unknown" id="sep-val">—</div>
+      </div>
+      <div class="score-bar-track"><div class="score-bar-fill unknown" id="sep-bar" style="width:0%"></div></div>
+      <div class="score-note" id="sep-note">Awaiting live vitals…</div>
+    </div>
+    <div class="score-card">
+      <div class="score-header">
+        <div class="score-title">Diabetes Research · XGBoost</div>
+        <div class="score-value unknown" id="diab-val">—</div>
+      </div>
+      <div class="score-bar-track"><div class="score-bar-fill unknown" id="diab-bar" style="width:0%"></div></div>
+      <div class="score-note" id="diab-note">Survey fields needed (BMI, age, sex, BP history)…</div>
+    </div>
+  </div>
+
+  <!-- Vitals Grid -->
+  <p class="section-title">Live Device Readings</p>
+  <p id="source-times" style="color:var(--muted);font-size:.75rem;line-height:1.6;margin-bottom:14px"></p>
+  <div class="vitals-grid" id="vitals-grid">
+    <!-- populated by JS -->
+  </div>
+
+  <!-- Signal Breakdown Table -->
+  <p class="section-title">Signal Breakdown</p>
+  <div class="signal-table-wrap">
+    <table class="signal-table" aria-label="Signal breakdown">
+      <thead>
+        <tr>
+          <th>Signal</th>
+          <th>Value</th>
+          <th>Status</th>
+          <th>Note</th>
+        </tr>
+      </thead>
+      <tbody id="signal-tbody">
+        <tr><td colspan="4" style="text-align:center;color:var(--muted);padding:20px;">Awaiting data…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- History Log -->
+  <div class="history-log">
+    <div class="history-head">
+      <h3>Reading History (last 12)</h3>
+      <button class="history-clear" onclick="clearHistory()">Clear</button>
+    </div>
+    <div class="history-entries" id="history-entries">
+      <div class="history-empty">No readings yet — waiting for first data…</div>
+    </div>
+  </div>
+
+  <!-- Manual Playground -->
+  <div class="playground">
+    <h2>⚗️ Manual Model Playground</h2>
+    <p>Test the models directly with custom JSON. Choose a preset or write your own payload. This is separate from the live readings above.</p>
+    <div class="pg-row">
+      <select id="pg-model" aria-label="Research model preset" style="max-width:340px" onchange="loadPreset()">
+        <option value="diabetes">Diabetes — XGBoost research model</option>
+        <option value="sepsis-demo">Sepsis — XGBoost demo (illustrative inputs)</option>
+      </select>
+      <button class="btn-run" id="pg-btn" onclick="runPlayground()">Run Model ▶</button>
+    </div>
+    <textarea id="pg-payload" aria-label="Research model JSON inputs" rows="14" spellcheck="false"></textarea>
+    <div class="pg-status" id="pg-status">Ready.</div>
+    <pre class="pg-output" id="pg-output">Model output will appear here.</pre>
+  </div>
+
+  <footer class="footer">
+    <p>
+      🔬 Research only · Not a clinical diagnosis · Not approved for medical use<br>
+      ML models: XGBoost sepsis (ICU research) + XGBoost diabetes (BRFSS survey research)<br>
+      <a href="/health">Server health</a> ·
+      <a href="/health-status">Raw monitor JSON</a> ·
+      <a href="/live">Raw live data</a>
+    </p>
+  </footer>
+
+</div>
+
+<script>
+// ─── State ────────────────────────────────────────────────────────────────────
+const HISTORY_MAX = 12;
+let history = [];
+let busy = false;
+
+// ─── Vital field metadata ─────────────────────────────────────────────────────
+const VITAL_META = {
+  heart_rate_bpm:     { label: 'Heart Rate',    unit: 'bpm',   icon: '💓' },
+  spo2_percent:       { label: 'SpO₂',           unit: '%',     icon: '🫁' },
+  systolic_bp_mmhg:   { label: 'Systolic BP',   unit: 'mmHg',  icon: '🩺' },
+  diastolic_bp_mmhg:  { label: 'Diastolic BP',  unit: 'mmHg',  icon: '🩺' },
+  temperature_c:      { label: 'Temperature',   unit: '°C',    icon: '🌡️' },
+  glucose_mg_dl:      { label: 'Glucose',        unit: 'mg/dL', icon: '🩸' },
+  bmi:                { label: 'BMI',            unit: 'kg/m²', icon: '⚖️' },
+  stress_level:       { label: 'Stress Level',  unit: '',      icon: '🧠' },
+};
+
+const STATUS_ICONS = { NOT_ASSESSED: '🔬', UNAVAILABLE: '📡' };
+const STATUS_LABELS = { NOT_ASSESSED: 'Not assessed', UNAVAILABLE: 'Disconnected' };
+
+// ─── Connection badge ─────────────────────────────────────────────────────────
+function setConnBadge(state, label) {
+  const badge = document.getElementById('conn-badge');
+  const dot   = document.getElementById('conn-dot');
+  const lbl   = document.getElementById('conn-label');
+  badge.className = 'conn-badge ' + (state === 'connected' ? 'connected' : state === 'partial' ? 'partial' : 'error');
+  dot.className   = 'dot' + (state === 'connected' || state === 'partial' ? ' pulse' : '');
+  lbl.textContent = label;
+}
+
+// ─── Render main status card ──────────────────────────────────────────────────
+function renderStatus(data) {
+  const triage = data.triage || {};
+  const status = triage.status || 'NOT_ASSESSED';
+  const card   = document.getElementById('status-card');
+  card.className = 'status-card ' + status;
+
+  document.getElementById('status-icon').textContent  = STATUS_ICONS[status] || '❓';
+  document.getElementById('status-name').textContent  = STATUS_LABELS[status] || status;
+  document.getElementById('status-reason').textContent = triage.reason || '';
+
+  // Meta pills
+  const meta = document.getElementById('status-meta');
+  const ft = data.fetched_at ? new Date(data.fetched_at).toLocaleTimeString() : '—';
+  meta.innerHTML = `
+    <span class="meta-pill">⏱ <span>${ft}</span></span>
+    <span class="meta-pill"><span>${triage.counts?.RECORDED ?? '—'} recorded</span></span>
+    <span class="meta-pill"><span>${triage.counts?.UNAVAILABLE ?? '—'} unavailable</span></span>
+    <span class="meta-pill">📡 <span>${data.source_status || '—'}</span></span>
+  `;
+}
+
+// ─── Render ML score cards ────────────────────────────────────────────────────
+function renderMLScores(data) {
+  const ml = data.triage?.ml_signals || [];
+  for (const sig of ml) {
+    const model = sig.field === 'ml_sepsis' ? 'sep' : 'diab';
+    const valEl  = document.getElementById(`${model}-val`);
+    const barEl  = document.getElementById(`${model}-bar`);
+    const noteEl = document.getElementById(`${model}-note`);
+    if (!valEl) continue;
+    const cls = sig.status || 'unknown';
+    const pct = sig.value != null ? sig.value : null;
+    valEl.className  = `score-value ${cls}`;
+    valEl.textContent = pct != null ? `${pct}%` : '—';
+    barEl.className  = `score-bar-fill ${cls}`;
+    barEl.style.width = pct != null ? `${Math.min(pct, 100)}%` : '0%';
+    noteEl.textContent = sig.note || '';
+  }
+}
+
+// ─── Render vitals grid ───────────────────────────────────────────────────────
+function renderVitals(data) {
+  const sources = data.sources || {};
+  const showTime = value => value == null ? 'not supplied' : String(value);
+  document.getElementById('source-times').textContent = `Vitals recorded: ${showTime(sources.vitals?.recorded_at)} · BP recorded: ${showTime(sources['blood-pressure']?.recorded_at)} · Temperature time: not supplied. Feed connection does not establish reading freshness.`;
+  const measurements = data.measurements || {};
+  const vitalSigs    = data.triage?.vital_signals || [];
+  const sigMap = {};
+  for (const s of vitalSigs) sigMap[s.field] = s;
+
+  const grid = document.getElementById('vitals-grid');
+  grid.innerHTML = '';
+
+  for (const [field, meta] of Object.entries(VITAL_META)) {
+    const sig   = sigMap[field] || {};
+    const value = measurements[field];
+    const status = value != null ? (sig.status || 'RECORDED') : 'unavailable';
+
+    const card = document.createElement('div');
+    card.className = `vital-card ${status}`;
+    const displayVal = value != null ? value : '—';
+    card.innerHTML = `
+      <div class="vital-label">${meta.icon} ${meta.label}</div>
+      <div class="vital-value">${displayVal}<span class="vital-unit">${value != null ? meta.unit : ''}</span></div>
+      <span class="vital-status-tag">${status === 'unavailable' ? 'No reading' : status}</span>
+    `;
+    grid.appendChild(card);
+  }
+}
+
+// ─── Render signal breakdown table ───────────────────────────────────────────
+function renderSignalTable(data) {
+  const triage = data.triage || {};
+  const allSigs = [...(triage.vital_signals || []), ...(triage.ml_signals || [])];
+  const tbody  = document.getElementById('signal-tbody');
+
+  if (!allSigs.length) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:20px;">No signal data</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = allSigs.map(sig => {
+    const valueStr = sig.value != null ? `${sig.value}${sig.unit ? ' ' + sig.unit : ''}` : '—';
+    return `<tr>
+      <td>${sig.is_ml ? '🤖' : '📊'} ${sig.label}</td>
+      <td class="val-mono">${valueStr}</td>
+      <td><span class="signal-pill ${sig.status}">${sig.status}</span></td>
+      <td style="color:var(--muted);font-size:0.75rem">${sig.note || ''}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ─── History ──────────────────────────────────────────────────────────────────
+function addHistory(data) {
+  const triage = data.triage || {};
+  const entry = {
+    time:   data.fetched_at ? new Date(data.fetched_at).toLocaleTimeString() : new Date().toLocaleTimeString(),
+    status: triage.status || '—',
+    reason: triage.reason || '',
+  };
+  history.unshift(entry);
+  if (history.length > HISTORY_MAX) history.pop();
+  renderHistory();
+}
+
+function renderHistory() {
+  const el = document.getElementById('history-entries');
+  if (!history.length) {
+    el.innerHTML = '<div class="history-empty">No readings yet.</div>';
+    return;
+  }
+  el.innerHTML = history.map(e => `
+    <div class="history-entry">
+      <span class="history-time">${e.time}</span>
+      <span class="history-reason">${e.reason}</span>
+      <span class="signal-pill ${e.status}">${e.status}</span>
+    </div>
+  `).join('');
+}
+
+function clearHistory() { history = []; renderHistory(); }
+
+// ─── Full render pipeline ─────────────────────────────────────────────────────
+function renderAll(data) {
+  const srcStatus = data.source_status || 'unavailable';
+  setConnBadge(srcStatus, srcStatus === 'connected' ? 'Live · All feeds connected' : srcStatus === 'partial' ? 'Partial · Some feeds missing' : 'Unavailable · Check device');
+  renderStatus(data);
+  renderMLScores(data);
+  renderVitals(data);
+  renderSignalTable(data);
+  addHistory(data);
+}
+
+function clearLiveState(reason) {
+  renderAll({source_status: 'unavailable', measurements: {}, triage: {
+    status: 'UNAVAILABLE', reason, ml_signals: ['sepsis', 'diabetes'].map(model => ({
+      field: 'ml_' + model, value: null, status: 'ABSTAIN', note: 'Live connection unavailable.'
+    }))
+  }});
+}
+
+// ─── SSE connection ───────────────────────────────────────────────────────────
+let es;
+function connectSSE() {
+  if (es) { try { es.close(); } catch {} }
+  setConnBadge('partial', 'Connecting…');
+  es = new EventSource('/stream');
+  es.onmessage = e => {
+    try { renderAll(JSON.parse(e.data)); } catch {}
+  };
+  es.onerror = () => {
+    clearLiveState('Stream interrupted — reconnecting…');
+    es.close();
+    setTimeout(connectSSE, 6000);
+  };
+}
+
+// ─── Manual refresh ───────────────────────────────────────────────────────────
+async function manualRefresh() {
+  if (busy) return;
+  busy = true;
+  const btn = document.getElementById('btn-refresh');
+  btn.disabled = true;
+  btn.textContent = '↻ Refreshing…';
+  try {
+    const r = await fetch('/health-status', { cache: 'no-store', signal: AbortSignal.timeout(12000) });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    renderAll(await r.json());
+  } catch (e) {
+    clearLiveState('Refresh failed — readings cleared');
+  } finally {
+    busy = false;
+    btn.disabled = false;
+    btn.textContent = '↻ Refresh';
+  }
+}
+
+// ─── Playground ───────────────────────────────────────────────────────────────
+const PRESETS = {};
+async function loadPreset() {
+  const model = document.getElementById('pg-model').value;
+  const status = document.getElementById('pg-status');
+  if (PRESETS[model]) {
+    document.getElementById('pg-payload').value = JSON.stringify(PRESETS[model], null, 2);
+    status.textContent = 'Preset loaded.';
+    return;
+  }
+  status.textContent = 'Loading preset…';
+  try {
+    const r = await fetch(`/examples/${model}`, { cache: 'no-store' });
+    if (!r.ok) throw new Error('Preset unavailable');
+    const j = await r.json();
+    PRESETS[model] = j;
+    if (document.getElementById('pg-model').value !== model) return;
+    document.getElementById('pg-payload').value = JSON.stringify(j, null, 2);
+    status.textContent = 'Preset loaded.';
+  } catch {
+    status.textContent = 'Could not load preset. Is the server running?';
+  }
+}
+
+async function runPlayground() {
+  const btn    = document.getElementById('pg-btn');
+  const status = document.getElementById('pg-status');
+  const output = document.getElementById('pg-output');
+  btn.disabled = true;
+  output.textContent = '';
+  status.textContent = 'Running model…';
+  try {
+    const body = JSON.stringify(JSON.parse(document.getElementById('pg-payload').value));
+    const r = await fetch('/predict', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body,
+      signal: AbortSignal.timeout(30000),
+    });
+    const result = await r.json();
+    output.textContent = JSON.stringify(result, null, 2);
+    const s = result.status;
+    status.textContent = s === 'demonstration_result' ? '⚠️ Demo result — illustrative inputs only.'
+      : s === 'research_result' ? '🔬 Research result received.'
+      : s === 'model_withheld' ? '🔒 Model withheld — see reason.'
+      : s === 'abstain' ? '⏹ Model abstained — see reason.'
+      : r.ok ? '✅ Done.' : '❌ Request failed.';
+  } catch (err) {
+    status.textContent = err instanceof SyntaxError ? '⚠️ Invalid JSON in payload.' : '❌ Cannot reach server.';
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+connectSSE();
+loadPreset();
+manualRefresh();
+</script>
+</body>
+</html>
